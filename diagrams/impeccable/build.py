@@ -32,10 +32,13 @@ INFO = {}
 for cid, c in commands.items():
     INFO[cid] = {"name": "/impeccable" if cid == "menu" else c[1], "g": c[2], "tag": TRIG[cid], "when": md(WHEN[cid]),
                  "what": md(ONE[cid]), "how": [step(cid, t) for t in HOW[cid]], "flows": flows(cid),
-                 "get": md(GET[cid]), "next": md(NEXT[cid]) if NEXT[cid] else None}
+                 "get": md(GET[cid]), "next": md(NEXT[cid]) if NEXT[cid] else None,
+                 "calls": ('<div class="fl"><span class="pill cmd">' + e("/impeccable" if cid == "menu" else c[1]) + '</span><i>→</i>' + " ".join(md(f"[[{k}]]") for k, _ in CALLS[cid]) + '</div>' + ("".join(f'<p class="why">{md(f"[[{k}]]")} {e(w)}</p>' for k, w in CALLS[cid] if w))) if cid in CALLS else None}
 for group, title, subtitle, ids in STAGES:
-    INFO["stage_" + group] = {"name": title, "g": group, "tag": None, "when": None, "what": e(subtitle.capitalize()) + ".",
-                              "how": None, "chips": "".join(md(f"[[{i}]]") for i in ids), "flows": None, "get": None, "next": None}
+    x = STAGEX[group]
+    INFO["stage_" + group] = {"stage": True, "name": title, "g": group, "what": md(x["for"]),
+        "pick": "".join(f'<div class="pk">{md("[[" + cid + "]]")}<span>{e(t)}</span></div>' for cid, t in x["pick"]),
+        "runT": x["runT"], "run": md(x["run"])}
 FLOW = [("1", "Setup", "init · document · extract", "ctx"), ("2", "Plan / build", "shape · craft", "plan"),
         ("3", "Diagnose", "critique + audit", "diag"), ("4", "Fix & style", "harden … bolder, animate", "fix"),
         ("5", "Finish", "polish, always last", "fin")]
@@ -69,7 +72,7 @@ svg.map text{{font-family:inherit;fill:var(--fg)}}
 .arrow{{stroke:var(--muted);stroke-width:1.6;fill:none}} .ahead{{fill:var(--muted)}}
 .pop{{position:absolute;z-index:5;width:340px;max-height:calc(100% - 16px);overflow:auto;background:var(--card);color:var(--fg);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.22);padding:12px 14px 14px;font-size:13px}}
 .pop[hidden]{{display:none}}
-.pop h2{{font:700 16px ui-monospace,Menlo,monospace;margin:0 28px 6px 0;color:var(--c)}}
+.pop .gt{{display:block;font:700 10px -apple-system,sans-serif;letter-spacing:.08em;color:var(--muted)}} .pop h2{{font:700 16px ui-monospace,Menlo,monospace;margin:0 28px 6px 0;color:var(--c)}}
 .pop .x{{position:absolute;top:6px;right:6px;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:22px;line-height:1;cursor:pointer}}
 .pop .x:hover{{background:var(--bg)}}
 .pop h3{{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--c);margin:10px 0 3px}}
@@ -84,6 +87,12 @@ mark{{background:var(--mkb);color:var(--mkf);border-radius:3px;padding:0 3px}}
 .pill.cmd{{background:color-mix(in srgb,var(--c) 16%,var(--card));border-color:var(--c);color:var(--c);font:700 12px ui-monospace,Menlo,monospace}}
 .chip{{font:600 12px ui-monospace,Menlo,monospace;color:var(--c);background:color-mix(in srgb,var(--c) 12%,var(--card));border:1px solid var(--c);border-radius:99px;padding:2px 9px;margin:1px 2px;cursor:pointer;min-height:26px}}
 .chip:hover{{background:color-mix(in srgb,var(--c) 26%,var(--card))}}
+.stagehead{{cursor:pointer;outline:none}} .stagehead .s1{{font-size:9.5px;letter-spacing:.08em;font-weight:700;fill:var(--muted)!important}}
+.stagehead .s2{{font-size:17px;font-weight:800;fill:var(--c)!important}} .stagehead .s3{{font-size:11px;fill:var(--muted)!important;font-weight:400}}
+.stagehead .bar{{fill:var(--c);opacity:.8}} .stagehead:hover .s2,.stagehead:focus-visible .s2,.stagehead.on .s2{{text-decoration:underline}}
+.badge rect{{fill:var(--c)}} .badge text{{font-size:10px;font-weight:700;fill:var(--card)!important}}
+.pk{{display:flex;align-items:center;flex-wrap:wrap;gap:2px 6px;margin:2px 0}} .pk span{{font-size:12.5px}}
+.pop .why{{font-size:12px;color:var(--muted);margin:2px 0}}
 .flow{{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}}
 .step{{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:6px 10px;display:grid;grid-template-columns:auto 1fr;column-gap:8px}}
 .step .n{{grid-row:span 2;font:700 18px/1 ui-monospace,Menlo,monospace;color:var(--c);align-self:center}} .step small{{color:var(--muted)}}
@@ -113,20 +122,22 @@ function place(n){{if(matchMedia('(max-width:760px)').matches){{pop.style.left=p
  var y=r.top-c.top-10;y=Math.max(8,Math.min(y,c.height-h-8));pop.style.left=x+'px';pop.style.top=y+'px'}}
 function open(n){{var i=INFO[n.dataset.id];if(!i)return;if(cur)cur.classList.remove('on');cur=n;lastNode=n;n.classList.add('on');
  pop.className='pop g-'+i.g;
- var h='<button class="x" type="button" aria-label="Close">×</button><h2 id="pt">'+esc(i.name)+'</h2>';
+ var h='<button class="x" type="button" aria-label="Close">×</button><h2 id="pt">'+(i.stage?'<small class="gt">STAGE · GROUP</small>':'')+esc(i.name)+'</h2>';
+ if(i.stage){{h+='<h3>What this stage is for</h3><p>'+i.what+'</p><h3>Not a command</h3><p><mark>You cannot run "'+esc(i.name)+'".</mark> It is a <b>group label</b>. You run the <b>commands inside it</b>.</p><h3>Which one to pick</h3>'+i.pick+'<h3>'+i.runT+'</h3><p>'+i.run+'</p>';}}else{{
  if(i.when)h+='<h3>When to use it</h3><p>'+i.when+' <span class="tag">'+esc(i.tag)+'</span></p>';
  h+='<h3>What it is</h3><p>'+i.what+'</p>';
  if(i.chips)h+='<h3>Commands in this stage</h3><p>'+i.chips+'</p>';
  if(i.how)h+='<h3>How it works</h3><ol>'+i.how.map(function(s){{return'<li>'+s+'</li>'}}).join('')+'</ol>';
  if(i.flows)h+='<h3>Behind the scenes</h3>'+i.flows;
+ if(i.calls)h+='<h3>Calls these</h3>'+i.calls;
  if(i.get)h+='<h3>What you get</h3><p>'+i.get+'</p>';
- if(i.next)h+='<p class="nx"><b>Next:</b> '+i.next+'</p>';
+ if(i.next)h+='<p class="nx"><b>Next:</b> '+i.next+'</p>';}}
  pop.innerHTML=h;pop.hidden=false;pop.scrollTop=0;pop.querySelector('.x').onclick=close;place(n)}}
-pop.addEventListener('click',function(ev){{ev.stopPropagation();var g=ev.target.closest('[data-go]');if(g){{var t=canvas.querySelector('.n[data-id="'+g.dataset.go+'"]');if(t)open(t)}}}});
-canvas.addEventListener('click',function(ev){{var n=ev.target.closest('.n[data-id]');if(n){{ev.stopPropagation();cur===n&&!pop.hidden?close():open(n)}}}});
-canvas.addEventListener('keydown',function(ev){{var n=ev.target.closest&&ev.target.closest('.n[data-id]');if(n&&(ev.key==='Enter'||ev.key===' ')){{ev.preventDefault();open(n)}}}});
+pop.addEventListener('click',function(ev){{ev.stopPropagation();var g=ev.target.closest('[data-go]');if(g){{var t=canvas.querySelector('svg [data-id="'+g.dataset.go+'"]');if(t)open(t)}}}});
+canvas.addEventListener('click',function(ev){{var n=ev.target.closest('[data-id]');if(n){{ev.stopPropagation();cur===n&&!pop.hidden?close():open(n)}}}});
+canvas.addEventListener('keydown',function(ev){{var n=ev.target.closest&&ev.target.closest('[data-id]');if(n&&(ev.key==='Enter'||ev.key===' ')){{ev.preventDefault();open(n)}}}});
 document.addEventListener('keydown',function(ev){{if(ev.key==='Escape'&&!pop.hidden)close()}});
-document.addEventListener('click',function(ev){{if(!pop.hidden&&!pop.contains(ev.target)&&!ev.target.closest('.n'))close()}});
+document.addEventListener('click',function(ev){{if(!pop.hidden&&!pop.contains(ev.target)&&!ev.target.closest('[data-id]'))close()}});
 window.addEventListener('resize',function(){{if(cur&&!pop.hidden)place(cur)}});
 document.getElementById('theme').onclick=function(){{var r=document.documentElement,d=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');r.setAttribute('data-theme',d==='dark'?'light':'dark')}};
 </script></body></html>'''

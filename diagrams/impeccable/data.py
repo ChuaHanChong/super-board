@@ -348,3 +348,33 @@ HOWH = {
 "colorize":"color plan","bolder":"Touches only","quieter":"Reduces color","animate":"reduced-motion","delight":"one idea","overdrive":"waits for your pick",
 "polish":"latest critique","extract":"3 or more times","live":"3 versions","hooks":"turns the checker","doctor":"Fixes safe problems","pin":"/polish",
 }
+
+# ---- v6: stage heads are groups, not commands. Parents = commands that really call others (sources: see impeccable-parent-child.md) ----
+CALLS = {  # parent -> [(child, why)]
+"delight":[("animate","for authored motion")],
+"document":[("init","only in seed mode, if PRODUCT.md is missing")],
+"live":[(c,"") for c in ["bolder","quieter","distill","polish","typeset","colorize","layout","adapt","animate","delight","overdrive"]],
+}
+STAGEX = {
+"ctx":{"for":"Gets the **background facts** in place so ==every later command knows your product==.",
+ "pick":[("init","new project: who is it for?"),("document","code exists: write down the look"),("extract","same UI repeats: share it"),("menu","not sure: ask what is next")],
+ "runT":"Run how many?","run":"Run **only what is missing**. ==Start with init==, then document once code exists. extract and the menu are optional."},
+"plan":{"for":"==Decide before you build==, then build the new screen.",
+ "pick":[("shape","plan only, no code"),("craft","build it (same as just asking for a build)")],
+ "runT":"Run how many?","run":"==Plan with shape, then build.== **craft adds nothing new**: asking for a build does the same."},
+"diag":{"for":"==Find out what is wrong== **before fixing**. Both only report.",
+ "pick":[("critique","does it feel easy to use?"),("audit","is it built right: speed, access, phones?")],
+ "runT":"Run both?","run":"==Either order, or both.== **They do not call each other** and do not run together. Each runs alone; critique first if unsure."},
+"fix":{"for":"==Repair the problems== the review found.",
+ "pick":[("harden","breaks on odd data"),("clarify","words are confusing"),("adapt","wrong on other screens"),("optimize","feels slow"),("onboard","new users get lost"),("distill","too cluttered")],
+ "runT":"Run how many?","run":"==Pick only the ones your findings need.== **Order does not matter**; finish with polish."},
+"style":{"for":"==Improve the look== of what already works.",
+ "pick":[("layout","spacing and order"),("typeset","fonts and sizes"),("colorize","too gray"),("bolder","too bland"),("quieter","too loud")],
+ "runT":"Run how many?","run":"==Pick the one that matches the problem.== **bolder and quieter are opposites**: choose one."},
+"motion":{"for":"==Add life== with movement and charm.",
+ "pick":[("animate","motion that explains"),("delight","one charming moment"),("overdrive","big showpiece effect")],
+ "runT":"Run how many?","run":"==Pick one.== **delight uses animate** for its motion, so you rarely need both."},
+"fin":{"for":"The ==last pass== before you ship.",
+ "pick":[("polish","final tidy-up")],
+ "runT":"Run how many?","run":"==Just polish==, and **always last**, after fixes and styling."},
+}

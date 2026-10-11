@@ -12,10 +12,20 @@ gtype = {g[0]: g for g in GROUPS}
 parts = []
 
 def node(nid, label, sub, group, x, y, cls="n"):
+    badge = ""
+    if nid in CALLS:
+        badge = f'<g class="badge"><rect x="{x+W-62}" y="{y-9}" width="66" height="17" rx="8.5"/><text x="{x+W-29}" y="{y+3}" text-anchor="middle">calls {len(CALLS[nid])}</text></g>'
     return (f'<g class="{cls} g-{group}" data-id="{nid}" tabindex="0" role="button" aria-label="{e(label)}: {e(sub)}">'
             f'<rect x="{x}" y="{y}" width="{W}" height="{H}" rx="10"/>'
             f'<text class="t1" x="{x+W/2}" y="{y+23}" text-anchor="middle">{e(label)}</text>'
-            f'<text class="t2" x="{x+W/2}" y="{y+40}" text-anchor="middle">{e(sub)}</text></g>')
+            f'<text class="t2" x="{x+W/2}" y="{y+40}" text-anchor="middle">{e(sub)}</text>{badge}</g>')
+
+def stage_head(nid, title, group, x, y, n):
+    return (f'<g class="stagehead g-{group}" data-id="{nid}" tabindex="0" role="button" aria-label="{e(title)} stage (a group, not a command)">'
+            f'<rect class="hit" x="{x}" y="{y}" width="{W}" height="{H}" fill="transparent"/>'
+            f'<text class="s1" x="{x+4}" y="{y+12}">STAGE {n} · GROUP</text>'
+            f'<text class="s2" x="{x+4}" y="{y+36}">{e(title)} <tspan class="s3">ⓘ</tspan></text>'
+            f'<rect class="bar" x="{x+4}" y="{y+46}" width="{W-8}" height="3" rx="1.5"/></g>')
 
 def region(label, group, x, y, w, h):
     return (f'<g class="r g-{group}"><rect x="{x}" y="{y}" width="{w}" height="{h}" rx="14"/>'
@@ -25,7 +35,7 @@ for col, (group, title, subtitle, ids) in enumerate(STAGES):
     x = 40 + col * GAP_X
     bottom = CMD_Y + (len(ids) - 1) * GAP_Y + H
     parts.append(region(gtype[group][1].replace("choose as needed", "as needed"), group, x - 16, HEAD_Y - 40, W + 32, bottom - HEAD_Y + 40 + 16))
-    parts.append(node("stage_" + group, title, subtitle, group, x, HEAD_Y, "n stage"))
+    parts.append(stage_head("stage_" + group, title, group, x, HEAD_Y, col + 1))
     for row, cid in enumerate(ids):
         parts.append(node(cid, commands[cid][1], TRIG[cid], group, x, CMD_Y + row * GAP_Y))
     if col:
