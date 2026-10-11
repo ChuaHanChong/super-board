@@ -6,7 +6,7 @@ from data import *
 e = html.escape
 W, H = 136, 54
 GAP_X, GAP_Y = 206, 80
-HEAD_Y, CMD_Y, UTIL_Y = 80, 168, 712
+HEAD_Y, CMD_Y, UTIL_Y, BUS_Y = 130, 218, 762, 56
 commands = {c[0]: c for c in C}
 gtype = {g[0]: g for g in GROUPS}
 parts = []
@@ -32,20 +32,29 @@ def region(label, group, x, y, w, h):
             f'<text x="{x+12}" y="{y+19}">{e(label)}</text></g>')
 
 for col, (group, title, subtitle, ids) in enumerate(STAGES):
-    x = 40 + col * GAP_X
+    x = 40 + (col + 1) * GAP_X
     bottom = CMD_Y + (len(ids) - 1) * GAP_Y + H
     parts.append(region(gtype[group][1].replace("choose as needed", "as needed"), group, x - 16, HEAD_Y - 40, W + 32, bottom - HEAD_Y + 40 + 16))
     parts.append(stage_head("stage_" + group, title, group, x, HEAD_Y, col + 1))
     for row, cid in enumerate(ids):
         parts.append(node(cid, commands[cid][1], TRIG[cid], group, x, CMD_Y + row * GAP_Y))
-    if col:
+    if True:
         ax = x - 16
         parts.append(f'<path class="arrow" d="M{ax-14} {HEAD_Y+H/2} H{ax+14}" marker-end="url(#ah)"/>')
+rx = 40
+parts.append(f'<g class="router" data-id="menu" tabindex="0" role="button" aria-label="/impeccable router: reads your project and picks the right command">'
+             f'<text class="s1" x="{rx+W/2}" y="{HEAD_Y-8}" text-anchor="middle">ROUTER</text>'
+             f'<rect x="{rx}" y="{HEAD_Y}" width="{W}" height="{H+10}" rx="30"/>'
+             f'<text class="t1" x="{rx+W/2}" y="{HEAD_Y+27}" text-anchor="middle">/impeccable</text>'
+             f'<text class="t2" x="{rx+W/2}" y="{HEAD_Y+45}" text-anchor="middle">picks the right one</text></g>')
+cx = [40 + (c + 1) * GAP_X + W / 2 for c in range(len(STAGES))]
+parts.append(f'<path class="bus" d="M{rx+W/2} {HEAD_Y-26} V{BUS_Y} H{cx[-1]}"/>')
+parts += [f'<path class="bus" d="M{x} {BUS_Y} V{HEAD_Y-44}" marker-end="url(#ah)"/>' for x in cx]
 uw = (len(UTILITIES) - 1) * GAP_X + W + 32
 parts.append(region("Utilities · use any time, in any order", "util", 24, UTIL_Y - 40, uw, H + 40 + 16))
 for col, cid in enumerate(UTILITIES):
     parts.append(node(cid, commands[cid][1], TRIG[cid], "util", 40 + col * GAP_X, UTIL_Y))
-VW, VH = 40 + 6 * GAP_X + W + 40, UTIL_Y + H + 32
+VW, VH = 40 + 7 * GAP_X + W + 40, UTIL_Y + H + 32
 svg = (f'<svg class="map" viewBox="0 0 {VW} {VH}" role="group" aria-label="impeccable command map">'
        '<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L7 4L0 8z" class="ahead"/></marker></defs>'
        + "".join(parts) + "</svg>")

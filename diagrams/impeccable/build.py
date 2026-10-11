@@ -34,23 +34,27 @@ for cid, c in commands.items():
                  "what": md(ONE[cid]), "how": [step(cid, t) for t in HOW[cid]], "flows": flows(cid),
                  "get": md(GET[cid]), "next": md(NEXT[cid]) if NEXT[cid] else None,
                  "calls": ('<div class="fl"><span class="pill cmd">' + e("/impeccable" if cid == "menu" else c[1]) + '</span><i>→</i>' + " ".join(md(f"[[{k}]]") for k, _ in CALLS[cid]) + '</div>' + ("".join(f'<p class="why">{md(f"[[{k}]]")} {e(w)}</p>' for k, w in CALLS[cid] if w))) if cid in CALLS else None}
+INFO["menu"]["router"] = True
+INFO["menu"]["g"] = "rt"
+INFO["menu"]["flows"] = "".join('<div class="fl">' + '<i>→</i>'.join(f'<span class="pill">{md(t)}</span>' for t in r) + "</div>" for r in ROUTE_PICKS)
+INFO["menu"]["words"] = "".join('<div class="fl">' + '<i>→</i>'.join(f'<span class="pill">{md(t)}</span>' for t in r) + "</div>" for r in ROUTE_WORDS)
 for group, title, subtitle, ids in STAGES:
     x = STAGEX[group]
     INFO["stage_" + group] = {"stage": True, "name": title, "g": group, "what": md(x["for"]),
-        "pick": "".join(f'<div class="pk">{md("[[" + cid + "]]")}<span>{e(t)}</span></div>' for cid, t in x["pick"]),
+        "pick": "".join(f'<div class="pk"><span>{e(t)}</span><i>→</i>{md("[[" + cid + "]]")}</div>' for cid, t in x["pick"]),
         "runT": x["runT"], "run": md(x["run"])}
 FLOW = [("1", "Setup", "init · document · extract", "ctx"), ("2", "Plan / build", "shape · craft", "plan"),
         ("3", "Diagnose", "critique + audit", "diag"), ("4", "Fix & style", "harden … bolder, animate", "fix"),
         ("5", "Finish", "polish, always last", "fin")]
 flow = "".join(f'<div class="step g-{g}"><span class="n">{n}</span><b>{e(t)}</b><small>{e(s)}</small></div>' for n, t, s, g in FLOW)
-colors = "".join(f".g-{g[0]}{{--c:var(--{g[0]})}}" for g in GROUPS)
+colors = "".join(f".g-{g[0]}{{--c:var(--{g[0]})}}" for g in GROUPS) + ".g-rt{--c:var(--rt)}"
 page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>impeccable commands map</title>
 <style>
 :root{{--bg:#f4f5f7;--fg:#0f172a;--muted:#64748b;--card:#fff;--line:#e2e8f0;
---ctx:#ea580c;--plan:#c2410c;--diag:#e11d48;--fix:#059669;--style:#0891b2;--motion:#0e7490;--fin:#475569;--sys:#7c3aed;--util:#d97706;--mkb:#fde68a;--mkf:#1f2937}}
-@media (prefers-color-scheme:dark){{:root:not([data-theme="light"]){{--bg:#0b1020;--fg:#e2e8f0;--muted:#94a3b8;--card:#111827;--line:#1f2937;--ctx:#fbbf24;--plan:#fb923c;--diag:#fb7185;--fix:#34d399;--style:#22d3ee;--motion:#22d3ee;--fin:#94a3b8;--util:#a78bfa;--mkb:rgba(251,191,36,.32);--mkf:#fef3c7}}}}
-:root[data-theme="dark"]{{--bg:#0b1020;--fg:#e2e8f0;--muted:#94a3b8;--card:#111827;--line:#1f2937;--ctx:#fbbf24;--plan:#fb923c;--diag:#fb7185;--fix:#34d399;--style:#22d3ee;--motion:#22d3ee;--fin:#94a3b8;--util:#a78bfa;--mkb:rgba(251,191,36,.32);--mkf:#fef3c7}}
+--ctx:#ea580c;--plan:#c2410c;--diag:#e11d48;--fix:#059669;--style:#0891b2;--motion:#0e7490;--fin:#475569;--sys:#7c3aed;--rt:#7c3aed;--util:#d97706;--mkb:#fde68a;--mkf:#1f2937}}
+@media (prefers-color-scheme:dark){{:root:not([data-theme="light"]){{--bg:#0b1020;--fg:#e2e8f0;--muted:#94a3b8;--card:#111827;--line:#1f2937;--ctx:#fbbf24;--plan:#fb923c;--diag:#fb7185;--fix:#34d399;--style:#22d3ee;--motion:#22d3ee;--fin:#94a3b8;--util:#a78bfa;--rt:#a78bfa;--mkb:rgba(251,191,36,.32);--mkf:#fef3c7}}}}
+:root[data-theme="dark"]{{--bg:#0b1020;--fg:#e2e8f0;--muted:#94a3b8;--card:#111827;--line:#1f2937;--ctx:#fbbf24;--plan:#fb923c;--diag:#fb7185;--fix:#34d399;--style:#22d3ee;--motion:#22d3ee;--fin:#94a3b8;--util:#a78bfa;--rt:#a78bfa;--mkb:rgba(251,191,36,.32);--mkf:#fef3c7}}
 *{{box-sizing:border-box}}
 body{{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif}}
 main{{max-width:1440px;margin:0 auto;padding:24px 16px 32px}}
@@ -90,6 +94,9 @@ mark{{background:var(--mkb);color:var(--mkf);border-radius:3px;padding:0 3px}}
 .stagehead{{cursor:pointer;outline:none}} .stagehead .s1{{font-size:9.5px;letter-spacing:.08em;font-weight:700;fill:var(--muted)!important}}
 .stagehead .s2{{font-size:17px;font-weight:800;fill:var(--c)!important}} .stagehead .s3{{font-size:11px;fill:var(--muted)!important;font-weight:400}}
 .stagehead .bar{{fill:var(--c);opacity:.8}} .stagehead:hover .s2,.stagehead:focus-visible .s2,.stagehead.on .s2{{text-decoration:underline}}
+.router{{cursor:pointer;outline:none}} .router rect{{fill:color-mix(in srgb,var(--rt) 18%,var(--card));stroke:var(--rt);stroke-width:3}} .router .s1{{font-size:10px;letter-spacing:.1em;font-weight:800;fill:var(--rt)!important}}
+.router:hover rect,.router:focus-visible rect,.router.on rect{{stroke-width:4.5}} .bus{{stroke:var(--rt);stroke-width:1.6;fill:none;stroke-dasharray:4 3;opacity:.8}}
+.pk i{{font-style:normal;color:var(--muted);font-weight:700}}
 .badge rect{{fill:var(--c)}} .badge text{{font-size:10px;font-weight:700;fill:var(--card)!important}}
 .pk{{display:flex;align-items:center;flex-wrap:wrap;gap:2px 6px;margin:2px 0}} .pk span{{font-size:12.5px}}
 .pop .why{{font-size:12px;color:var(--muted);margin:2px 0}}
@@ -103,7 +110,7 @@ mark{{background:var(--mkb);color:var(--mkf);border-radius:3px;padding:0 3px}}
 }}
 </style></head><body><main>
 <h1>impeccable · slash commands</h1>
-<p class="sub">v4.0.4 · {len(C)} commands · read left to right, then tap a command to see how it works.</p>
+<p class="sub">v{VERSION} · {len(C) - 1} commands + the /impeccable router · read left to right, then tap anything to see how it works.</p>
 <div class="canvas" id="canvas">
 <div class="tools"><span>Setup → plan / build → diagnose → fix &amp; style → polish last</span><button id="theme" type="button" aria-label="Toggle light or dark">Light / dark</button></div>
 <div class="scroll">{svg}</div>
@@ -123,12 +130,12 @@ function place(n){{if(matchMedia('(max-width:760px)').matches){{pop.style.left=p
 function open(n){{var i=INFO[n.dataset.id];if(!i)return;if(cur)cur.classList.remove('on');cur=n;lastNode=n;n.classList.add('on');
  pop.className='pop g-'+i.g;
  var h='<button class="x" type="button" aria-label="Close">×</button><h2 id="pt">'+(i.stage?'<small class="gt">STAGE · GROUP</small>':'')+esc(i.name)+'</h2>';
- if(i.stage){{h+='<h3>What this stage is for</h3><p>'+i.what+'</p><h3>Not a command</h3><p><mark>You cannot run "'+esc(i.name)+'".</mark> It is a <b>group label</b>. You run the <b>commands inside it</b>.</p><h3>Which one to pick</h3>'+i.pick+'<h3>'+i.runT+'</h3><p>'+i.run+'</p>';}}else{{
+ if(i.stage){{h+='<h3>What this stage is for</h3><p>'+i.what+'</p><h3>Not a command</h3><p><mark>You cannot run "'+esc(i.name)+'".</mark> It is a <b>group label</b>. You run the <b>commands inside it</b>.</p><h3>Which one to pick</h3><p><b>No router for this stage yet.</b> Pick by symptom:</p>'+i.pick+'<h3>'+i.runT+'</h3><p>'+i.run+'</p>';}}else{{
  if(i.when)h+='<h3>When to use it</h3><p>'+i.when+' <span class="tag">'+esc(i.tag)+'</span></p>';
  h+='<h3>What it is</h3><p>'+i.what+'</p>';
  if(i.chips)h+='<h3>Commands in this stage</h3><p>'+i.chips+'</p>';
  if(i.how)h+='<h3>How it works</h3><ol>'+i.how.map(function(s){{return'<li>'+s+'</li>'}}).join('')+'</ol>';
- if(i.flows)h+='<h3>Behind the scenes</h3>'+i.flows;
+ if(i.router){{h+='<h3>How it picks</h3><p class="why">It reads your project, then follows the first match:</p>'+i.flows+'<h3>Or just say it in words</h3>'+i.words}}else if(i.flows)h+='<h3>Behind the scenes</h3>'+i.flows;
  if(i.calls)h+='<h3>Calls these</h3>'+i.calls;
  if(i.get)h+='<h3>What you get</h3><p>'+i.get+'</p>';
  if(i.next)h+='<p class="nx"><b>Next:</b> '+i.next+'</p>';}}
