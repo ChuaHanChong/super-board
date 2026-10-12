@@ -1,7 +1,7 @@
 """Build diagrams/pstack/index.html: python3 gen.py  (stdlib only; reads pstack-data.json, content*.py, template.html, overview.b64)."""
 import json, html, textwrap, re
 from pathlib import Path
-import content3, content4 as C4, content5 as C5
+import content3, content4 as C4, content5 as C5, content6 as C6
 D = Path(__file__).parent
 d = json.load(open(D / 'pstack-data.json'))
 E = html.escape
@@ -115,7 +115,7 @@ def apply_b(txt, words):
 for s in skills:
     if s['kind'] == 'skill':
         c = content3.SK[s['id']]
-        s['when'] = c['when']; s['whatItIs'] = c['is_']; s['steps'] = c['steps']; s['flows'] = c['flows']; s['output'] = c['out']
+        s['when'] = C6.WHEN[s['id']]; s['whatItIs'] = c['is_']; s['steps'] = c['steps']; s['flows'] = c['flows']; s['output'] = c['out']
         if s['id'] in C4.CALLS: s['calls'] = C4.CALLS[s['id']]; s['ncalls'] = NC[s['id']]
         if s['id'] in C4.DIAGS:
             f, lab = C4.DIAGS[s['id']]; t, fl = C4.DIAG_FLOWS[f]
@@ -125,14 +125,14 @@ for s in skills:
         s['when'] = w; s['whatItIs'] = i
         s['inPractice'] = [apply_b(('==' + x + '==') if x == mk else x, bw) for x in s['inPractice']]
 for s in skills:
-    if s['kind'] == 'skill': s['ex'] = list(C5.EX[s['id']])
+    if s['kind'] == 'skill': s['ex'] = list(C6.EX[s['id']])
 ps = [s for s in skills if s['id'] == 'poteto-mode'][0]
 ps['picks'] = C4.PICKS
 ps['diag'] = {'title': 'Router flow', 'flows': [["Your prompt","poteto-mode","Read the Principles section",{'stack':["Read-only question: Investigation","Defect: Bug fix","New behavior: Feature","Structure only: Refactoring","Measured slowness: Perf issue","Large work or no match: figure-it-out"]},"Verify and report"]], 'url': C4.GUIDE + '02-poteto-mode.md', 'src': 'guide ch. 2'}
 keep = ('ex','id','name','command','trigger','category','whatItIs','steps','output','claudeCode','codex','handsOffTo','source','url','claudeUrl','inPractice','principleGroup','note','kind','summary','when','flows','calls','ncalls','picks','diag')
 ginfo = {}
 for c in cats:
-    items = [[s['trigger'], s['id']] for s in colsk(c['id'])]
+    items = [list(x) for x in C6.GWHEN[c['id']]]
     ginfo[c['id']] = {'name': c['name'], 'blurb': c['blurb'], 'routes': C4.ROUTES[c['id']], 'items': items, 'ex': list(C5.GEX[c['id']])}
 DATA = {'skills': {s['id']: {k: s[k] for k in keep if k in s} for s in skills}, 'groupsInfo': ginfo,
         'cats': {c['id']: c['name'] for c in cats}, 'groups': {g['id']: g for g in groups}, 'how': d['principlesHowItWorks'], 'order': d['order'],
@@ -146,7 +146,8 @@ order = ''.join(f'<div class="step"><i>{o["n"]}</i><span><b>{E(o["name"])}</b><s
 lab = {'https://flaviocopes.com/pstack/':'Flavio Copes','https://github.com/michael-denyer/pstack-claude':'Claude port repo','https://github.com/cursor/plugins/tree/main/pstack':'Cursor plugin','https://x.com/poteto/status/2094457600259842065':'poteto on X','https://cursor.com/marketplace/cursor/pstack':'Cursor marketplace','https://github.com/cursor/plugins/blob/main/pstack/docs/guide/README.md':'Official guide','https://github.com/michael-denyer/pstack-claude/blob/main/docs/reference.md':'Port reference'}
 fl = ' · '.join(f'<a href="{E(u)}" target="_blank" rel="noopener">{lab[u]}</a>' for u in d['links'])
 t = (D / 'template.html').read_text()
-for k, v in {'%%SVG%%': SVG, '%%ORDER%%': order, '%%DATA%%': js, '%%CATCSS%%': catcss, '%%LT%%': lt, '%%DK%%': dk, '%%FLINKS%%': fl}.items(): t = t.replace(k, v)
+SH = D.parent / '_shared'
+for k, v in {'%%SMCSS%%': (SH / 'skillmap.css').read_text(encoding='utf-8'), '%%SMJS%%': (SH / 'skillmap.js').read_text(encoding='utf-8'), '%%SVG%%': SVG, '%%ORDER%%': order, '%%DATA%%': js, '%%CATCSS%%': catcss, '%%LT%%': lt, '%%DK%%': dk, '%%FLINKS%%': fl}.items(): t = t.replace(k, v)
 # standalone page: <title> and <style> go in <head>; the rest is the body
 head = re.match(r"\s*(<title>.*?</title>)\s*(<style>.*?</style>)", t, re.S)
 body = t[head.end():]
