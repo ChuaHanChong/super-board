@@ -170,9 +170,10 @@ fi
 # --- dedupe -----------------------------------------------------------------
 # Repo-wide, any label, any state. An open hit is a duplicate; a closed-only hit
 # is a recurrence — file again, but name the issue that claimed the fix.
+# Exact match on a whitespace-delimited token: `err|sentry|441` must not hit `err|sentry|4411`.
 HITS=$(gh issue list ${REPO_FLAG[@]+"${REPO_FLAG[@]}"} --state all --limit 500 \
   --json number,state,body \
-  --jq "[.[] | select(.body != null and (.body | contains(\"${FP}\")))] | sort_by(.state != \"OPEN\") | map(\"\(.number) \(.state)\") | .[]" 2>/dev/null || true)
+  --jq "[.[] | select(.body != null and any(.body | splits(\"\\\\s+\"); . == \"${FP}\"))] | sort_by(.state != \"OPEN\") | map(\"\(.number) \(.state)\") | .[]" 2>/dev/null || true)
 OPEN_HIT=$(echo "$HITS" | awk '$2=="OPEN"{print $1; exit}')
 CLOSED_HIT=$(echo "$HITS" | awk '$2!="OPEN" && $1!=""{print $1; exit}')
 

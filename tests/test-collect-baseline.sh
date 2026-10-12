@@ -167,7 +167,7 @@ has "labels collect:prs" "$(cat "$GH_LOG")" "--add-label collect:prs"
 
 echo "── dedupe matches the fingerprint exactly"
 PREFIX='[{"number":301,"state":"OPEN","body":"<!-- super-collect-fingerprint: err|sentry|4411 -->"}]'
-xfail "Sentry 441 is not a duplicate of Sentry 4411 (substring match in super-collect-file.sh:175)" \
+is  "Sentry 441 is not a duplicate of Sentry 4411" \
   "would-file" "$(STUB_HITS="$PREFIX" run --type bug --source sentry --title T --body-file "$TICKETS/bug-sentry-4411.md" --fingerprint "err|sentry|441" | cut -d'|' -f1)"
 
 echo "── SKILL.md setup step 3: source the gh guard, then sb_gh_guard_check"
