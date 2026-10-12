@@ -72,3 +72,17 @@ details.sec .sb{padding:2px 12px 12px;animation:smo .16s ease-out}
 .sm .cmps{font-size:12.5px;color:var(--muted);margin:6px 0 10px!important}.sm .cmps a{color:var(--c)}
 .sm .dots{color:var(--c);letter-spacing:1px;font-size:11px}
 .sm .cmpick{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.sm .cmpick .pc{padding:3px 10px;border:1px solid var(--line);border-radius:999px;font-size:12.5px}.sm .cmpick .pc.cur{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,transparent)}
+.sm .cmpcases{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.sm .casechip{min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg);font:600 12.5px var(--sans,inherit);cursor:pointer}
+.sm .casechip[aria-pressed=true]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.sm table.cmp .dimc{opacity:.55}.sm table.cmp th.win,.sm table.cmp td.win{opacity:1;background:color-mix(in srgb,var(--c) 22%,var(--card));box-shadow:inset 2px 0 0 var(--c),inset -2px 0 0 var(--c)}
+.sm table.cmp th.win{border-top:3px solid var(--c)}
+.sm .bestb{display:block;margin-bottom:3px;font-size:11px;font-weight:800;color:var(--c)}
+.sm .cmpwhy{margin:4px 0 8px!important;padding:6px 10px;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 8%,transparent);border-radius:4px;font-size:13px}
+.sm .cmptabs{display:flex;align-items:center;gap:8px;margin:2px 0 4px}.sm .cmplab{flex:none;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.sm .cmpcases{display:flex;gap:0;overflow-x:auto;border:1px solid var(--line);border-radius:8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.sm .cmpcases::-webkit-scrollbar{display:none}
+.sm .casechip{flex:none;border:0;border-radius:0;border-right:1px solid var(--line);white-space:nowrap;min-height:34px}.sm .casechip:last-child{border-right:0}
+.sm .cmpwhy{margin:4px 0 6px!important}
+.sm table.cmp th.cmpc{min-width:0;width:54px;max-width:60px;white-space:nowrap;padding:4px 6px}
+.sm table.cmp th,.sm table.cmp td{padding:4px 7px}
+@media (max-width:700px){.sm .cmptabs{flex-direction:column;align-items:stretch;gap:4px}}
