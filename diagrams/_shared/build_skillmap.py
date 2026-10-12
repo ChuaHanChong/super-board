@@ -21,21 +21,25 @@ else:
 rd = lambda f: (SH / f).read_text(encoding="utf-8")
 e = html.escape
 import base64
+sys.path.insert(0, str(SH))
+import sync_explore
+REG = sync_explore.reg
+_bad = sync_explore.problems()
+if _bad:
+    sys.exit("\n".join("EXPLORE CHECK: " + x for x in _bad))
 def uri(rel): return "data:image/png;base64," + base64.b64encode((SH.parent / rel).read_bytes()).decode()
-LOGOS = {"impeccable": "assets/logos/impeccable.png", "pstack": "assets/logos/poteto.png", "mattpocock": "assets/logos/mattpocock.png"}
-img = lambda k: '<img class="ni nimg" alt="" src="%s">' % uri(LOGOS[k])
-NAV = rd("sitenav.html")
-for k in ("impeccable", "pstack"): NAV = NAV.replace("%%LOGO_" + k + "%%", img(k))
-matt = ""
-if (SH.parent / "mattpocock" / "index.html").exists() or name == "mattpocock":
-    matt = '<a class="lk" href="../mattpocock/"%%A_mattpocock%%>' + img("mattpocock") + '<span class="nl">Matt Pocock<span class="hide-s"> map</span></span></a>'
-NAV = NAV.replace("%%NAV_MATT%%", matt)
+LOGOS = {r["id"]: r["logo"] for r in REG if r.get("logo")}
+SKILL_ICON = '<svg class="ni" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="12" cy="18" r="2.2"/><path d="M8 7l3 9M16 7l-3 9M8.2 6h7.6"/></svg>'
+def navitem(r):
+    ic = '<img class="ni nimg" alt="" src="%s">' % uri(r["logo"]) if r.get("logo") else SKILL_ICON
+    lab = r["short"] + ('<span class="hide-s"> map</span>' if r["label"].endswith(" map") else "")
+    cur = ' aria-current="page"' if r["id"] == m["key"] else ""
+    return '<a class="lk" href="../%s"%s>%s<span class="nl">%s</span></a>' % (r["path"], cur, ic, lab)
+NAV = rd("sitenav.html").replace("%%MAPNAV%%", "\n  ".join(navitem(r) for r in REG if r.get("nav")))
 GENERIC = '<svg class="plogo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4-8 4-8-4z"/><path d="M4 12l8 4 8-4M4 16.5l8 4 8-4"/></svg>'
 logo_rel = m.get("logo") or LOGOS.get(m["key"])
 PLOGO = ('<img class="plogo" alt="" src="%s">' % uri(logo_rel)) if logo_rel else GENERIC
 FAV = ('<link rel="icon" href="%s">' % uri(logo_rel)) if logo_rel else ""
-for k in ("skill", "impeccable", "pstack", "mattpocock"):
-    NAV = NAV.replace("%%A_" + k + "%%", ' aria-current="page"' if k == m["key"] else "")
 flt = ""
 if m.get("filter"):
     f = m["filter"]
