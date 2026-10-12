@@ -227,7 +227,7 @@ If a screenshot/network/console artifact does not exist, explicitly write `not c
 
 ### Filing guardrails
 
-`super-qa-file-bug.sh` validates issue bodies before filing. It must reject weak tickets that are missing required sections or still contain placeholders like `TBD`, `<...>`, or `TODO:`. Do not bypass this with `SUPER_QA_ALLOW_WEAK_BODY=1` during normal autonomous runs.
+`super-qa-file-bug.sh` validates issue bodies before filing. It must reject weak tickets that are missing required sections or still contain placeholders like `TBD`, `<...>`, or `TODO:`. Do not bypass this with `SUPER_QA_ALLOW_WEAK_BODY=1` during normal autonomous runs. `--check-body` runs only these checks and exits (0, or the refusal code) without calling `gh`; super-collect's dry run uses it.
 
 Every filed issue must include:
 
