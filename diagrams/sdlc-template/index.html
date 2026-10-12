@@ -77,6 +77,7 @@ html.lock,html.lock body{overflow:hidden}
 .ni.nimg{border-radius:50%;object-fit:cover}.plogo{width:44px;height:44px;border-radius:12px;object-fit:cover;flex:none;border:1px solid var(--border);align-self:center;padding:0}svg.plogo{padding:9px;color:var(--fg)}
 @media (max-width:700px){.plogo{width:36px;height:36px;border-radius:10px}}
 .sm-head{align-items:center;gap:10px}
+.cmpb circle{fill:var(--c,var(--accent));stroke:var(--bg);stroke-width:1.5}.cmpb text{fill:var(--bg);font:800 11px var(--sans);pointer-events:none}
 
 :root{--mapw:2012px}
 /* Shared skill-map dialog component. Inlined by diagrams/impeccable/build.py and diagrams/pstack/gen.py.
@@ -136,6 +137,21 @@ details.sec .sb{padding:2px 12px 12px;animation:smo .16s ease-out}
  dialog.sm{width:100vw;max-width:100vw;height:100vh;height:100dvh;max-height:100dvh;margin:0;border-radius:0;border-left:0;border-top:6px solid var(--c);padding:max(16px,env(safe-area-inset-top,0px)) 16px max(20px,env(safe-area-inset-bottom,0px))}
  .sm h3{font-size:20px}.sm .chip{min-height:40px}.sm .exr{grid-template-columns:1fr;gap:2px;margin:8px 0}
 }
+.l-cmp{--l:var(--sm-router)}
+.sm .cmpt{font-weight:700;margin:6px 0}
+.sm .cmpw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;-webkit-overflow-scrolling:touch}
+.sm table.cmp{border-collapse:collapse;width:100%;font-size:13px;line-height:1.4}
+.sm table.cmp th,.sm table.cmp td{padding:8px 10px;text-align:left;vertical-align:top;min-width:150px;border-bottom:1px solid var(--line)}
+.sm table.cmp tr:last-child>*{border-bottom:0}
+.sm table.cmp th.cmpc{position:sticky;left:0;z-index:1;min-width:104px;max-width:110px;background:var(--card);color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;border-right:1px solid var(--line)}
+.sm table.cmp thead th,.sm table.cmp tr:first-child th{background:var(--hov)}
+.sm table.cmp th.cur,.sm table.cmp td.cur{background:color-mix(in srgb,var(--c) 12%,var(--card));box-shadow:inset 0 0 0 0 transparent}
+.sm table.cmp th.cur{border-top:3px solid var(--c)}
+.sm table.cmp th small{display:block;color:var(--muted);font-weight:400}
+.sm .cmpl{border-radius:50%;vertical-align:middle;margin-right:6px;object-fit:cover}
+.sm table.cmp th a{font-weight:700;color:var(--c)}
+.sm ul.cmpick{list-style:none;padding:0;margin:8px 0}.sm ul.cmpick li{padding:4px 8px;border-radius:6px}.sm ul.cmpick li.cur{background:color-mix(in srgb,var(--c) 12%,transparent)}
+.sm .cmps{font-size:12.5px;color:var(--muted);margin:6px 0 10px!important}.sm .cmps a{color:var(--c)}
 
 :root{--st-plan:#b45309;--st-design:#7c3aed;--st-build:#2563eb;--st-test:#15803d;--st-deploy:#c2410c;--st-maintain:#0e7490;--st-anytime:#475569;}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--st-plan:#fbbf24;--st-design:#a78bfa;--st-build:#60a5fa;--st-test:#34d399;--st-deploy:#fb923c;--st-maintain:#22d3ee;--st-anytime:#94a3b8;}}
@@ -219,7 +235,7 @@ var SM=(function(){
   function plain(x){return String(x).replace(/\[\[([^\]]+)\]\]/g,function(_,i){return opts.label?opts.label(i):i}).replace(/\*\*|==|`/g,'')}
   function cut(x,n){x=plain(x).replace(/\s+/g,' ').trim();return x.length>n?x.slice(0,n-1).trim()+'…':x}
   function flat(f){return f.map(function(t){return Array.isArray(t)?t.map(function(x){return plain(x.slice(1))}).join(' '):(t&&t.stack?t.stack[0]:(t[0]==='@'?plain(t.slice(1)):plain(t)))}).join(' → ')}
-  function peek(b){var v=b.v,t=b.type;
+  function peek(b){if(b.peek)return b.peek;var v=b.v,t=b.type;
    if(t==='ol')return v.length+(v.length===1?' step':' steps');if(t==='ul')return v.length+(v.length===1?' item':' items');
    if(t==='p')return cut(v,70);if(t==='chips')return v.map(function(n){return opts.label?opts.label(n):n}).join(', ');
    if(t==='example'){var r=v.filter(function(x){return x[0]==='You type'||x[0]==='You say'})[0]||v[0];return cut(r[1],70)}
@@ -242,7 +258,7 @@ var SM=(function(){
     if(!b.label){block(b);return}
     var isPrev=/^When X/.test(b.label)||(b.key==='picks'&&b.type==='flows'&&b.v.length>3);
     if(OPEN[b.key]&&!isPrev||isPrev){sec(b.label,b.key||'how');if(isPrev)preview(b);else block(b);return}
-    var d=el('details','sec l-'+(b.key||'how')),sm=el('summary'),pk=peek(b);
+    var d=el('details','sec l-'+(b.key||'how')),sm=el('summary'),pk=peek(b);if(b.open)d.open=true;
     sm.appendChild(el('span','sl',b.label));if(pk)sm.appendChild(el('span','sp',pk));sm.appendChild(el('span','chv'));d.appendChild(sm);
     var inner=el('div','sb');d.appendChild(inner);body.appendChild(d);var old=T;T=inner;block(b);T=old;d.addEventListener('toggle',sync)});
    sync()};
@@ -317,8 +333,22 @@ window.SMCANVAS='always';window.SMNOCOLLAPSE=true;var PACK={"stages": {"plan": {
  document.getElementById('q').addEventListener('input',function(e){st.q=e.target.value.trim().toLowerCase();apply()});
  $('.seg button').forEach(function(b){b.addEventListener('click',function(){st.f=b.dataset.f;$('.seg button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});apply()})});
  var D=SM.Dialog(dlg,{label:P.label,onGo:function(id){open(id)},onClose:function(){nodes().forEach(function(x){x.classList.remove('sel')});cur=null;if(last)try{last.focus({preventScroll:true})}catch(e){}}});
- function open(id){var g=nodes().filter(function(x){return x.dataset.id===id})[0];if(!g||!P.model(id))return;if(!dlg.open)last=g;
-  D.render(P.model(id));cur=id;nodes().forEach(function(x){x.classList.toggle('sel',x===g)});D.open()}
+var CMP=window.SMCOMPARE||null;
+ function cmpBlock(id){var gs=CMP.groups[id],PK=CMP.packs;return {label:'Compare with similar skills',key:'cmp',type:'node',open:true,peek:gs.length>1?gs.length+' comparisons':'vs '+gs[0].members.filter(function(x){return !(x.pack===CMP.pack&&x.skill===id)}).map(function(x){return PK[x.pack].name}).join(', '),v:function(body,self){
+  gs.forEach(function(g){var el=self.el;body.appendChild(el('p','cmpt',g.topic));var w=el('div','cmpw'),t=el('table','cmp'),h=el('tr');h.appendChild(el('th','cmpc',''));
+   g.members.forEach(function(m){var cur=m.pack===CMP.pack&&m.skill===id,th=el('th',cur?'cur':'');var im=el('img','cmpl');im.src=PK[m.pack].logo;im.alt='';im.width=18;im.height=18;th.appendChild(im);
+    var href=cur?null:(m.pack!==CMP.pack&&PK[m.pack].path&&m.onMap?PK[m.pack].path+'#skill-'+m.skill:m.url),a=href?el('a',null,m.name):el('span',null,m.name);if(href){a.href=href;if(!/^\.\./.test(href)){a.target='_blank';a.rel='noopener'}}
+    th.appendChild(a);th.appendChild(el('small',null,PK[m.pack].name+(cur?' (this)':'')));h.appendChild(th)});t.appendChild(h);
+   g.rows.forEach(function(r){var tr=el('tr');tr.appendChild(el('th','cmpc',r.aspect));g.members.forEach(function(m){tr.appendChild(el('td',m.pack===CMP.pack&&m.skill===id?'cur':'',r.values[m.pack]||'—'))});t.appendChild(tr)});
+   w.appendChild(t);body.appendChild(w);
+   var u=el('ul','cmpick');g.members.forEach(function(m){var cur=m.pack===CMP.pack&&m.skill===id,li=el('li',cur?'cur':''),b=el('b',null,PK[m.pack].name+': ');li.appendChild(b);li.appendChild(document.createTextNode(g.pick[m.pack]||''));u.appendChild(li)});body.appendChild(u);
+   if(g.sources&&g.sources.length){var sp=el('p','cmps');sp.appendChild(document.createTextNode('Sources: '));g.sources.forEach(function(s,i){if(i)sp.appendChild(document.createTextNode(' · '));var a=el('a',null,s.label);a.href=s.url;a.target='_blank';a.rel='noopener';sp.appendChild(a)});body.appendChild(sp)}})}}}
+ function M(id){var m=P.model(id);if(!m||!CMP||!CMP.groups[id])return m;var i=-1;m.blocks.forEach(function(b,k){if(b.key==='is'&&i<0)i=k});m.blocks.splice(i<0?m.blocks.length:i+1,0,cmpBlock(id));return m}
+ /* compare badge on nodes */
+ if(CMP)nodes().forEach(function(g){if(!CMP.groups[g.dataset.id])return;var r=g.querySelector('rect');if(!r)return;var x=+r.getAttribute('x'),y=+r.getAttribute('y'),b=document.createElementNS('http://www.w3.org/2000/svg','g');b.setAttribute('class','cmpb');
+  b.innerHTML='<title>Has a comparison with similar skills</title><circle cx="'+(x+3)+'" cy="'+(y+3)+'" r="8"/><text x="'+(x+3)+'" y="'+(y+7)+'" text-anchor="middle">≈</text>';g.appendChild(b)});
+ function open(id){var g=nodes().filter(function(x){return x.dataset.id===id})[0];if(!g||!M(id))return;if(!dlg.open)last=g;
+  D.render(M(id));cur=id;nodes().forEach(function(x){x.classList.toggle('sel',x===g)});D.open()}
  window.SMopen=open;
  var sc=document.getElementById('sc');
  sc.addEventListener('click',function(e){var n=e.target.closest('[data-id]');if(n&&!(window.SMcanvas&&window.SMcanvas.moved))open(n.dataset.id)});
@@ -333,6 +363,8 @@ window.SMCANVAS='always';window.SMNOCOLLAPSE=true;var PACK={"stages": {"plan": {
  document.addEventListener('fullscreenchange',sync);
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!dlg.open&&exp)expand(false)});
  apply();
+ function fromHash(){var h=location.hash.slice(1);if(!/^[A-Za-z0-9._-]+$/.test(h))return;var id=h.replace(/^skill-/,'');if(M(id)&&nodes().some(function(x){return x.dataset.id===id}))open(id)}
+ window.addEventListener('hashchange',fromHash);setTimeout(fromHash,0);
 })();
 
 /* Shared canvas mode + collapsible groups. SVG contract: g[data-region=gid] (group box), [data-grp=gid] (members), [data-head] (title element, also a node),

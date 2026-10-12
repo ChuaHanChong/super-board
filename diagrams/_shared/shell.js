@@ -11,8 +11,22 @@
  document.getElementById('q').addEventListener('input',function(e){st.q=e.target.value.trim().toLowerCase();apply()});
  $('.seg button').forEach(function(b){b.addEventListener('click',function(){st.f=b.dataset.f;$('.seg button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});apply()})});
  var D=SM.Dialog(dlg,{label:P.label,onGo:function(id){open(id)},onClose:function(){nodes().forEach(function(x){x.classList.remove('sel')});cur=null;if(last)try{last.focus({preventScroll:true})}catch(e){}}});
- function open(id){var g=nodes().filter(function(x){return x.dataset.id===id})[0];if(!g||!P.model(id))return;if(!dlg.open)last=g;
-  D.render(P.model(id));cur=id;nodes().forEach(function(x){x.classList.toggle('sel',x===g)});D.open()}
+var CMP=window.SMCOMPARE||null;
+ function cmpBlock(id){var gs=CMP.groups[id],PK=CMP.packs;return {label:'Compare with similar skills',key:'cmp',type:'node',open:true,peek:gs.length>1?gs.length+' comparisons':'vs '+gs[0].members.filter(function(x){return !(x.pack===CMP.pack&&x.skill===id)}).map(function(x){return PK[x.pack].name}).join(', '),v:function(body,self){
+  gs.forEach(function(g){var el=self.el;body.appendChild(el('p','cmpt',g.topic));var w=el('div','cmpw'),t=el('table','cmp'),h=el('tr');h.appendChild(el('th','cmpc',''));
+   g.members.forEach(function(m){var cur=m.pack===CMP.pack&&m.skill===id,th=el('th',cur?'cur':'');var im=el('img','cmpl');im.src=PK[m.pack].logo;im.alt='';im.width=18;im.height=18;th.appendChild(im);
+    var href=cur?null:(m.pack!==CMP.pack&&PK[m.pack].path&&m.onMap?PK[m.pack].path+'#skill-'+m.skill:m.url),a=href?el('a',null,m.name):el('span',null,m.name);if(href){a.href=href;if(!/^\.\./.test(href)){a.target='_blank';a.rel='noopener'}}
+    th.appendChild(a);th.appendChild(el('small',null,PK[m.pack].name+(cur?' (this)':'')));h.appendChild(th)});t.appendChild(h);
+   g.rows.forEach(function(r){var tr=el('tr');tr.appendChild(el('th','cmpc',r.aspect));g.members.forEach(function(m){tr.appendChild(el('td',m.pack===CMP.pack&&m.skill===id?'cur':'',r.values[m.pack]||'—'))});t.appendChild(tr)});
+   w.appendChild(t);body.appendChild(w);
+   var u=el('ul','cmpick');g.members.forEach(function(m){var cur=m.pack===CMP.pack&&m.skill===id,li=el('li',cur?'cur':''),b=el('b',null,PK[m.pack].name+': ');li.appendChild(b);li.appendChild(document.createTextNode(g.pick[m.pack]||''));u.appendChild(li)});body.appendChild(u);
+   if(g.sources&&g.sources.length){var sp=el('p','cmps');sp.appendChild(document.createTextNode('Sources: '));g.sources.forEach(function(s,i){if(i)sp.appendChild(document.createTextNode(' · '));var a=el('a',null,s.label);a.href=s.url;a.target='_blank';a.rel='noopener';sp.appendChild(a)});body.appendChild(sp)}})}}}
+ function M(id){var m=P.model(id);if(!m||!CMP||!CMP.groups[id])return m;var i=-1;m.blocks.forEach(function(b,k){if(b.key==='is'&&i<0)i=k});m.blocks.splice(i<0?m.blocks.length:i+1,0,cmpBlock(id));return m}
+ /* compare badge on nodes */
+ if(CMP)nodes().forEach(function(g){if(!CMP.groups[g.dataset.id])return;var r=g.querySelector('rect');if(!r)return;var x=+r.getAttribute('x'),y=+r.getAttribute('y'),b=document.createElementNS('http://www.w3.org/2000/svg','g');b.setAttribute('class','cmpb');
+  b.innerHTML='<title>Has a comparison with similar skills</title><circle cx="'+(x+3)+'" cy="'+(y+3)+'" r="8"/><text x="'+(x+3)+'" y="'+(y+7)+'" text-anchor="middle">≈</text>';g.appendChild(b)});
+ function open(id){var g=nodes().filter(function(x){return x.dataset.id===id})[0];if(!g||!M(id))return;if(!dlg.open)last=g;
+  D.render(M(id));cur=id;nodes().forEach(function(x){x.classList.toggle('sel',x===g)});D.open()}
  window.SMopen=open;
  var sc=document.getElementById('sc');
  sc.addEventListener('click',function(e){var n=e.target.closest('[data-id]');if(n&&!(window.SMcanvas&&window.SMcanvas.moved))open(n.dataset.id)});
@@ -27,4 +41,6 @@
  document.addEventListener('fullscreenchange',sync);
  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!dlg.open&&exp)expand(false)});
  apply();
+ function fromHash(){var h=location.hash.slice(1);if(!/^[A-Za-z0-9._-]+$/.test(h))return;var id=h.replace(/^skill-/,'');if(M(id)&&nodes().some(function(x){return x.dataset.id===id}))open(id)}
+ window.addEventListener('hashchange',fromHash);setTimeout(fromHash,0);
 })();

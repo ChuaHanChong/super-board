@@ -27,7 +27,9 @@ REG = sync_explore.reg
 _bad = sync_explore.problems()
 if _bad:
     sys.exit("\n".join("EXPLORE CHECK: " + x for x in _bad))
-def uri(rel): return "data:image/png;base64," + base64.b64encode((SH.parent / rel).read_bytes()).decode()
+def uri(rel):
+    raw = (SH.parent / rel).read_bytes(); mime = "image/jpeg" if raw[:2] == b"\xff\xd8" else "image/png"
+    return "data:%s;base64,%s" % (mime, base64.b64encode(raw).decode())
 LOGOS = {r["id"]: r["logo"] for r in REG if r.get("logo")}
 SKILL_ICON = '<svg class="ni" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="12" cy="18" r="2.2"/><path d="M8 7l3 9M16 7l-3 9M8.2 6h7.6"/></svg>'
 def navitem(r):
@@ -46,11 +48,20 @@ if m.get("filter"):
     flt = f'<div class="seg" role="group" aria-label="{e(f["label"])}">' + "".join(
         f'<button type="button" data-f="{e(v)}" aria-pressed="{"true" if i == 0 else "false"}" aria-label="{e(l)}" title="{e(l)}">{icon}</button>' for i, (v, l, icon) in enumerate(f["options"])) + "</div>"
 order = "".join(f'<div class="step {c}"><i>{e(n)}</i><span><b>{e(t)}</b><small>{e(s)}</small></span></div>' for n, t, s, c in m["order"])
+# compare data: skills of this pack that sit in a comparison group
+_cmp = json.loads(rd("compare.json"))["groups"]
+PACKS = {"pstack": ("pstack", "assets/logos/poteto.png", "../pstack/"), "mattpocock": ("Matt Pocock", "assets/logos/mattpocock.png", "../mattpocock/"),
+         "impeccable": ("Impeccable", "assets/logos/impeccable.png", "../impeccable/"), "superpowers": ("Superpowers", "assets/logos/obra.png", None)}
+_by = {}
+for g in _cmp:
+    for mem in g["members"]:
+        if mem["pack"] == m["key"]: _by.setdefault(mem["skill"], []).append(g)
+CMPJS = "window.SMCOMPARE=" + json.dumps({"pack": m["key"], "groups": _by, "packs": {k: {"name": v[0], "logo": uri(v[1]), "path": v[2]} for k, v in PACKS.items()}}, ensure_ascii=False).replace("</", "<\\/") + ";\n" if _by else ""
 t = rd("shell.html")
 for k, v in {"%%TITLE%%": e(m["title"]), "%%PLOGO%%": PLOGO, "%%FAV%%": FAV, "%%VERSION%%": e(m["version"]), "%%SUBTITLE%%": m["subtitle"], "%%NAV%%": NAV, "%%FILTER%%": flt,
              "%%TOOLS%%": m.get("tools", ""), "%%SVG%%": m["svg"], "%%LEGEND%%": m.get("legend", ""), "%%ORDER%%": order, "%%FOOTER%%": m["footer"],
              "%%SHELLCSS%%": rd("shell.css") + "\n:root{--mapw:%dpx}" % m["mapw"], "%%SMCSS%%": rd("skillmap.css"), "%%PAGECSS%%": m["css"],
-             "%%SMJS%%": rd("skillmap.js"), "%%PAGEJS%%": m["js"], "%%SHELLJS%%": rd("shell.js"), "%%CANVASJS%%": rd("canvas.js")}.items():
+             "%%SMJS%%": rd("skillmap.js"), "%%PAGEJS%%": CMPJS + m["js"], "%%SHELLJS%%": rd("shell.js"), "%%CANVASJS%%": rd("canvas.js")}.items():
     t = t.replace(k, v)
 (mdir / "index.html").write_text(t, encoding="utf-8")
 print(mdir / "index.html", len(t))

@@ -73,3 +73,4 @@ html.lock,html.lock body{overflow:hidden}
 .ni.nimg{border-radius:50%;object-fit:cover}.plogo{width:44px;height:44px;border-radius:12px;object-fit:cover;flex:none;border:1px solid var(--border);align-self:center;padding:0}svg.plogo{padding:9px;color:var(--fg)}
 @media (max-width:700px){.plogo{width:36px;height:36px;border-radius:10px}}
 .sm-head{align-items:center;gap:10px}
+.cmpb circle{fill:var(--c,var(--accent));stroke:var(--bg);stroke-width:1.5}.cmpb text{fill:var(--bg);font:800 11px var(--sans);pointer-events:none}

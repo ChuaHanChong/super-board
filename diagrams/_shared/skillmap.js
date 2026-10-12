@@ -35,7 +35,7 @@ var SM=(function(){
   function plain(x){return String(x).replace(/\[\[([^\]]+)\]\]/g,function(_,i){return opts.label?opts.label(i):i}).replace(/\*\*|==|`/g,'')}
   function cut(x,n){x=plain(x).replace(/\s+/g,' ').trim();return x.length>n?x.slice(0,n-1).trim()+'…':x}
   function flat(f){return f.map(function(t){return Array.isArray(t)?t.map(function(x){return plain(x.slice(1))}).join(' '):(t&&t.stack?t.stack[0]:(t[0]==='@'?plain(t.slice(1)):plain(t)))}).join(' → ')}
-  function peek(b){var v=b.v,t=b.type;
+  function peek(b){if(b.peek)return b.peek;var v=b.v,t=b.type;
    if(t==='ol')return v.length+(v.length===1?' step':' steps');if(t==='ul')return v.length+(v.length===1?' item':' items');
    if(t==='p')return cut(v,70);if(t==='chips')return v.map(function(n){return opts.label?opts.label(n):n}).join(', ');
    if(t==='example'){var r=v.filter(function(x){return x[0]==='You type'||x[0]==='You say'})[0]||v[0];return cut(r[1],70)}
@@ -58,7 +58,7 @@ var SM=(function(){
     if(!b.label){block(b);return}
     var isPrev=/^When X/.test(b.label)||(b.key==='picks'&&b.type==='flows'&&b.v.length>3);
     if(OPEN[b.key]&&!isPrev||isPrev){sec(b.label,b.key||'how');if(isPrev)preview(b);else block(b);return}
-    var d=el('details','sec l-'+(b.key||'how')),sm=el('summary'),pk=peek(b);
+    var d=el('details','sec l-'+(b.key||'how')),sm=el('summary'),pk=peek(b);if(b.open)d.open=true;
     sm.appendChild(el('span','sl',b.label));if(pk)sm.appendChild(el('span','sp',pk));sm.appendChild(el('span','chv'));d.appendChild(sm);
     var inner=el('div','sb');d.appendChild(inner);body.appendChild(d);var old=T;T=inner;block(b);T=old;d.addEventListener('toggle',sync)});
    sync()};
