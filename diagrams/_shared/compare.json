@@ -9,63 +9,51 @@
      "skill": "grilling",
      "name": "grilling",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/productivity/grilling/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "superpowers",
      "skill": "brainstorming",
      "name": "brainstorming",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/brainstorming/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 3
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "mattpocock": "You have a fuzzy plan to stress-test",
-      "superpowers": "Before any new feature, build, or behavior change"
+      "mattpocock": "==Stress-test== a plan",
+      "superpowers": "Before ==any== build"
      }
     },
     {
-     "aspect": "How strict it is",
+     "aspect": "Strictness",
      "values": {
-      "mattpocock": "Numbered question rounds, each with a suggested answer",
-      "superpowers": "Hard gate: nothing gets built until you approve"
+      "mattpocock": "==Rounds== of questions",
+      "superpowers": "==Hard gate==, approve first"
      }
     },
     {
-     "aspect": "The loop",
+     "aspect": "You get",
      "values": {
-      "mattpocock": "Ask every open question, wait, repeat until none left",
-      "superpowers": "One open question per message, with playbacks between"
+      "mattpocock": "Agreed ==answers==",
+      "superpowers": "A ==design doc=="
      }
     },
     {
-     "aspect": "What it produces",
+     "aspect": "Unique",
      "values": {
-      "mattpocock": "Nothing alone; grill-with-docs adds glossary and ADRs",
-      "superpowers": "A design doc in docs/superpowers/specs, builder-checked"
-     }
-    },
-    {
-     "aspect": "Special trick",
-     "values": {
-      "mattpocock": "Sub-agents look up facts so you only decide",
-      "superpowers": "Offers a browser tab of mockups; you may skip questions"
-     }
-    },
-    {
-     "aspect": "Calls other skills",
-     "values": {
-      "mattpocock": "grill-with-docs adds domain-modeling; grill-me is an alias",
-      "superpowers": "Hands the approved design to writing-plans"
+      "mattpocock": "Sub-agents fetch ==facts==",
+      "superpowers": "Visual ==mockups=="
      }
     }
    ],
    "pick": {
-    "mattpocock": "Pick when you want quick question rounds with answers you can accept.",
-    "superpowers": "Pick when you want a slower chat that ends in a written design."
+    "mattpocock": "Fast question rounds",
+    "superpowers": "Written design first"
    },
    "sources": [
     {
@@ -80,7 +68,28 @@
      "label": "mattpocock grill-with-docs",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/grill-with-docs/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "mattpocock",
+    "why": "Quick rounds, recommended answers",
+    "cases": [
+     {
+      "case": "Fuzzy idea in repo",
+      "winner": "mattpocock",
+      "why": "Leaves glossary and ADRs"
+     },
+     {
+      "case": "Exploring, non-technical",
+      "winner": "superpowers",
+      "why": "Open questions, visual mockups"
+     },
+     {
+      "case": "Need written design",
+      "winner": "superpowers",
+      "why": "Builder-checked design doc"
+     }
+    ]
+   }
   },
   {
    "id": "plan-breakdown",
@@ -91,69 +100,64 @@
      "skill": "figure-it-out",
      "name": "figure-it-out",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/figure-it-out/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "mattpocock",
      "skill": "to-tickets",
      "name": "to-tickets",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/to-tickets/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "superpowers",
      "skill": "writing-plans",
      "name": "writing-plans",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/writing-plans/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 3
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "Big or risky job where no narrower playbook fits",
-      "mattpocock": "You have a spec or chat to cut into tickets",
-      "superpowers": "You have a spec for a multi-step task, before code"
+      "pstack": "==Huge==, risky job",
+      "mattpocock": "Spec to ==tickets==",
+      "superpowers": "Spec to ==steps=="
      }
     },
     {
-     "aspect": "How strict it is",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "Rigor scales with risk; riskiest unknown goes first",
-      "mattpocock": "You approve slice size and blockers before publishing",
-      "superpowers": "Every step is one action with a checkable result"
+      "pstack": "==Scales== with risk",
+      "mattpocock": "You ==approve== slices",
+      "superpowers": "==Exact==, checkable steps"
      }
     },
     {
-     "aspect": "The steps",
+     "aspect": "You get",
      "values": {
-      "pstack": "Frame, design the workflow, run loop, log, verify",
-      "mattpocock": "Gather, draft vertical slices, quiz you, publish",
-      "superpowers": "Map files, size tasks, write checkable steps"
+      "pstack": "Workflow + ==decision log==",
+      "mattpocock": "==Tickets== with blockers",
+      "superpowers": "A ==plan file=="
      }
     },
     {
-     "aspect": "What it produces",
+     "aspect": "Unique",
      "values": {
-      "pstack": "A written workflow plus a decision log to audit",
-      "mattpocock": "One ticket per slice, with blocking edges",
-      "superpowers": "A plan file in docs/superpowers/plans"
-     }
-    },
-    {
-     "aspect": "Special trick",
-     "values": {
-      "pstack": "Plans the workflow itself, not the code",
-      "mattpocock": "Wide refactors go expand, migrate, then contract",
-      "superpowers": "Plan header names which skill must run it"
+      "pstack": "Plans the ==workflow==",
+      "mattpocock": "==Blocking== edges",
+      "superpowers": "Names the ==executor=="
      }
     }
    ],
    "pick": {
-    "pstack": "Pick when the job is huge and you will review it later.",
-    "mattpocock": "Pick when you want small tickets that can start in parallel.",
-    "superpowers": "Pick when you want exact tasks a fresh engineer can follow."
+    "pstack": "Huge job, review later",
+    "mattpocock": "Parallel small tickets",
+    "superpowers": "Exact tasks, fresh engineer"
    },
    "sources": [
     {
@@ -176,7 +180,28 @@
      "label": "mattpocock wayfinder (plans work too big for one session)",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/wayfinder/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "mattpocock",
+    "why": "Tickets agents run in parallel",
+    "cases": [
+     {
+      "case": "Huge risky migration",
+      "winner": "pstack",
+      "why": "Rigor scales, decision log"
+     },
+     {
+      "case": "Parallel agent work",
+      "winner": "mattpocock",
+      "why": "Blocking edges, vertical slices"
+     },
+     {
+      "case": "Solo step-by-step",
+      "winner": "superpowers",
+      "why": "Exact steps with tests"
+     }
+    ]
+   }
   },
   {
    "id": "design-shape",
@@ -187,63 +212,51 @@
      "skill": "architect",
      "name": "architect",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/architect/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "mattpocock",
      "skill": "codebase-design",
      "name": "codebase-design",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/codebase-design/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 1
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "New code crosses a function boundary",
-      "mattpocock": "You design or fix a module's interface or seam"
+      "pstack": "Code crosses ==boundaries==",
+      "mattpocock": "Module ==interface== unclear"
      }
     },
     {
-     "aspect": "How strict it is",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "Needs two different designs before picking one",
-      "mattpocock": "A vocabulary guide with no fixed steps"
+      "pstack": "==Two designs== required",
+      "mattpocock": "==Vocabulary== only"
      }
     },
     {
-     "aspect": "The loop",
+     "aspect": "You get",
      "values": {
-      "pstack": "Ground, sketch, agree, fill in, scrap if wrong",
-      "mattpocock": "Judge by depth: much behavior behind a small interface"
+      "pstack": "==Signature== sketch",
+      "mattpocock": "Shared ==design words=="
      }
     },
     {
-     "aspect": "What it produces",
+     "aspect": "Unique",
      "values": {
-      "pstack": "Types and signatures with not-implemented bodies",
-      "mattpocock": "Shared design words; improve-codebase-architecture makes an HTML report"
-     }
-    },
-    {
-     "aspect": "Special trick",
-     "values": {
-      "pstack": "Throws the sketch out if code proves it wrong",
-      "mattpocock": "Deletion test: does removing it concentrate or move complexity?"
-     }
-    },
-    {
-     "aspect": "Calls other skills",
-     "values": {
-      "pstack": "Runs how and arena; interrogate is optional",
-      "mattpocock": "tdd and improve-codebase-architecture borrow its words"
+      "pstack": "==Scraps== bad sketches",
+      "mattpocock": "==Deletion== test"
      }
     }
    ],
    "pick": {
-    "pstack": "Pick when you want several rival designs before you write code.",
-    "mattpocock": "Pick when you need shared words for modules, seams, and depth."
+    "pstack": "Rival designs first",
+    "mattpocock": "Shared design vocabulary"
    },
    "sources": [
     {
@@ -262,7 +275,23 @@
      "label": "mattpocock improve-codebase-architecture",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/improve-codebase-architecture/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "pstack",
+    "why": "Forces two real designs",
+    "cases": [
+     {
+      "case": "New module",
+      "winner": "pstack",
+      "why": "Two designs, signature sketch"
+     },
+     {
+      "case": "Shared team vocabulary",
+      "winner": "mattpocock",
+      "why": "Common words for seams"
+     }
+    ]
+   }
   },
   {
    "id": "tdd",
@@ -273,77 +302,64 @@
      "skill": "tdd",
      "name": "tdd",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/tdd/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 1
     },
     {
      "pack": "mattpocock",
      "skill": "tdd",
      "name": "tdd",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/tdd/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "superpowers",
      "skill": "test-driven-development",
      "name": "test-driven-development",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/test-driven-development/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 3
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "Bug has a cheap, obvious test, or you ask for one",
-      "mattpocock": "You build features or fix bugs test-first",
-      "superpowers": "Any feature, bugfix, refactor, or behavior change"
+      "pstack": "Cheap-test ==bugs==",
+      "mattpocock": "Test-first ==features==",
+      "superpowers": "==Everything==, always"
      }
     },
     {
-     "aspect": "How strict it is",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "Soft: skip the test if it would be a bad one",
-      "mattpocock": "Firm loop rules; test seams agreed with you first",
-      "superpowers": "Iron law: no code without a failing test first"
+      "pstack": "==Soft==, can skip",
+      "mattpocock": "**Firm** loop rules",
+      "superpowers": "==Iron law==, no exceptions"
      }
     },
     {
-     "aspect": "The loop",
+     "aspect": "You get",
      "values": {
-      "pstack": "Failing test, quote the failure, fix, rerun",
-      "mattpocock": "Red, then green, one slice at a time",
-      "superpowers": "Red, green, refactor, watching every step"
+      "pstack": "One regression ==test==",
+      "mattpocock": "Tests at ==seams==",
+      "superpowers": "Tests + ==checklist=="
      }
     },
     {
-     "aspect": "What it produces",
+     "aspect": "Unique",
      "values": {
-      "pstack": "One focused regression test plus an evidence report",
-      "mattpocock": "Tests at agreed seams; refactoring waits for review",
-      "superpowers": "Tests plus a checklist before you say done"
-     }
-    },
-    {
-     "aspect": "Special trick",
-     "values": {
-      "pstack": "Quote the failure content, not the assertion line",
-      "mattpocock": "No test is written at an unconfirmed seam",
-      "superpowers": "Wrote code first? Delete it and start over"
-     }
-    },
-    {
-     "aspect": "Calls other skills",
-     "values": {
-      "pstack": "None; the bug-fix playbook calls it",
-      "mattpocock": "codebase-design when the interface shape is unclear",
-      "superpowers": "Points to writing-good-tests.md; debugging calls it"
+      "pstack": "Quote the ==failure==",
+      "mattpocock": "Agree ==seams== first",
+      "superpowers": "Code first? ==Delete== it"
      }
     }
    ],
    "pick": {
-    "pstack": "Pick for a bug fix when a cheap test exists, and a skip is fine.",
-    "mattpocock": "Pick when you want agreed test seams and vertical slices.",
-    "superpowers": "Pick when you want zero exceptions on test-first."
+    "pstack": "Quick bug fix, cheap test",
+    "mattpocock": "Agreed seams, vertical slices",
+    "superpowers": "Zero exceptions"
    },
    "sources": [
     {
@@ -358,7 +374,28 @@
      "label": "superpowers test-driven-development",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/test-driven-development/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "mattpocock",
+    "why": "Agreed seams, vertical slices",
+    "cases": [
+     {
+      "case": "Quick bug fix",
+      "winner": "pstack",
+      "why": "Cheap test, can skip"
+     },
+     {
+      "case": "New feature, solo",
+      "winner": "mattpocock",
+      "why": "Red-green, one slice"
+     },
+     {
+      "case": "Strict team discipline",
+      "winner": "superpowers",
+      "why": "Iron law, no exceptions"
+     }
+    ]
+   }
   },
   {
    "id": "debugging",
@@ -369,77 +406,64 @@
      "skill": "principle-fix-root-causes",
      "name": "principle-fix-root-causes",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/principle-fix-root-causes/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 1
     },
     {
      "pack": "mattpocock",
      "skill": "diagnosing-bugs",
      "name": "diagnosing-bugs",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/diagnosing-bugs/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "superpowers",
      "skill": "systematic-debugging",
      "name": "systematic-debugging",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/systematic-debugging/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 3
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "Whenever you debug a crash or symptom",
-      "mattpocock": "Hard bug: something broken, throwing, failing, or slow",
-      "superpowers": "Any bug, failing test, or surprise, before fixing"
+      "pstack": "Any ==symptom==",
+      "mattpocock": "==Hard== bugs, slow",
+      "superpowers": "Any bug, ==before== fixing"
      }
     },
     {
-     "aspect": "How strict it is",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "A short principle; the bug-fix playbook adds steps",
-      "mattpocock": "Six phases; no feedback loop means no guessing",
-      "superpowers": "Iron law: no fixes without finding root cause"
+      "pstack": "==Principle==, few rules",
+      "mattpocock": "==Six phases==",
+      "superpowers": "==Iron law==, root cause"
      }
     },
     {
-     "aspect": "The loop",
+     "aspect": "You get",
      "values": {
-      "pstack": "Reproduce, ask why until root cause, fix there",
-      "mattpocock": "Build loop, shrink repro, rank guesses, probe, fix",
-      "superpowers": "Investigate, compare patterns, test one guess, fix"
+      "pstack": "Pattern-wide ==fix==",
+      "mattpocock": "Regression test + ==hypothesis==",
+      "superpowers": "Failing test, ==one== fix"
      }
     },
     {
-     "aspect": "Special trick",
+     "aspect": "Unique",
      "values": {
-      "pstack": "A nil-check that hides a crash is a symptom fix",
-      "mattpocock": "Tag debug logs [DEBUG-xxxx] so cleanup is one grep",
-      "superpowers": "Three failed fixes means question the architecture"
-     }
-    },
-    {
-     "aspect": "What it leaves behind",
-     "values": {
-      "pstack": "Fixes every place the same pattern repeats",
-      "mattpocock": "A regression test and the winning guess in the commit",
-      "superpowers": "A failing test first, then one single fix"
-     }
-    },
-    {
-     "aspect": "Calls other skills",
-     "values": {
-      "pstack": "Bug-fix playbook adds how, why, tdd, architect",
-      "mattpocock": "None named; it builds its own loop",
-      "superpowers": "test-driven-development and verification-before-completion"
+      "pstack": "No ==guard== band-aids",
+      "mattpocock": "Build the ==loop== first",
+      "superpowers": "Three fails: ==rethink=="
      }
     }
    ],
    "pick": {
-    "pstack": "Pick when you want a short rule: fix the cause, not the symptom.",
-    "mattpocock": "Pick when the bug is hard and you need a tight repro loop.",
-    "superpowers": "Pick when you keep guessing and need strict steps."
+    "pstack": "Fix cause, not symptom",
+    "mattpocock": "Hard bug, tight loop",
+    "superpowers": "Strict steps, no guessing"
    },
    "sources": [
     {
@@ -458,7 +482,28 @@
      "label": "pstack bug-fix playbook",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/poteto-mode/playbooks/bug-fix.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "mattpocock",
+    "why": "Builds tight repro loop first",
+    "cases": [
+     {
+      "case": "Hard flaky bug",
+      "winner": "mattpocock",
+      "why": "Loop, shrink, ranked hypotheses"
+     },
+     {
+      "case": "Keep guessing fixes",
+      "winner": "superpowers",
+      "why": "Three fails: question architecture"
+     },
+     {
+      "case": "Quick crash",
+      "winner": "pstack",
+      "why": "Fix root, grep pattern"
+     }
+    ]
+   }
   },
   {
    "id": "run-the-plan",
@@ -469,77 +514,64 @@
      "skill": "swarm",
      "name": "swarm",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/swarm/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 1
     },
     {
      "pack": "mattpocock",
      "skill": "implement-spec",
      "name": "implement-spec",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/implement-spec/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "superpowers",
      "skill": "subagent-driven-development",
      "name": "subagent-driven-development",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/subagent-driven-development/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 3
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "You need N slices or N attempts run in parallel",
-      "mattpocock": "A spec with tickets is ready to implement",
-      "superpowers": "A plan with independent tasks, run in this session"
+      "pstack": "N ==parallel== workers",
+      "mattpocock": "Spec with ==tickets==",
+      "superpowers": "Plan, ==independent== tasks"
      }
     },
     {
-     "aspect": "The loop",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "Frame, fan out, aggregate, report",
-      "mattpocock": "Run ready tickets in worktrees, merge, then review",
-      "superpowers": "Implementer then task review for each task, then final review"
+      "pstack": "==Evidence== reports",
+      "mattpocock": "Ticket ==graph==",
+      "superpowers": "==Review== every task"
      }
     },
     {
-     "aspect": "How strict it is",
+     "aspect": "You get",
      "values": {
-      "pstack": "Workers report PASS, ISSUES, or BLOCKED with evidence",
-      "mattpocock": "Tickets form a graph; ready ones run together",
-      "superpowers": "Spec and quality review after every task"
+      "pstack": "One merged ==report==",
+      "mattpocock": "Integration ==branch==",
+      "superpowers": "==Ledger== + checklist"
      }
     },
     {
-     "aspect": "What it produces",
+     "aspect": "Unique",
      "values": {
-      "pstack": "One merged report with a result table",
-      "mattpocock": "One integration branch, optionally a draft PR",
-      "superpowers": "A ledger of rulings and a task checklist"
-     }
-    },
-    {
-     "aspect": "Special trick",
-     "values": {
-      "pstack": "Race the same brief and pick a winner",
-      "mattpocock": "Subagents talk through short context pointers",
-      "superpowers": "Never pauses; decides conflicts and logs each ruling"
-     }
-    },
-    {
-     "aspect": "Doing it inline instead",
-     "values": {
-      "pstack": "No inline mode; it only fans out",
-      "mattpocock": "implement does one ticket itself, using tdd",
-      "superpowers": "executing-plans runs it yourself, one final review"
+      "pstack": "==Race== same brief",
+      "mattpocock": "Worktree per ==ticket==",
+      "superpowers": "Inline: ==executing-plans=="
      }
     }
    ],
    "pick": {
-    "pstack": "Pick when you want many workers racing or covering slices.",
-    "mattpocock": "Pick when your plan is a ticket graph on a tracker.",
-    "superpowers": "Pick when you want a fresh reviewer after every task."
+    "pstack": "Many racing workers",
+    "mattpocock": "Ticket graph on tracker",
+    "superpowers": "Fresh reviewer each task"
    },
    "sources": [
     {
@@ -566,7 +598,28 @@
      "label": "superpowers dispatching-parallel-agents",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/dispatching-parallel-agents/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "mattpocock",
+    "why": "Ticket graph, integration branch",
+    "cases": [
+     {
+      "case": "Tickets on tracker",
+      "winner": "mattpocock",
+      "why": "Worktrees, merge, then review"
+     },
+     {
+      "case": "Quality gate per task",
+      "winner": "superpowers",
+      "why": "Spec and quality review"
+     },
+     {
+      "case": "Compare competing attempts",
+      "winner": "pstack",
+      "why": "Races same brief"
+     }
+    ]
+   }
   },
   {
    "id": "code-review",
@@ -577,82 +630,77 @@
      "skill": "interrogate",
      "name": "interrogate",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/interrogate/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 3
     },
     {
      "pack": "mattpocock",
      "skill": "code-review",
      "name": "code-review",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/code-review/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "superpowers",
      "skill": "requesting-code-review",
      "name": "requesting-code-review",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/requesting-code-review/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 2
     },
     {
      "pack": "impeccable",
      "skill": "critique",
      "name": "critique (UI design review)",
      "url": "https://github.com/pbakaus/impeccable/blob/c63b8dd7dd5a5f3c32eaabe1af76d0694f863ed2/skill/reference/critique.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "A diff is ready and you want blind spots found",
-      "mattpocock": "You review a branch since a fixed point",
-      "superpowers": "After each task, after a feature, before merge",
-      "impeccable": "A page or component needs design feedback"
+      "pstack": "Find ==blind spots==",
+      "mattpocock": "Branch since ==fixed point==",
+      "superpowers": "After ==each task==",
+      "impeccable": "UI ==design== feedback"
      }
     },
     {
-     "aspect": "Who reviews",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "Several AI models read the same diff",
-      "mattpocock": "Two sub-agents: standards and spec",
-      "superpowers": "One fresh reviewer gets only SHAs and requirements",
-      "impeccable": "Two isolated checks: design review and detector"
+      "pstack": "Many ==models==",
+      "mattpocock": "==Two axes==",
+      "superpowers": "==One== fresh reviewer",
+      "impeccable": "==Scored== 0-4"
      }
     },
     {
-     "aspect": "What you get back",
+     "aspect": "You get",
      "values": {
-      "pstack": "Act on, consider, noted, dismissed buckets",
-      "mattpocock": "Standards and spec findings, side by side",
-      "superpowers": "Strengths, issues from Critical to Minor, verdict",
-      "impeccable": "A score out of 40 and priority issues"
+      "pstack": "Four ==buckets==",
+      "mattpocock": "Standards + ==spec== findings",
+      "superpowers": "Issues ==Critical to Minor==",
+      "impeccable": "Score + ==priorities=="
      }
     },
     {
-     "aspect": "Special trick",
+     "aspect": "Unique",
      "values": {
-      "pstack": "Where models agree is the strongest signal",
-      "mattpocock": "A built-in code-smell list applies without repo rules",
-      "superpowers": "The reviewer never sees your session history",
-      "impeccable": "Scores ten usability rules from 0 to 4"
-     }
-    },
-    {
-     "aspect": "Who fixes it",
-     "values": {
-      "pstack": "Nobody; it never auto-applies changes",
-      "mattpocock": "You do; it only reports",
-      "superpowers": "You fix Critical now and Important before moving on",
-      "impeccable": "You pick next; it asks what to improve"
+      "pstack": "Models ==agree==",
+      "mattpocock": "Built-in ==smells==",
+      "superpowers": "No ==history==",
+      "impeccable": "==Not== code"
      }
     }
    ],
    "pick": {
-    "pstack": "Pick when you want many models to tear the diff apart.",
-    "mattpocock": "Pick when you want to check standards and the spec.",
-    "superpowers": "Pick when you want a quick fresh-eyes check after each task.",
-    "impeccable": "Pick when the thing under review is a user interface, not code."
+    "pstack": "Many-model teardown",
+    "mattpocock": "Standards and spec check",
+    "superpowers": "Quick fresh-eyes check",
+    "impeccable": "Reviewing an interface"
    },
    "sources": [
     {
@@ -679,7 +727,33 @@
      "label": "impeccable audit (accessibility and performance check)",
      "url": "https://github.com/pbakaus/impeccable/blob/c63b8dd7dd5a5f3c32eaabe1af76d0694f863ed2/skill/reference/audit.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "mattpocock",
+    "why": "Checks code against spec",
+    "cases": [
+     {
+      "case": "Big risky diff",
+      "winner": "pstack",
+      "why": "Many models find blind spots"
+     },
+     {
+      "case": "Check against spec",
+      "winner": "mattpocock",
+      "why": "Standards and spec axes"
+     },
+     {
+      "case": "After each task",
+      "winner": "superpowers",
+      "why": "Fresh reviewer, SHAs only"
+     },
+     {
+      "case": "UI polish",
+      "winner": "impeccable",
+      "why": "Scores usability heuristics"
+     }
+    ]
+   }
   },
   {
    "id": "review-feedback",
@@ -690,56 +764,51 @@
      "skill": "babysit",
      "name": "babysit",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/babysit/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "superpowers",
      "skill": "receiving-code-review",
      "name": "receiving-code-review",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/receiving-code-review/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 3
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "An open PR needs green CI and comments handled",
-      "superpowers": "You got review feedback and have not changed code yet"
+      "pstack": "==Open PR== needs green",
+      "superpowers": "Feedback ==received=="
      }
     },
     {
-     "aspect": "How strict it is",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "Acts only on feedback it agrees with",
-      "superpowers": "Verify each point first; no performative agreement"
+      "pstack": "Acts if ==agrees==",
+      "superpowers": "==Verify== first"
      }
     },
     {
-     "aspect": "The loop",
+     "aspect": "You get",
      "values": {
-      "pstack": "Fix conflicts, then CI, then comments, repeat",
-      "superpowers": "Read, restate, verify, evaluate, reply, fix one at a time"
+      "pstack": "==Mergeable== PR",
+      "superpowers": "Checked ==replies=="
      }
     },
     {
-     "aspect": "Special trick",
+     "aspect": "Unique",
      "values": {
-      "pstack": "Judgment call or unclear? Reply instead of guessing",
-      "superpowers": "Suggested feature unused? Check usage, apply YAGNI"
-     }
-    },
-    {
-     "aspect": "Calls other skills",
-     "values": {
-      "pstack": "fix-merge-conflicts, fix-ci, get-pr-comments",
-      "superpowers": "None; asks you before touching unclear items"
+      "pstack": "Replies, ==no guess==",
+      "superpowers": "==YAGNI== check"
      }
     }
    ],
    "pick": {
-    "pstack": "Pick when you want the PR shepherded to mergeable on its own.",
-    "superpowers": "Pick when you want each comment checked before acting."
+    "pstack": "Shepherd PR to merge",
+    "superpowers": "Verify each comment"
    },
    "sources": [
     {
@@ -750,7 +819,23 @@
      "label": "superpowers receiving-code-review",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/receiving-code-review/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "pstack",
+    "why": "Handles CI, conflicts, comments",
+    "cases": [
+     {
+      "case": "Red CI, conflicts",
+      "winner": "pstack",
+      "why": "Fixes CI, conflicts, comments"
+     },
+     {
+      "case": "Doubtful reviewer feedback",
+      "winner": "superpowers",
+      "why": "Verify before implementing"
+     }
+    ]
+   }
   },
   {
    "id": "prove-it-works",
@@ -761,63 +846,51 @@
      "skill": "principle-prove-it-works",
      "name": "principle-prove-it-works",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/principle-prove-it-works/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "superpowers",
      "skill": "verification-before-completion",
      "name": "verification-before-completion",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/verification-before-completion/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 3
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "After a task, before declaring it done",
-      "superpowers": "Before any claim of done, fixed, or passing"
+      "pstack": "After ==task==",
+      "superpowers": "Before any ==claim=="
      }
     },
     {
-     "aspect": "How strict it is",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "Check the real artifact; proxies do not count",
-      "superpowers": "Iron law: no claims without fresh evidence"
+      "pstack": "==Real== artifact",
+      "superpowers": "==Iron law==, evidence"
      }
     },
     {
-     "aspect": "The loop",
+     "aspect": "You get",
      "values": {
-      "pstack": "Run it, read the actual value, doubt your check first",
-      "superpowers": "Pick the command, run it fully, read output, then claim"
+      "pstack": "Re-runnable ==script==",
+      "superpowers": "Claims with ==output=="
      }
     },
     {
-     "aspect": "Special trick",
+     "aspect": "Unique",
      "values": {
-      "pstack": "Red is a colour: quote the failure content",
-      "superpowers": "Revert the fix and rerun; the test must fail"
-     }
-    },
-    {
-     "aspect": "What it leaves behind",
-     "values": {
-      "pstack": "A re-runnable script as proof you can show",
-      "superpowers": "Nothing; you state the claim with its evidence"
-     }
-    },
-    {
-     "aspect": "Calls other skills",
-     "values": {
-      "pstack": "Sibling create-verification-skill builds an app driver",
-      "superpowers": "systematic-debugging calls it before success claims"
+      "pstack": "Red is a ==colour==",
+      "superpowers": "==Revert== and rerun"
      }
     }
    ],
    "pick": {
-    "pstack": "Pick when you want a script that proves it on the real thing.",
-    "superpowers": "Pick when you want a hard stop on unproven claims."
+    "pstack": "Script proves real thing",
+    "superpowers": "Hard stop on claims"
    },
    "sources": [
     {
@@ -832,7 +905,23 @@
      "label": "pstack create-verification-skill",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/create-verification-skill/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "pstack",
+    "why": "Proof on the real artifact",
+    "cases": [
+     {
+      "case": "Shipping to production",
+      "winner": "pstack",
+      "why": "Real-artifact proof script"
+     },
+     {
+      "case": "Stop false done",
+      "winner": "superpowers",
+      "why": "Evidence before any claim"
+     }
+    ]
+   }
   },
   {
    "id": "ship-the-pr",
@@ -843,69 +932,64 @@
      "skill": "make-pr-easy-to-review",
      "name": "make-pr-easy-to-review",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/make-pr-easy-to-review/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "mattpocock",
      "skill": "pr",
      "name": "pr",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/pr/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 1
     },
     {
      "pack": "superpowers",
      "skill": "finishing-a-development-branch",
      "name": "finishing-a-development-branch",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/finishing-a-development-branch/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 3
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "An existing PR is noisy and hard to read",
-      "mattpocock": "You are writing a PR body",
-      "superpowers": "Work is done and tests pass; choose how to land"
+      "pstack": "PR is ==noisy==",
+      "mattpocock": "Writing ==PR body==",
+      "superpowers": "Work ==done==, land it"
      }
     },
     {
-     "aspect": "What it does",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "Cleans commits, fixes the description, guides reviewers",
-      "mattpocock": "Fills a template: summary, evidence, merge danger",
-      "superpowers": "Runs tests, then offers merge, PR, or keep"
+      "pstack": "==Plans== before rewrite",
+      "mattpocock": "==Template==, brief prose",
+      "superpowers": "==Tests== gate menu"
      }
     },
     {
-     "aspect": "How strict it is",
+     "aspect": "You get",
      "values": {
-      "pstack": "Plans first; never rewrites history without your OK",
-      "mattpocock": "No preamble; prose kept brief",
-      "superpowers": "Tests must pass before the menu appears"
+      "pstack": "Cleaner ==history==",
+      "mattpocock": "A ==body==",
+      "superpowers": "Merge, PR, ==or keep=="
      }
     },
     {
-     "aspect": "Special trick",
+     "aspect": "Unique",
      "values": {
-      "pstack": "Checks the git tree is unchanged after rewriting",
-      "mattpocock": "Pictures: diff sketches, call trees, Mermaid",
-      "superpowers": "Cleans up the worktree after merge or PR"
-     }
-    },
-    {
-     "aspect": "Does it touch code?",
-     "values": {
-      "pstack": "Never; behavior stays the same",
-      "mattpocock": "No; it only writes text",
-      "superpowers": "Yes; it merges or pushes after your choice"
+      "pstack": "Behavior ==unchanged==",
+      "mattpocock": "==Diagrams== in PR",
+      "superpowers": "==Worktree== cleanup"
      }
     }
    ],
    "pick": {
-    "pstack": "Pick when a PR exists but reviewers will struggle to read it.",
-    "mattpocock": "Pick when you need a clear PR body fast.",
-    "superpowers": "Pick when you need to decide merge, PR, or keep."
+    "pstack": "Make PR readable",
+    "mattpocock": "Clear PR body fast",
+    "superpowers": "Choose merge or PR"
    },
    "sources": [
     {
@@ -920,7 +1004,28 @@
      "label": "superpowers finishing-a-development-branch",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/finishing-a-development-branch/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "mattpocock",
+    "why": "Evidence plus merge danger",
+    "cases": [
+     {
+      "case": "Write PR body",
+      "winner": "mattpocock",
+      "why": "Summary, evidence, merge danger"
+     },
+     {
+      "case": "Messy existing PR",
+      "winner": "pstack",
+      "why": "Cleans commits, guides reviewers"
+     },
+     {
+      "case": "Finish a branch",
+      "winner": "superpowers",
+      "why": "Menu: merge, PR, keep"
+     }
+    ]
+   }
   },
   {
    "id": "router",
@@ -931,69 +1036,64 @@
      "skill": "poteto-mode",
      "name": "poteto-mode",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/poteto-mode/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "mattpocock",
      "skill": "ask-matt",
      "name": "ask-matt",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/ask-matt/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 1
     },
     {
      "pack": "superpowers",
      "skill": "using-superpowers",
      "name": "using-superpowers",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/using-superpowers/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 3
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "Start here; it sets style and triggers other skills",
-      "mattpocock": "You ask which skill fits your situation",
-      "superpowers": "Start of every conversation"
+      "pstack": "==Start== here",
+      "mattpocock": "==Ask== which skill",
+      "superpowers": "==Every== conversation"
      }
     },
     {
-     "aspect": "How it starts",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "By name, or when you ask for poteto's style",
-      "mattpocock": "You type it; the agent never auto-runs it",
-      "superpowers": "Loads itself before any reply"
+      "pstack": "Names ==principles==",
+      "mattpocock": "==Advice== only",
+      "superpowers": "==1%== chance, invoke"
      }
     },
     {
-     "aspect": "How strict it is",
+     "aspect": "You get",
      "values": {
-      "pstack": "Names the principles that shaped each choice",
-      "mattpocock": "Advice only; you pick and run the skill",
-      "superpowers": "Even a 1% chance a skill applies means use it"
+      "pstack": "A ==playbook==",
+      "mattpocock": "A ==flow== map",
+      "superpowers": "Skills ==forced=="
      }
     },
     {
-     "aspect": "Special trick",
+     "aspect": "Unique",
      "values": {
-      "pstack": "Picks a playbook, then calls other skills",
-      "mattpocock": "Lays out one main flow from idea to ship",
-      "superpowers": "Process skills go first, building skills second"
-     }
-    },
-    {
-     "aspect": "Calls other skills",
-     "values": {
-      "pstack": "how, architect, swarm, and the principle skills",
-      "mattpocock": "Reads each skill's file before recommending it",
-      "superpowers": "brainstorming for builds, systematic-debugging for bugs"
+      "pstack": "Runs ==whole== workflow",
+      "mattpocock": "==Manual== trigger only",
+      "superpowers": "==Auto-loads== every chat"
      }
     }
    ],
    "pick": {
-    "pstack": "Pick when you want one entry point that runs the whole workflow.",
-    "mattpocock": "Pick when you want a map and will choose steps yourself.",
-    "superpowers": "Pick when you want skills forced on every task."
+    "pstack": "One-entry workflow",
+    "mattpocock": "Map, you choose",
+    "superpowers": "Skills forced every task"
    },
    "sources": [
     {
@@ -1008,7 +1108,28 @@
      "label": "superpowers using-superpowers",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/using-superpowers/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "pstack",
+    "why": "Picks playbook, runs workflow",
+    "cases": [
+     {
+      "case": "Learn the skills",
+      "winner": "mattpocock",
+      "why": "Maps flow, you choose"
+     },
+     {
+      "case": "Autonomous full run",
+      "winner": "pstack",
+      "why": "Playbooks call other skills"
+     },
+     {
+      "case": "Force discipline",
+      "winner": "superpowers",
+      "why": "Skills mandatory every task"
+     }
+    ]
+   }
   },
   {
    "id": "writing-agent-docs",
@@ -1019,56 +1140,51 @@
      "skill": "writing-for-agents",
      "name": "writing-for-agents",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/productivity/writing-for-agents/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "superpowers",
      "skill": "writing-skills",
      "name": "writing-skills",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/writing-skills/SKILL.md",
-     "onMap": false
+     "onMap": false,
+     "strict": 3
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "mattpocock": "Creating or editing skills, AGENTS.md, or CLAUDE.md",
-      "superpowers": "Creating or editing a skill, or testing it before use"
+      "mattpocock": "==Docs== for agents",
+      "superpowers": "New or edited ==skill=="
      }
     },
     {
-     "aspect": "Core idea",
+     "aspect": "Strictness",
      "values": {
-      "mattpocock": "Pointer wording decides when the material gets read",
-      "superpowers": "Writing skills is test-driven development for process docs"
+      "mattpocock": "==Pointer== wording",
+      "superpowers": "==Baseline== test first"
      }
     },
     {
-     "aspect": "The loop",
+     "aspect": "You get",
      "values": {
-      "mattpocock": "Sharpen the pointer; inline text only if that fails",
-      "superpowers": "Watch an agent fail, write the skill, watch it pass"
+      "mattpocock": "Sharp ==pointers==",
+      "superpowers": "==Tested== skill"
      }
     },
     {
-     "aspect": "Special trick",
+     "aspect": "Unique",
      "values": {
-      "mattpocock": "One trigger per branch; cut synonyms",
-      "superpowers": "Pressure scenarios with subagents give a real baseline"
-     }
-    },
-    {
-     "aspect": "Calls other skills",
-     "values": {
-      "mattpocock": "SKILL-MECHANICS.md covers frontmatter and routers",
-      "superpowers": "Needs test-driven-development as background"
+      "mattpocock": "One trigger per ==branch==",
+      "superpowers": "==Pressure== scenarios"
      }
     }
    ],
    "pick": {
-    "mattpocock": "Pick when you want short, sharp pointers that trigger reliably.",
-    "superpowers": "Pick when you want each skill tested against a failing baseline."
+    "mattpocock": "Sharp trigger pointers",
+    "superpowers": "Tested against failure"
    },
    "sources": [
     {
@@ -1079,7 +1195,23 @@
      "label": "superpowers writing-skills",
      "url": "https://github.com/obra/superpowers/blob/bb92a77741419a4ab5f06e711a283343f1ada0c3/skills/writing-skills/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "mattpocock",
+    "why": "Lean pointers, cheap context",
+    "cases": [
+     {
+      "case": "Sharpen AGENTS.md",
+      "winner": "mattpocock",
+      "why": "Pointer wording triggers reliably"
+     },
+     {
+      "case": "Ship reusable skill",
+      "winner": "superpowers",
+      "why": "Tested against failing baseline"
+     }
+    ]
+   }
   },
   {
    "id": "learn-from-session",
@@ -1090,56 +1222,51 @@
      "skill": "reflect",
      "name": "reflect",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/reflect/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     },
     {
      "pack": "mattpocock",
      "skill": "retro",
      "name": "retro",
      "url": "https://github.com/mattpocock/skills/blob/49dd158d1076134a641b33efb035946536778336/skills/engineering/retro/SKILL.md",
-     "onMap": true
+     "onMap": true,
+     "strict": 2
     }
    ],
    "rows": [
     {
-     "aspect": "When you use it",
+     "aspect": "Use when",
      "values": {
-      "pstack": "You say reflect after a session",
-      "mattpocock": "A session went badly; fix the agent's setup"
+      "pstack": "After ==reflect==",
+      "mattpocock": "Session ==went badly=="
      }
     },
     {
-     "aspect": "What it reads",
+     "aspect": "Strictness",
      "values": {
-      "pstack": "The active transcript, found by a script",
-      "mattpocock": "Session logs, defaulting to the current session"
+      "pstack": "==Three== reviewers",
+      "mattpocock": "==Seven== categories"
      }
     },
     {
-     "aspect": "The loop",
+     "aspect": "You get",
      "values": {
-      "pstack": "Three parallel reviewers, then route each learning",
-      "mattpocock": "Scan seven categories, rank candidates by severity"
+      "pstack": "==Skill== edits",
+      "mattpocock": "Ranked ==setup== fixes"
      }
     },
     {
-     "aspect": "What you get",
+     "aspect": "Unique",
      "values": {
-      "pstack": "Concrete edits to existing skills",
-      "mattpocock": "Ranked fixes: pointers, checks, standards, AGENTS.md"
-     }
-    },
-    {
-     "aspect": "Special trick",
-     "values": {
-      "pstack": "One-offs are not learnings; trivial chats skipped",
-      "mattpocock": "The review agent enforces rules, not the builder"
+      "pstack": "==Skips== one-offs",
+      "mattpocock": "==Reviewer== enforces rules"
      }
     }
    ],
    "pick": {
-    "pstack": "Pick when you want learnings turned straight into skill edits.",
-    "mattpocock": "Pick when you want to improve checks and instruction files."
+    "pstack": "Learnings into skill edits",
+    "mattpocock": "Fix checks, AGENTS.md"
    },
    "sources": [
     {
@@ -1154,7 +1281,23 @@
      "label": "pstack correct (makes repeat mistakes impossible)",
      "url": "https://github.com/michael-denyer/pstack-claude/blob/main/plugins/pstack/skills/correct/SKILL.md"
     }
-   ]
+   ],
+   "best": {
+    "overall": "pstack",
+    "why": "Turns learnings into skill edits",
+    "cases": [
+     {
+      "case": "Fix skills",
+      "winner": "pstack",
+      "why": "Routes learnings to edits"
+     },
+     {
+      "case": "Fix repo checks",
+      "winner": "mattpocock",
+      "why": "Checks, standards, AGENTS.md"
+     }
+    ]
+   }
   }
  ]
 }

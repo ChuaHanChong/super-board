@@ -59,9 +59,9 @@ details.sec .sb{padding:2px 12px 12px;animation:smo .16s ease-out}
 .sm .cmpt{font-weight:700;margin:6px 0}
 .sm .cmpw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;-webkit-overflow-scrolling:touch}
 .sm table.cmp{border-collapse:collapse;width:100%;font-size:13px;line-height:1.4}
-.sm table.cmp th,.sm table.cmp td{padding:8px 10px;text-align:left;vertical-align:top;min-width:150px;border-bottom:1px solid var(--line)}
+.sm table.cmp th,.sm table.cmp td{padding:5px 8px;text-align:left;vertical-align:top;min-width:0;border-bottom:1px solid var(--line);font-size:12.5px}
 .sm table.cmp tr:last-child>*{border-bottom:0}
-.sm table.cmp th.cmpc{position:sticky;left:0;z-index:1;min-width:104px;max-width:110px;background:var(--card);color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;border-right:1px solid var(--line)}
+.sm table.cmp th.cmpc{position:sticky;left:0;z-index:1;min-width:76px;max-width:84px;background:var(--card);color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;border-right:1px solid var(--line)}
 .sm table.cmp thead th,.sm table.cmp tr:first-child th{background:var(--hov)}
 .sm table.cmp th.cur,.sm table.cmp td.cur{background:color-mix(in srgb,var(--c) 12%,var(--card));box-shadow:inset 0 0 0 0 transparent}
 .sm table.cmp th.cur{border-top:3px solid var(--c)}
@@ -70,3 +70,5 @@ details.sec .sb{padding:2px 12px 12px;animation:smo .16s ease-out}
 .sm table.cmp th a{font-weight:700;color:var(--c)}
 .sm ul.cmpick{list-style:none;padding:0;margin:8px 0}.sm ul.cmpick li{padding:4px 8px;border-radius:6px}.sm ul.cmpick li.cur{background:color-mix(in srgb,var(--c) 12%,transparent)}
 .sm .cmps{font-size:12.5px;color:var(--muted);margin:6px 0 10px!important}.sm .cmps a{color:var(--c)}
+.sm .dots{color:var(--c);letter-spacing:1px;font-size:11px}
+.sm .cmpick{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.sm .cmpick .pc{padding:3px 10px;border:1px solid var(--line);border-radius:999px;font-size:12.5px}.sm .cmpick .pc.cur{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,transparent)}

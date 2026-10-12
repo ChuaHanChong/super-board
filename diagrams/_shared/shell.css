@@ -74,3 +74,6 @@ html.lock,html.lock body{overflow:hidden}
 @media (max-width:700px){.plogo{width:36px;height:36px;border-radius:10px}}
 .sm-head{align-items:center;gap:10px}
 .cmpb circle{fill:var(--c,var(--accent));stroke:var(--bg);stroke-width:1.5}.cmpb text{fill:var(--bg);font:800 11px var(--sans);pointer-events:none}
+.seg button[aria-pressed=true] svg{color:var(--bg)!important}
+.fpill{display:inline-flex;align-items:center;gap:4px;margin:0 0 8px;padding:5px 12px;border:1px solid var(--border);border-radius:999px;background:var(--bg2);font-size:13px}.fpill[hidden]{display:none}
+.fpill button{border:0;background:none;color:var(--accent);font:600 13px var(--sans);cursor:pointer;padding:0;text-decoration:underline}
