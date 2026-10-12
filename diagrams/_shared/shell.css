@@ -70,3 +70,6 @@ html.lock,html.lock body{overflow:hidden}
 .sm-hero.cv.exp .scroll,.sm-hero.cv:fullscreen .scroll{height:calc(100dvh - 110px)}
 @media (max-width:700px){.sm-hero.cv .scroll{height:70vh}.sm-hero.cv.exp .scroll,.sm-hero.cv:fullscreen .scroll{height:calc(100dvh - 190px)}}
 .tbb[hidden]{display:none}
+.ni.nimg{border-radius:50%;object-fit:cover}.plogo{width:44px;height:44px;border-radius:12px;object-fit:cover;flex:none;border:1px solid var(--border);align-self:center;padding:0}svg.plogo{padding:9px;color:var(--fg)}
+@media (max-width:700px){.plogo{width:36px;height:36px;border-radius:10px}}
+.sm-head{align-items:center;gap:10px}

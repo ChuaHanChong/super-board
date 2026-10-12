@@ -59,7 +59,8 @@ def build(data, mdir):
     per = 2
     colx = lambda i: X0 + i * CW
     # heights
-    def cat_h(c): return 24 + 14 + math.ceil(len(c["chain"]) / per) * (NH + GY) - GY + 30
+    def nrows(c): return 1 if len(c["chain"]) <= 2 else len(c["chain"])
+    def cat_h(c): return 24 + 14 + nrows(c) * (NH + GY) - GY + 30
     cols = {sid: [c for c in cats if c["stage"] == sid] for sid in STAGES}
     body_h = max([sum(cat_h(c) for c in cs) for cs in cols.values() if cs] + [120])
     H_COL = 76 + body_h
@@ -69,8 +70,6 @@ def build(data, mdir):
         nsk = sum(len(c["chain"]) for c in cs)
         out.append(head(sid, i + 1, SNAME[sid], x + 18, Y0 + 14, "stage", ""))
         if i: out.append(f'<line class="div" data-grp="{sid}" x1="{x}" y1="{Y0+4}" x2="{x}" y2="{Y0+H_COL-4}"/>')
-        if i < len(STAGES) - 1:
-            out.append(f'<path class="arr flowdn" data-edge="{sid} {STAGES[i+1]}" d="M{x+CW-12} {Y0+50} H{x+CW+12}" marker-end="url(#ah)"/>')
         if not cs:
             out.append(f'<text class="emp" data-grp="{sid}" x="{x+18}" y="{Y0+92}">No skills for this stage</text><text class="emp" data-grp="{sid}" x="{x+18}" y="{Y0+110}">in {E(meta["name"])}</text>')
             continue
@@ -79,17 +78,17 @@ def build(data, mdir):
             out.append(f'<g class="ch st-{sid}" data-id="cat:{E(c["id"])}" data-grp="{sid}" tabindex="0" role="button" aria-label="{E(c["name"])} (a category)"><title>Category: {E(c["name"])}. Tap for details.</title>'
                        f'<rect class="chb" x="{x+14}" y="{ty-3}" width="{CW-28}" height="24" rx="6"/><text class="cht" x="{x+20}" y="{ty+14}">{E(c["name"])}</text></g>')
             ny = ty + 24 + 14; pos = []
+            horiz = len(c["chain"]) <= 2
             for j, sk in enumerate(c["chain"]):
-                r, cc = divmod(j, per); px = x + 18 + cc * (NW + GX); py = ny + r * (NH + GY); pos.append((px, py))
+                px = x + 18 + (j * (NW + GX) if horiz else 0); py = ny + (0 if horiz else j * (NH + GY)); pos.append((px, py))
                 out.append(node(sk, px, py, sid, j == 0))
             for j in range(len(pos) - 1):
                 (ax, ay), (bx, by) = pos[j], pos[j + 1]
-                if by == ay: out.append(f'<path class="arr" data-grp="{sid}" d="M{ax+NW} {ay+NH/2} H{bx-2}" marker-end="url(#ah)"/>')
-                else:
-                    ym = ay + NH + GY / 2
-                    out.append(f'<path class="arr" data-grp="{sid}" d="M{ax+NW/2} {ay+NH} V{ym} H{bx+NW/2} V{by-2}" marker-end="url(#ah)"/>')
+                if horiz: out.append(f'<path class="arr" data-grp="{sid}" d="M{ax+NW} {ay+NH/2} H{bx-2}" marker-end="url(#ah)"/>')
+                else: out.append(f'<path class="arr" data-grp="{sid}" d="M{ax+NW/2} {ay+NH} V{by-2}" marker-end="url(#ah)"/>')
             ty += cat_h(c)
     TW = X0 * 2 + CW * len(STAGES)
+    out.append(f'<path class="strip" d="M{X0+18} {Y0+54} H{TW-X0-14}" marker-end="url(#ah)"/>')
     y = Y0 + H_COL + 36
     ag = data.get("anytime", [])
     if ag:
@@ -132,7 +131,7 @@ def build(data, mdir):
 .nd:hover rect,.nd:focus-visible rect{stroke:var(--c);stroke-width:2.4}.nd.sel rect{fill:color-mix(in srgb,var(--c) 14%,var(--bg));stroke:var(--c);stroke-width:2.6}
 .nn{fill:var(--fg);font:600 11px var(--mono)}.nt{fill:var(--muted);font:10px var(--sans)}
 .stbg{fill:var(--c)!important;stroke:none!important}.stt{fill:var(--bg);font:800 8px var(--sans);letter-spacing:.06em}
-.arr{stroke:var(--muted);stroke-width:1.5;fill:none}.ahp{fill:var(--muted)}.flowdn{stroke-width:2}
+.strip{stroke:var(--muted);stroke-width:1.2;fill:none;opacity:.7}.arr{stroke:var(--muted);stroke-width:1.2;fill:none}.ahp{fill:var(--muted)}.flowdn{stroke-width:2}
 .sm.calm h4,.sm.calm details.sec{--l:var(--c)}
 .sm.calm h4,.sm.calm details.sec .sl{color:var(--c);background:color-mix(in srgb,var(--c) 10%,transparent);border-color:color-mix(in srgb,var(--c) 35%,transparent)}
 .sm.calm ul.wl li{border-left-color:var(--c)}.sm.calm .chip{border-color:var(--c);color:var(--c)}
@@ -149,4 +148,4 @@ def build(data, mdir):
     src = "".join(f'<a href="{E(s["url"])}" target="_blank" rel="noopener">{E(s["label"])}</a> · ' for s in meta.get("sources", []))[:-3]
     order = [(str(i + 1), SNAME[s], re.sub(r"\*\*|==", "", stages.get(s, {}).get("principle") or "No skills in this pack")[:46], f"st-{s}") for i, s in enumerate(STAGES)]
     return dict(key=meta.get("nav", ""), title=meta["name"], version=meta.get("version", "") or "template", subtitle=E(meta.get("tagline", "")),
-                svg=svg, mapw=2012, css=css, js=js, order=order, filter=flt, legend="", footer=("Sources: " + src) if src else "", out=meta.get("out"))
+                svg=svg, mapw=2012, css=css, js=js, order=order, filter=flt, legend="", footer=("Sources: " + src) if src else "", out=meta.get("out"), logo=meta.get("logo"))

@@ -36,7 +36,8 @@
    }
   ],
   "countNote": "flavio post says 24 skills/23 principles/22 playbooks (+1 internal); repo README/dir listing show 28 skills, 24 principles, 23 playbook files; marketplace shows 52 skills (=28+24) and 2 subagents.",
-  "nav": "pstack"
+  "nav": "pstack",
+  "logo": "assets/logos/poteto.png"
  },
  "stages": [
   {
