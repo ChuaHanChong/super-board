@@ -51,7 +51,7 @@ svg.map text{font-family:inherit;fill:var(--fg)}
 .n rect{fill:color-mix(in srgb,var(--c) 13%,var(--card));stroke:var(--c);stroke-width:1.5}
 .n.stage rect{fill:color-mix(in srgb,var(--c) 24%,var(--card));stroke-width:2}
 .n:hover rect,.n:focus-visible rect{stroke-width:3} .n.sel rect{stroke-width:3.5;fill:color-mix(in srgb,var(--c) 30%,var(--card))}
-.t1{font:600 14px ui-monospace,Menlo,monospace} .t2{font-size:11px;fill:var(--muted)!important}
+.t1{font:600 14px ui-monospace,Menlo,monospace} .t2{font-size:10.5px;fill:var(--muted)!important}
 .arrow{stroke:var(--muted);stroke-width:1.6;fill:none} .ahead{fill:var(--muted)}
 .stagehead{cursor:pointer;outline:none} .stagehead .s1{font-size:9.5px;letter-spacing:.08em;font-weight:700;fill:var(--muted)!important}
 .stagehead .s2{font-size:17px;font-weight:800;fill:var(--c)!important} .stagehead .s3{font-size:11px;fill:var(--muted)!important;font-weight:400}

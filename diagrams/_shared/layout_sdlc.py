@@ -6,7 +6,7 @@ STAGES = ["plan", "design", "build", "test", "deploy", "maintain"]
 SNAME = dict(plan="Plan", design="Design", build="Build", test="Test", deploy="Deploy", maintain="Maintain")
 LIGHT = dict(plan="#b45309", design="#7c3aed", build="#2563eb", test="#15803d", deploy="#c2410c", maintain="#0e7490", anytime="#475569")
 DARK = dict(plan="#fbbf24", design="#a78bfa", build="#60a5fa", test="#34d399", deploy="#fb923c", maintain="#22d3ee", anytime="#94a3b8")
-W = 1440; X0 = 16; NW = 132; NH = 54; GX = 30; GY = 26; PADX = 14; CW = 330
+W = 1440; X0 = 16; NW = 132; NH = 64; GX = 30; GY = 26; PADX = 14; CW = 330
 
 ICON_ALL = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>'
 ICON_CL = '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#d97757" stroke-width="3.2" stroke-linecap="round"><path d="M12 2.5v19M2.5 12h19M5.3 5.3l13.4 13.4M18.7 5.3L5.3 18.7"/></g></svg>'
@@ -44,7 +44,8 @@ def build(data, mdir):
         ty = yy + (19 if len(L) == 1 else 15)
         fs = ' style="font-size:%.1fpx"' % max(7.5, 11 * 15.5 / max(len(l) for l in L)) if max(len(l) for l in L) > 15 else ""
         tx = "".join(f'<text class="nn" x="{x+9}" y="{ty+i*12}"{fs}>{E(l)}</text>' for i, l in enumerate(L))
-        tr = f'<text class="nt" x="{x+9}" y="{yy+(36 if len(L)==1 else 41)}">{E(s.get("trigger",""))}</text>'
+        t0 = yy + (34 if len(L) == 1 else 41)
+        tr = "".join(f'<text class="nt" x="{x+9}" y="{t0+i*11}">{E(l)}</text>' for i, l in enumerate(textwrap.wrap(s.get("trigger", ""), 23)[:2]))
         sb = f'<rect class="stbg" x="{x+NW-44}" y="{yy-7}" width="40" height="13" rx="6.5"/><text class="stt" x="{x+NW-24}" y="{yy+3}" text-anchor="middle">START</text>' if start else ""
         return (f'<g class="nd st-{nst}" data-id="{E(sid)}" data-grp="{grp}" tabindex="0" role="button" aria-label="{E(s["name"])}: {E(s.get("trigger",""))}">'
                 f'<title>{E(s["name"])}</title><rect x="{x}" y="{yy}" width="{NW}" height="{NH}" rx="8"/>{tx}{tr}{sb}</g>')

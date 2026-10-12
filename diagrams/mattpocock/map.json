@@ -623,7 +623,7 @@
   "ask-matt": {
    "name": "ask-matt",
    "command": "/ask-matt",
-   "trigger": "which skill fits?",
+   "trigger": "route you to right skill",
    "platforms": [
     "claude-code",
     "cursor",
@@ -691,7 +691,7 @@
   "setup-matt-pocock-skills": {
    "name": "setup-matt-pocock-skills",
    "command": "/setup-matt-pocock-skills",
-   "trigger": "once per repo",
+   "trigger": "tell skills where docs live",
    "platforms": [
     "claude-code",
     "cursor",
@@ -753,7 +753,7 @@
   "grilling": {
    "name": "grilling",
    "command": "/grilling",
-   "trigger": "interview me hard",
+   "trigger": "interview you in hard rounds",
    "platforms": [
     "claude-code",
     "cursor",
@@ -811,7 +811,7 @@
   "grill-me": {
    "name": "grill-me",
    "command": "/grill-me",
-   "trigger": "interview, no repo",
+   "trigger": "grill you, write no files",
    "platforms": [
     "claude-code",
     "cursor",
@@ -868,7 +868,7 @@
   "wait-what": {
    "name": "wait-what",
    "command": "/wait-what",
-   "trigger": "that did not land",
+   "trigger": "re-explain last message simply",
    "platforms": [
     "claude-code",
     "cursor",
@@ -920,7 +920,7 @@
   "teach": {
    "name": "teach",
    "command": "/teach",
-   "trigger": "teach me a topic",
+   "trigger": "tutor you on a topic",
    "platforms": [
     "claude-code",
     "cursor",
@@ -975,7 +975,7 @@
   "writing-for-agents": {
    "name": "writing-for-agents",
    "command": "/writing-for-agents",
-   "trigger": "write docs agents read",
+   "trigger": "write docs agents can read",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1027,7 +1027,7 @@
   "research": {
    "name": "research",
    "command": "/research",
-   "trigger": "look it up, cited",
+   "trigger": "look up cited answers",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1091,7 +1091,7 @@
   "to-questionnaire": {
    "name": "to-questionnaire",
    "command": "/to-questionnaire",
-   "trigger": "ask someone else",
+   "trigger": "turn question into expert form",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1154,7 +1154,7 @@
   "grill-with-docs": {
    "name": "grill-with-docs",
    "command": "/grill-with-docs",
-   "trigger": "sharpen my idea",
+   "trigger": "grill idea, write glossary",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1223,7 +1223,7 @@
   "to-spec": {
    "name": "to-spec",
    "command": "/to-spec",
-   "trigger": "turn talk into spec",
+   "trigger": "write agreed plan as spec",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1289,7 +1289,7 @@
   "to-tickets": {
    "name": "to-tickets",
    "command": "/to-tickets",
-   "trigger": "split into tickets",
+   "trigger": "slice plan into thin tickets",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1355,7 +1355,7 @@
   "wayfinder": {
    "name": "wayfinder",
    "command": "/wayfinder",
-   "trigger": "too big to hold",
+   "trigger": "map big decisions, settle each",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1425,7 +1425,7 @@
   "triage": {
    "name": "triage",
    "command": "/triage",
-   "trigger": "sort incoming issues",
+   "trigger": "label issues until ready",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1498,7 +1498,7 @@
   "handoff": {
    "name": "handoff",
    "command": "/handoff",
-   "trigger": "pass the baton",
+   "trigger": "pack chat for next agent",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1558,7 +1558,7 @@
   "prototype": {
    "name": "prototype",
    "command": "/prototype",
-   "trigger": "try it, throw away",
+   "trigger": "build throwaway to test idea",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1620,7 +1620,7 @@
   "domain-modeling": {
    "name": "domain-modeling",
    "command": "/domain-modeling",
-   "trigger": "fix the words",
+   "trigger": "keep glossary and decisions tidy",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1681,7 +1681,7 @@
   "codebase-design": {
    "name": "codebase-design",
    "command": "/codebase-design",
-   "trigger": "shape of a module",
+   "trigger": "design small-interface deep modules",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1739,7 +1739,7 @@
   "implement": {
    "name": "implement",
    "command": "/implement",
-   "trigger": "build this ticket",
+   "trigger": "build ticket, review, commit",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1806,7 +1806,7 @@
   "implement-spec": {
    "name": "implement-spec",
    "command": "/implement-spec",
-   "trigger": "build the whole spec",
+   "trigger": "build whole spec with helpers",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1873,7 +1873,7 @@
   "tdd": {
    "name": "tdd",
    "command": "/tdd",
-   "trigger": "test first, small steps",
+   "trigger": "write failing test first",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1941,7 +1941,7 @@
   "diagnosing-bugs": {
    "name": "diagnosing-bugs",
    "command": "/diagnosing-bugs",
-   "trigger": "hard bug, find it",
+   "trigger": "reproduce bug, then fix it",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2005,7 +2005,7 @@
   "code-review": {
    "name": "code-review",
    "command": "/code-review",
-   "trigger": "check the diff",
+   "trigger": "review diff: standards and spec",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2068,7 +2068,7 @@
   "pr": {
    "name": "pr",
    "command": "/pr",
-   "trigger": "write PR body",
+   "trigger": "write clear PR descriptions",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2130,7 +2130,7 @@
   "wizard": {
    "name": "wizard",
    "command": "/wizard",
-   "trigger": "human-only steps",
+   "trigger": "script your human-only steps",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2189,7 +2189,7 @@
   "retro": {
    "name": "retro",
    "command": "/retro",
-   "trigger": "what to improve",
+   "trigger": "review session, improve setup",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2251,7 +2251,7 @@
   "improve-codebase-architecture": {
    "name": "improve-codebase-architecture",
    "command": "/improve-codebase-architecture",
-   "trigger": "find deeper modules",
+   "trigger": "find modules to deepen",
    "platforms": [
     "claude-code",
     "cursor",

@@ -697,7 +697,7 @@
   "poteto-mode": {
    "name": "poteto-mode",
    "command": "/poteto-mode",
-   "trigger": "any real task",
+   "trigger": "pick and run right playbook",
    "platforms": [
     "claude-code",
     "cursor",
@@ -788,7 +788,7 @@
   "setup-pstack": {
    "name": "setup-pstack",
    "command": "/setup-pstack",
-   "trigger": "first-time setup",
+   "trigger": "choose models for each job",
    "platforms": [
     "claude-code",
     "cursor",
@@ -864,7 +864,7 @@
   "poteto-help": {
    "name": "poteto-help",
    "command": "/poteto-help",
-   "trigger": "how do I use this",
+   "trigger": "answer pstack how-to questions",
    "platforms": [
     "claude-code",
     "cursor",
@@ -925,7 +925,7 @@
   "figure-it-out": {
    "name": "figure-it-out",
    "command": "/figure-it-out",
-   "trigger": "no playbook fits",
+   "trigger": "design custom playbook for job",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1005,7 +1005,7 @@
   "how": {
    "name": "how",
    "command": "/how",
-   "trigger": "how does it work",
+   "trigger": "explain how code works",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1082,7 +1082,7 @@
   "why": {
    "name": "why",
    "command": "/why",
-   "trigger": "why built this way",
+   "trigger": "find why code was built",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1154,7 +1154,7 @@
   "teach": {
    "name": "teach",
    "command": "/teach",
-   "trigger": "explain it to me",
+   "trigger": "explain your work simply",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1222,7 +1222,7 @@
   "recall": {
    "name": "recall",
    "command": "/recall",
-   "trigger": "catch me up",
+   "trigger": "rebuild what you were doing",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1290,7 +1290,7 @@
   "ketchup": {
    "name": "ketchup",
    "command": "/ketchup",
-   "trigger": "chat got long",
+   "trigger": "recap chat since last message",
    "platforms": [
     "cursor"
    ],
@@ -1344,7 +1344,7 @@
   "bro": {
    "name": "bro",
    "command": "/bro",
-   "trigger": "too much jargon",
+   "trigger": "repeat last reply simply",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1403,7 +1403,7 @@
   "architect": {
    "name": "architect",
    "command": "/architect",
-   "trigger": "before big code",
+   "trigger": "sketch types, then write code",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1486,7 +1486,7 @@
   "arena": {
    "name": "arena",
    "command": "/arena",
-   "trigger": "try several shapes",
+   "trigger": "build rival versions, pick best",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1558,7 +1558,7 @@
   "swarm": {
    "name": "swarm",
    "command": "/swarm",
-   "trigger": "many things in parallel",
+   "trigger": "run many workers at once",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1626,7 +1626,7 @@
   "interrogate": {
    "name": "interrogate",
    "command": "/interrogate",
-   "trigger": "stress-test the diff",
+   "trigger": "have AI models attack diff",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1701,7 +1701,7 @@
   "tdd": {
    "name": "tdd",
    "command": "/tdd",
-   "trigger": "fix a bug test-first",
+   "trigger": "write failing test, fix bug",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1771,7 +1771,7 @@
   "typescript-best-practices": {
    "name": "typescript-best-practices",
    "command": "/typescript-best-practices",
-   "trigger": "editing .ts files",
+   "trigger": "enforce strict TypeScript rules",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1829,7 +1829,7 @@
   "unslop": {
    "name": "unslop",
    "command": "/unslop",
-   "trigger": "reads like AI",
+   "trigger": "strip AI tone from text",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1894,7 +1894,7 @@
   "technical-writing": {
    "name": "technical-writing",
    "command": "/technical-writing",
-   "trigger": "docs and PR text",
+   "trigger": "write clear, focused docs",
    "platforms": [
     "claude-code",
     "cursor",
@@ -1966,7 +1966,7 @@
   "no-comments": {
    "name": "no-comments",
    "command": "/no-comments",
-   "trigger": "before review",
+   "trigger": "delete needless code comments",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2043,7 +2043,7 @@
   "deslop": {
    "name": "deslop",
    "command": "/deslop",
-   "trigger": "before commit",
+   "trigger": "strip AI junk from diff",
    "platforms": [
     "claude-code",
     "codex"
@@ -2110,7 +2110,7 @@
   "create-verification-skill": {
    "name": "create-verification-skill",
    "command": "/create-verification-skill",
-   "trigger": "no way to test the app",
+   "trigger": "build skill to run app",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2179,7 +2179,7 @@
   "maintain-verification-skill": {
    "name": "maintain-verification-skill",
    "command": "/maintain-verification-skill",
-   "trigger": "verify skill is stale",
+   "trigger": "fix stale verify skill",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2250,7 +2250,7 @@
   "benchmark-checklist": {
    "name": "benchmark-checklist",
    "command": "/benchmark-checklist",
-   "trigger": "number looks too good",
+   "trigger": "sanity-check speed numbers",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2319,7 +2319,7 @@
   "blast-radius": {
    "name": "blast-radius",
    "command": "/blast-radius",
-   "trigger": "what could this break",
+   "trigger": "find what change could break",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2398,7 +2398,7 @@
   "thermo-nuclear-code-quality-review": {
    "name": "thermo-nuclear-code-quality-review",
    "command": "/thermo-nuclear-code-quality-review",
-   "trigger": "hard code review",
+   "trigger": "harshly review code structure",
    "platforms": [
     "claude-code",
     "codex"
@@ -2459,7 +2459,7 @@
   "babysit": {
    "name": "babysit",
    "command": "/babysit",
-   "trigger": "PR won't go green",
+   "trigger": "watch PR until it merges",
    "platforms": [
     "claude-code",
     "codex"
@@ -2541,7 +2541,7 @@
   "fix-ci": {
    "name": "fix-ci",
    "command": "/fix-ci",
-   "trigger": "CI is red",
+   "trigger": "fix failing CI checks",
    "platforms": [
     "claude-code",
     "codex"
@@ -2599,7 +2599,7 @@
   "fix-merge-conflicts": {
    "name": "fix-merge-conflicts",
    "command": "/fix-merge-conflicts",
-   "trigger": "merge conflict",
+   "trigger": "resolve conflicts, recheck build",
    "platforms": [
     "claude-code",
     "codex"
@@ -2661,7 +2661,7 @@
   "get-pr-comments": {
    "name": "get-pr-comments",
    "command": "/get-pr-comments",
-   "trigger": "what did reviewers say",
+   "trigger": "list review comments as actions",
    "platforms": [
     "claude-code",
     "codex"
@@ -2723,7 +2723,7 @@
   "make-pr-easy-to-review": {
    "name": "make-pr-easy-to-review",
    "command": "/make-pr-easy-to-review",
-   "trigger": "PR is hard to read",
+   "trigger": "tidy PR for reviewers",
    "platforms": [
     "claude-code",
     "codex"
@@ -2789,7 +2789,7 @@
   "what-did-i-get-done": {
    "name": "what-did-i-get-done",
    "command": "/what-did-i-get-done",
-   "trigger": "status update",
+   "trigger": "summarize recent commits",
    "platforms": [
     "claude-code",
     "codex"
@@ -2842,7 +2842,7 @@
   "show-me-your-work": {
    "name": "show-me-your-work",
    "command": "/show-me-your-work",
-   "trigger": "long or unattended run",
+   "trigger": "log every decision made",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2913,7 +2913,7 @@
   "reflect": {
    "name": "reflect",
    "command": "/reflect",
-   "trigger": "session taught something",
+   "trigger": "turn session lessons into skills",
    "platforms": [
     "claude-code",
     "cursor",
@@ -2978,7 +2978,7 @@
   "correct": {
    "name": "correct",
    "command": "/correct",
-   "trigger": "same mistake again",
+   "trigger": "make repeat mistakes impossible",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3042,7 +3042,7 @@
   "automate-me": {
    "name": "automate-me",
    "command": "/automate-me",
-   "trigger": "make it mine",
+   "trigger": "build your own mode skill",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3109,7 +3109,7 @@
   "make-bot-ui": {
    "name": "make-bot-ui",
    "command": "/make-bot-ui",
-   "trigger": "Cursor bot buttons",
+   "trigger": "build buttons that wake bot",
    "platforms": [
     "cursor"
    ],
@@ -3167,7 +3167,7 @@
   "principle-laziness-protocol": {
    "name": "laziness-protocol",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "delete first, change least",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3214,7 +3214,7 @@
   "principle-foundational-thinking": {
    "name": "foundational-thinking",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "get data shapes right first",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3261,7 +3261,7 @@
   "principle-redesign-from-first-principles": {
    "name": "redesign-from-first-principles",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "redesign as if always planned",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3308,7 +3308,7 @@
   "principle-attack-the-premise": {
    "name": "attack-the-premise",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "question the shared assumption",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3355,7 +3355,7 @@
   "principle-subtract-before-you-add": {
    "name": "subtract-before-you-add",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "remove dead weight first",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3402,7 +3402,7 @@
   "principle-minimize-reader-load": {
    "name": "minimize-reader-load",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "cut what readers must trace",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3449,7 +3449,7 @@
   "principle-outcome-oriented-execution": {
    "name": "outcome-oriented-execution",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "aim at the final design",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3496,7 +3496,7 @@
   "principle-experience-first": {
    "name": "experience-first",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "pick user delight over ease",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3543,7 +3543,7 @@
   "principle-exhaust-the-design-space": {
    "name": "exhaust-the-design-space",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "compare 2-3 real alternatives",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3590,7 +3590,7 @@
   "principle-build-the-lever": {
    "name": "build-the-lever",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "build tool that does job",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3637,7 +3637,7 @@
   "principle-model-the-domain": {
    "name": "model-the-domain",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "put rules in data structures",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3684,7 +3684,7 @@
   "principle-boundary-discipline": {
    "name": "boundary-discipline",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "validate at edges only",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3731,7 +3731,7 @@
   "principle-type-system-discipline": {
    "name": "type-system-discipline",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "types forbid impossible states",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3778,7 +3778,7 @@
   "principle-make-operations-idempotent": {
    "name": "make-operations-idempotent",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "make reruns reach same state",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3825,7 +3825,7 @@
   "principle-migrate-callers-then-delete-legacy-apis": {
    "name": "migrate-callers-then-delete-legacy-apis",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "move callers, delete old API",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3872,7 +3872,7 @@
   "principle-separate-before-serializing-shared-state": {
    "name": "separate-before-serializing-shared-state",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "give each actor own state",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3919,7 +3919,7 @@
   "principle-prove-it-works": {
    "name": "prove-it-works",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "test the real thing",
    "platforms": [
     "claude-code",
     "cursor",
@@ -3966,7 +3966,7 @@
   "principle-fix-root-causes": {
    "name": "fix-root-causes",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "fix cause, not symptom",
    "platforms": [
     "claude-code",
     "cursor",
@@ -4013,7 +4013,7 @@
   "principle-sequence-verifiable-units": {
    "name": "sequence-verifiable-units",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "work in small checked steps",
    "platforms": [
     "claude-code",
     "cursor",
@@ -4060,7 +4060,7 @@
   "principle-test-behavior-not-implementation": {
    "name": "test-behavior-not-implementation",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "test behavior, not internals",
    "platforms": [
     "claude-code",
     "cursor",
@@ -4107,7 +4107,7 @@
   "principle-explain-the-number": {
    "name": "explain-the-number",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "find what limits the number",
    "platforms": [
     "claude-code",
     "cursor",
@@ -4154,7 +4154,7 @@
   "principle-guard-the-context-window": {
    "name": "guard-the-context-window",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "spend context on what matters",
    "platforms": [
     "claude-code",
     "cursor",
@@ -4201,7 +4201,7 @@
   "principle-never-block-on-the-human": {
    "name": "never-block-on-the-human",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "act first, human corrects later",
    "platforms": [
     "claude-code",
     "cursor",
@@ -4248,7 +4248,7 @@
   "principle-encode-lessons-in-structure": {
    "name": "encode-lessons-in-structure",
    "command": null,
-   "trigger": "steer by name",
+   "trigger": "turn repeat lessons into checks",
    "platforms": [
     "claude-code",
     "cursor",

@@ -32,7 +32,7 @@ LOGOS = {r["id"]: r["logo"] for r in REG if r.get("logo")}
 SKILL_ICON = '<svg class="ni" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="12" cy="18" r="2.2"/><path d="M8 7l3 9M16 7l-3 9M8.2 6h7.6"/></svg>'
 def navitem(r):
     ic = '<img class="ni nimg" alt="" src="%s">' % uri(r["logo"]) if r.get("logo") else SKILL_ICON
-    lab = r["short"] + ('<span class="hide-s"> map</span>' if r["label"].endswith(" map") else "")
+    lab = r["short"] + ('<span class="hide-s"> map</span>' if r["label"].endswith(" map") and r["label"] != r["short"] else "")
     cur = ' aria-current="page"' if r["id"] == m["key"] else ""
     return '<a class="lk" href="../%s"%s>%s<span class="nl">%s</span></a>' % (r["path"], cur, ic, lab)
 NAV = rd("sitenav.html").replace("%%MAPNAV%%", "\n  ".join(navitem(r) for r in REG if r.get("nav")))

@@ -1,11 +1,12 @@
+import textwrap
 """Lay out the left-to-right map as an inline SVG (diagram.svg). No external tools needed."""
 import html
 from pathlib import Path
 from data import *
 
 e = html.escape
-W, H = 136, 54
-GAP_X, GAP_Y = 206, 80
+W, H = 136, 62
+GAP_X, GAP_Y = 206, 86
 HEAD_Y, CMD_Y, UTIL_Y, BUS_Y = 130, 218, 762, 56
 commands = {c[0]: c for c in C}
 gtype = {g[0]: g for g in GROUPS}
@@ -18,7 +19,7 @@ def node(nid, label, sub, group, x, y, cls="n"):
     return (f'<g class="{cls} g-{group}" data-id="{nid}" data-grp="{group}" tabindex="0" role="button" aria-label="{e(label)}: {e(sub)}">'
             f'<rect x="{x}" y="{y}" width="{W}" height="{H}" rx="10"/>'
             f'<text class="t1" x="{x+W/2}" y="{y+23}" text-anchor="middle">{e(label)}</text>'
-            f'<text class="t2" x="{x+W/2}" y="{y+40}" text-anchor="middle">{e(sub)}</text>{badge}</g>')
+            + "".join(f'<text class="t2" x="{x+W/2}" y="{y+39+i*11}" text-anchor="middle">{e(l)}</text>' for i, l in enumerate(textwrap.wrap(sub, 21)[:2])) + badge + '</g>')
 
 def stage_head(nid, title, group, x, y, n):
     return (f'<g class="stagehead g-{group}" data-id="{nid}" data-grp="{group}" data-head="1" tabindex="0" role="button" aria-label="{e(title)} stage (a group, not a command)">'
