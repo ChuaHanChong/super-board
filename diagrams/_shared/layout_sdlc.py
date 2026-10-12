@@ -1,6 +1,6 @@
 """Layout `sdlc`: six stage layers (Plan > Design > Build > Test > Deploy > Maintain), categories side by side with chains of skills,
 plus an Anytime band. build(data) -> dict for build_skillmap.py. Schema: see _shared/README.md and the map.json files."""
-import html, json, math, re
+import html, json, math, re, textwrap
 E = html.escape
 STAGES = ["plan", "design", "build", "test", "deploy", "maintain"]
 SNAME = dict(plan="Plan", design="Design", build="Build", test="Test", deploy="Deploy", maintain="Maintain")
@@ -63,7 +63,8 @@ def build(data, mdir):
     def cat_h(c): return 24 + 14 + nrows(c) * (NH + GY) - GY + 30
     cols = {sid: [c for c in cats if c["stage"] == sid] for sid in STAGES}
     body_h = max([sum(cat_h(c) for c in cs) for cs in cols.values() if cs] + [120])
-    H_COL = 76 + body_h
+    GAPH = 62 if any(stages.get(k, {}).get('gap') for k in STAGES if cols[k]) else 0
+    H_COL = 76 + body_h + GAPH
     for i, sid in enumerate(STAGES):
         x = colx(i); cs = cols[sid]; st = stages.get(sid, {})
         out.append(f'<g class="rg{" empty" if not cs else ""}" data-region="{sid}"><rect class="col" x="{x}" y="{Y0}" width="{CW}" height="{H_COL}"/></g>')
@@ -87,6 +88,9 @@ def build(data, mdir):
                 if horiz: out.append(f'<path class="arr" data-grp="{sid}" d="M{ax+NW} {ay+NH/2} H{bx-2}" marker-end="url(#ah)"/>')
                 else: out.append(f'<path class="arr" data-grp="{sid}" d="M{ax+NW/2} {ay+NH} V{by-2}" marker-end="url(#ah)"/>')
             ty += cat_h(c)
+        gp = st.get('gap')
+        if gp:
+            for li, ln in enumerate(textwrap.wrap(gp, 44)[:4]): out.append(f'<text class="gap" data-grp="{sid}" x="{x+18}" y="{Y0+H_COL-50+li*13}">{("Not covered: " if li == 0 else "") + E(ln)}</text>')
     TW = X0 * 2 + CW * len(STAGES)
     out.append(f'<path class="strip" d="M{X0+18} {Y0+54} H{TW-X0-14}" marker-end="url(#ah)"/>')
     y = Y0 + H_COL + 36
@@ -124,7 +128,7 @@ def build(data, mdir):
 .sh{cursor:pointer;outline:none}.stn{fill:var(--c);font:800 16px var(--sans)}.stc{fill:var(--muted);font:11px var(--sans)}
 .sic{stroke:var(--c)}.empty .sic{stroke:var(--muted)}.hdiv{stroke:var(--border);stroke-width:1;stroke-dasharray:4 4}
 .sh:hover .stn,.sh:focus-visible .stn,.sh.sel .stn{fill:var(--c);text-decoration:underline}
-.div{stroke:var(--border);stroke-width:1.5}.emp{fill:var(--muted);font:600 13px var(--sans)}
+.gap{fill:var(--muted);font:italic 10.5px var(--sans)}.div{stroke:var(--border);stroke-width:1.5}.emp{fill:var(--muted);font:600 13px var(--sans)}
 .ch{cursor:pointer;outline:none}.chb{fill:none;stroke:none}.ch:hover .chb,.ch:focus-visible .chb,.ch.sel .chb{fill:color-mix(in srgb,var(--c) 12%,transparent)}
 .cht{fill:var(--c);font:800 13px var(--sans)}.chn{fill:var(--muted);font:600 11px var(--sans)}
 .nd{cursor:pointer;outline:none}.nd rect{fill:var(--bg);stroke:var(--c);stroke-width:1.4}

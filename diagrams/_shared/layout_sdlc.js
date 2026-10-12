@@ -21,6 +21,7 @@
   B.push({label:'What this stage is for',key:'grp',type:'p',v:s.principle||'No skills for this stage in this pack yet.'});
   B.push({type:'note',v:'**This is a stage, not a skill.** You run the skills inside its categories.'});
   if(s.when&&s.when.length)B.push({label:'When X → this stage',key:'when',type:'when',v:s.when});
+  if(s.gap)B.push({label:'What this pack leaves out',key:'bts',type:'p',v:s.gap});
   if(cs.length)B.push({label:'Categories here',key:'how',type:'chips',v:cs.map(function(c){return 'cat:'+c})});
   return {accent:'st-'+sid+' calm',title:SN[sid]+' stage',tags:[['STAGE '+(PACK.order.indexOf(sid)+1),1],[cs.length+(cs.length===1?' category':' categories')]],blocks:B.concat(srcBlock(s.sources))}}
  function catModel(cid){var c=CATS[cid],B=[];
