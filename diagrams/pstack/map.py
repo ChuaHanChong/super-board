@@ -70,7 +70,8 @@ xe = X1 + 6 * (CW + GAP) + CW / 2; xs = X1 + CW / 2; ym = y1 + rh1 + 17
 out.append(f'<path class="arr" data-edge="{cats[6]["id"]} {cats[7]["id"]}" d="M{xe} {y1+rh1+2} V{ym} H{xs-30} V{y2-6}" marker-end="url(#ah)"/>')
 # router
 rb = y2 + rh2
-out.append(f'<g class="rg c-router" data-cat="router" data-region="router"><rect class="reg" x="{X0}" y="{ytop}" width="150" height="{rb-ytop}" rx="12"/></g>')
+CATFIT = ' '.join(c['id'] for c in cats)
+out.append(f'<g class="rg c-router" data-cat="router" data-region="router" data-fit="{CATFIT}"><rect class="reg" x="{X0}" y="{ytop}" width="150" height="{rb-ytop}" rx="12"/></g>')
 ry = ytop + 40; rs = [s for s in sk if s['id'] == 'poteto-mode'][0]
 out.append(f'<g class="nd rt0 c-router" data-id="poteto-mode" data-grp="router" data-head="1" tabindex="0" role="button" aria-label="poteto-mode router (calls {NC["poteto-mode"]})"><title>poteto-mode: the router</title>'
            f'<rect x="{X0+10}" y="{ry}" width="130" height="104" rx="10"/>'
@@ -91,8 +92,8 @@ gw = (W - 2 * X0 - 24) // 5
 gh = 36
 mxp = max(len([p for p in pr if p['principleGroup'] == g['id']]) for g in groups)
 lh = 48 + gh + mxp * 38 + 12
-out.append(f'<g class="rg c-principles" data-cat="principles"><rect class="reg" x="{X0}" y="{y3}" width="{W-2*X0}" height="{lh}" rx="12"/><text class="rt" x="{X0+12}" y="{y3+26}">PRINCIPLES · 24 ONE-RULE SKILLS, APPLIED BY NAME, SEPARATE FROM THE FLOW</text></g>')
-out.append(f'<g class="nd hw c-principles" data-id="__how" tabindex="0" role="button" aria-label="How principles work"><rect x="{W-X0-12-196}" y="{y3+8}" width="196" height="32" rx="16"/><text class="nn hwt" x="{W-X0-12-98}" y="{y3+28}" text-anchor="middle">How principles work</text></g>')
+out.append(f'<g class="rg c-principles" data-cat="principles" data-region="principles" data-fit="{" ".join("pg-" + g_["id"] for g_ in groups)}"><rect class="reg" x="{X0}" y="{y3}" width="{W-2*X0}" height="{lh}" rx="12"/><text class="rt" x="{X0+12}" y="{y3+26}">PRINCIPLES · 24 ONE-RULE SKILLS, APPLIED BY NAME, SEPARATE FROM THE FLOW</text></g>')
+out.append(f'<g class="nd hw c-principles" data-id="__how" data-grp="principles" tabindex="0" role="button" aria-label="How principles work"><rect x="{W-X0-12-196}" y="{y3+8}" width="196" height="32" rx="16"/><text class="nn hwt" x="{W-X0-12-98}" y="{y3+28}" text-anchor="middle">How principles work</text></g>')
 for gi, g in enumerate(groups):
     x = X0 + 12 + gi * gw
     out.append(f'<g class="rg c-principles" data-cat="principles" data-region="pg-{g["id"]}"><rect class="reg sub" x="{x}" y="{y3+48}" width="{gw-10}" height="{lh-48-10}" rx="9"/><text class="rt gt" x="{x+10}" y="{y3+68}">{E(g["name"])}</text>')
