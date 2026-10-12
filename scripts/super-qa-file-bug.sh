@@ -21,7 +21,8 @@
 #     [--category functional|visual|network|console|i18n|a11y|data|testability] \
 #     [--area <area>] [--route <route>] [--spec <path>] [--iter <n>] \
 #     [--fingerprint "<slug>|<tc>|<signature>"] \
-#     [--suggested-skill super-build|super-qa|ui-refine-loop|super-review]
+#     [--suggested-skill super-build|super-qa|ui-refine-loop|super-review] \
+#     [--check-body]      # run the body checks only, then exit (no gh calls)
 #       (ui-refine-loop only labels a UI ticket; a human can run /ui-refine-loop —
 #        the board never triggers it)
 #
@@ -39,7 +40,7 @@
 set -uo pipefail
 
 TITLE=""; BODY_FILE=""; KIND="bug"; PRIORITY="medium"; CATEGORY=""
-AREA=""; ROUTE=""; SPEC=""; ITER=""; FINGERPRINT=""; SUGGESTED_SKILL=""
+AREA=""; ROUTE=""; SPEC=""; ITER=""; FINGERPRINT=""; SUGGESTED_SKILL=""; CHECK_ONLY=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -54,6 +55,7 @@ while [ $# -gt 0 ]; do
     --iter)            ITER="$2"; shift 2 ;;
     --fingerprint)     FINGERPRINT="$2"; shift 2 ;;
     --suggested-skill) SUGGESTED_SKILL="$2"; shift 2 ;;
+    --check-body)      CHECK_ONLY=1; shift ;;
     *) echo "unknown arg: $1" >&2; exit 64 ;;
   esac
 done
@@ -132,6 +134,7 @@ if [ "${SUPER_QA_ALLOW_WEAK_BODY:-0}" != "1" ]; then
   echo "$PROSE" | grep -qE '<[a-zA-Z][^>]*[[:space:]:][^>]*>' && LEFTOVER="${LEFTOVER}${LEFTOVER:+ and }<placeholder>"
   [ -z "$LEFTOVER" ] || die "body still contains unfilled placeholders (${LEFTOVER}) — fill them or set SUPER_QA_ALLOW_WEAK_BODY=1" 66
 fi
+[ "$CHECK_ONLY" -eq 0 ] || exit 0
 
 # --- fingerprint ------------------------------------------------------------
 # Deterministic by construction: the same finding on a later iteration must
