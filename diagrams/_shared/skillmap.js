@@ -4,7 +4,7 @@ var SM=(function(){
  function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
  function Dlg(dlg,opts){
   var body=el('div'),btn=el('button','x','×');btn.type='button';btn.setAttribute('aria-label','Close');
-  dlg.textContent='';dlg.appendChild(btn);dlg.appendChild(body);dlg.classList.add('sm');
+  dlg.textContent='';var bar=el('div','smbar'),bl=el('span','sml'),bt=el('span','smt');if(window.SMLOGO){var li=el('img','smlogo');li.src=window.SMLOGO;li.alt='';bl.appendChild(li)}bar.appendChild(bl);bar.appendChild(bt);dlg.appendChild(bar);bar.appendChild(btn);dlg.appendChild(body);dlg.addEventListener('scroll',function(){bar.classList.toggle('scrolled',dlg.scrollTop>24)});dlg.classList.add('sm');
   var self={body:body,dlg:dlg,opts:opts};
   function chip(id){var c=el('button','chip',opts.label?opts.label(id):id);c.type='button';c.dataset.go=id;return c}
   function md(p,s){String(s).split(/(\*\*.+?\*\*|==.+?==|`.+?`|\[\[[^\]]+\]\])/).forEach(function(x){if(!x)return;
@@ -52,8 +52,8 @@ var SM=(function(){
   var xa=el('button','xa','Expand all');xa.type='button';xa.onclick=function(){var open=!xa.dataset.all;
    [].forEach.call(body.querySelectorAll('details'),function(d){d.open=open});
    [].forEach.call(body.querySelectorAll('.more'),function(m){m.hidden=!open;var tg=m.nextElementSibling;if(tg&&tg.classList.contains('showall')){tg.setAttribute('aria-expanded',String(open));tg.textContent=open?'Show fewer':'Show all '+tg.dataset.n}});sync()};
-  dlg.insertBefore(xa,body);
-  self.render=function(m){body.textContent='';T=body;dlg.className='sm '+(m.accent||'');if(m.title)body.appendChild(el('h3',null,m.title));if(m.tags)tags(m.tags);
+  bar.insertBefore(xa,btn);
+  self.render=function(m){body.textContent='';bt.textContent=m.title||'';bar.classList.remove('scrolled');T=body;dlg.className='sm '+(m.accent||'');if(m.title)body.appendChild(el('h3',null,m.title));if(m.tags)tags(m.tags);
    m.blocks.forEach(function(b){
     if(!b.label){block(b);return}
     var isPrev=/^When X/.test(b.label)||(b.key==='picks'&&b.type==='flows'&&b.v.length>3);

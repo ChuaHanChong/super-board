@@ -118,3 +118,17 @@ details.sec .sb{padding:2px 12px 12px;animation:smo .16s ease-out}
 /* iter3 */
 .sm .casechip{max-width:176px;overflow:hidden;text-overflow:ellipsis}
 .sm .cmptabs{padding-right:0}
+
+/* sticky header bar: name + logo + actions; content scrolls under it */
+.sm{--px:28px;--pt:24px}
+dialog.sm{padding:var(--pt) var(--px) 22px}
+.sm .smbar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:8px;height:48px;margin:calc(-1 * var(--pt)) calc(-1 * var(--px)) 6px;padding:0 14px 0 var(--px);background:var(--card);border-bottom:1px solid transparent;transition:border-color .15s}
+.sm .smbar.scrolled{border-bottom-color:var(--line);box-shadow:0 4px 10px -8px rgba(0,0,0,.4)}
+.sm .sml{flex:none;display:flex}.sm .smlogo{width:22px;height:22px;border-radius:6px;object-fit:cover;opacity:0;transition:opacity .15s}.sm .smbar.scrolled .smlogo{opacity:1}
+.sm .smt{flex:1;min-width:0;font:700 15px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .15s}.sm .smbar.scrolled .smt{opacity:1}
+.sm .smbar .x{position:static;float:none;margin:0;min-width:40px;min-height:40px;width:40px;height:40px;padding:0}
+.sm .smbar .xa{float:none;margin:0 0 0 auto;min-height:40px}.sm .smbar .xa[hidden]{display:none}
+.sm .smbar .xa+.x{margin-left:4px}.sm .smbar:not(:has(.xa:not([hidden]))) .smt{margin-right:0}
+.sm .smt{margin-right:auto}
+@media (max-width:700px){.sm{--px:16px;--pt:max(8px,env(safe-area-inset-top,0px))}dialog.sm{padding:var(--pt) var(--px) max(20px,env(safe-area-inset-bottom,0px))}.sm .smbar{padding:0 8px 0 var(--px)}}
+.sm .smbar{top:calc(-1 * var(--pt))}
