@@ -26,7 +26,7 @@ t = rd("shell.html")
 for k, v in {"%%TITLE%%": e(m["title"]), "%%VERSION%%": e(m["version"]), "%%SUBTITLE%%": m["subtitle"], "%%NAV%%": NAV, "%%FILTER%%": flt,
              "%%TOOLS%%": m.get("tools", ""), "%%SVG%%": m["svg"], "%%LEGEND%%": m.get("legend", ""), "%%ORDER%%": order, "%%FOOTER%%": m["footer"],
              "%%SHELLCSS%%": rd("shell.css") + "\n:root{--mapw:%dpx}" % m["mapw"], "%%SMCSS%%": rd("skillmap.css"), "%%PAGECSS%%": m["css"],
-             "%%SMJS%%": rd("skillmap.js"), "%%PAGEJS%%": m["js"], "%%SHELLJS%%": rd("shell.js")}.items():
+             "%%SMJS%%": rd("skillmap.js"), "%%PAGEJS%%": m["js"], "%%SHELLJS%%": rd("shell.js"), "%%CANVASJS%%": rd("canvas.js")}.items():
     t = t.replace(k, v)
 (mdir / "index.html").write_text(t, encoding="utf-8")
 print(mdir / "index.html", len(t))

@@ -32,7 +32,7 @@ def icons(src, x, y):
     if src in ('both', 'claude'): o += f'<use href="#ic-claude" x="{x}" y="{y}" width="12" height="12"/>'; x += 15
     if src in ('both', 'cursor'): o += f'<use class="ic-cur" href="#ic-cursor" x="{x}" y="{y}" width="12" height="12"/>'
     return o
-def node(s, x, y, w):
+def node(s, x, y, w, grp=None):
     c = s['category']; L = wrapname(s['name'])
     ty = y + (17 if len(L) == 1 else 14)
     tx = ''.join(f'<text class="nn" x="{x+9}" y="{ty+i*12}">{E(l)}</text>' for i, l in enumerate(L))
@@ -41,7 +41,8 @@ def node(s, x, y, w):
     badge = ''
     if s['id'] in NC:
         badge = f'<rect class="bg" x="{x+w-47}" y="{y+NH-17}" width="40" height="12" rx="6"/><text class="bt" x="{x+w-27}" y="{y+NH-8}" text-anchor="middle">calls {NC[s["id"]]}</text>'
-    return (f'<g class="{cls}" data-id="{E(s["id"])}" tabindex="0" role="button" aria-label="{E(s["name"])}, {AV[s["source"]]}{" (calls "+str(NC[s["id"]])+")" if s["id"] in NC else ""}"><title>{E(s["name"])} ({AV[s["source"]]})</title>'
+    gattr = f' data-grp="{grp}"' if grp else ''
+    return (f'<g class="{cls}" data-id="{E(s["id"])}"{gattr} tabindex="0" role="button" aria-label="{E(s["name"])}, {AV[s["source"]]}{" (calls "+str(NC[s["id"]])+")" if s["id"] in NC else ""}"><title>{E(s["name"])} ({AV[s["source"]]})</title>'
             f'<rect x="{x}" y="{y}" width="{w}" height="{NH}" rx="8"/>{tx}{trig}{icons(s["source"], x+9, y+NH-16)}{badge}</g>')
 rows = [cats[:7], cats[7:]]
 colsk = lambda cid: [s for s in sk if s['category'] == cid and s['id'] != 'poteto-mode']
@@ -52,26 +53,26 @@ for ri, row in enumerate(rows):
     rh = hd + 6 + mx * ST + 4
     for i, c in enumerate(row):
         x = X1 + i * (CW + GAP); centers[c['id']] = x + CW / 2
-        out.append(f'<g class="rg c-{c["id"]}" data-cat="{c["id"]}"><rect class="reg" x="{x}" y="{y}" width="{CW}" height="{rh}" rx="12"/></g>')
-        out.append(f'<g class="hd c-{c["id"]}" data-id="grp:{c["id"]}" data-cat="{c["id"]}" tabindex="0" role="button" aria-label="Group: {E(c["name"])}"><title>Group: {E(c["name"])}. Tap for details.</title><rect x="{x+4}" y="{y+4}" width="{CW-8}" height="{hd-4}" rx="8"/>'
+        out.append(f'<g class="rg c-{c["id"]}" data-cat="{c["id"]}" data-region="{c["id"]}"><rect class="reg" x="{x}" y="{y}" width="{CW}" height="{rh}" rx="12"/></g>')
+        out.append(f'<g class="hd c-{c["id"]}" data-id="grp:{c["id"]}" data-grp="{c["id"]}" data-head="1" data-cat="{c["id"]}" tabindex="0" role="button" aria-label="Group: {E(c["name"])}"><title>Group: {E(c["name"])}. Tap for details.</title><rect x="{x+4}" y="{y+4}" width="{CW-8}" height="{hd-4}" rx="8"/>'
                    f'<line class="hdl" x1="{x+10}" y1="{y+hd-2}" x2="{x+CW-10}" y2="{y+hd-2}"/><text class="chev" x="{x+CW-18}" y="{y+22}">\u203a</text>')
         ty = y + 25
         for l in wrapw(c['name'], 17): out.append(f'<text class="rt" x="{x+11}" y="{ty}">{E(l)}</text>'); ty += 15
         out.append('</g>')
-        for j, s in enumerate(colsk(c['id'])): out.append(node(s, x + 10, y + hd + 6 + j * ST, CW - 20))
+        for j, s in enumerate(colsk(c['id'])): out.append(node(s, x + 10, y + hd + 6 + j * ST, CW - 20, c['id']))
         if i < len(row) - 1:
             ax = x + CW + 3
-            out.append(f'<line class="arr" x1="{ax}" y1="{y+24}" x2="{ax+GAP-9}" y2="{y+24}" marker-end="url(#ah)"/>')
+            out.append(f'<line class="arr" data-edge="{c["id"]} {row[i+1]["id"]}" x1="{ax}" y1="{y+24}" x2="{ax+GAP-9}" y2="{y+24}" marker-end="url(#ah)"/>')
     rowinfo.append((y, rh, hd)); y += rh + 46
 (y1, rh1, _), (y2, rh2, _) = rowinfo
 # elbow
 xe = X1 + 6 * (CW + GAP) + CW / 2; xs = X1 + CW / 2; ym = y1 + rh1 + 17
-out.append(f'<path class="arr" d="M{xe} {y1+rh1+2} V{ym} H{xs-30} V{y2-6}" marker-end="url(#ah)"/>')
+out.append(f'<path class="arr" data-edge="{cats[6]["id"]} {cats[7]["id"]}" d="M{xe} {y1+rh1+2} V{ym} H{xs-30} V{y2-6}" marker-end="url(#ah)"/>')
 # router
 rb = y2 + rh2
-out.append(f'<g class="rg c-router" data-cat="router"><rect class="reg" x="{X0}" y="{ytop}" width="150" height="{rb-ytop}" rx="12"/></g>')
+out.append(f'<g class="rg c-router" data-cat="router" data-region="router"><rect class="reg" x="{X0}" y="{ytop}" width="150" height="{rb-ytop}" rx="12"/></g>')
 ry = ytop + 40; rs = [s for s in sk if s['id'] == 'poteto-mode'][0]
-out.append(f'<g class="nd rt0 c-router" data-id="poteto-mode" tabindex="0" role="button" aria-label="poteto-mode router (calls {NC["poteto-mode"]})"><title>poteto-mode: the router</title>'
+out.append(f'<g class="nd rt0 c-router" data-id="poteto-mode" data-grp="router" data-head="1" tabindex="0" role="button" aria-label="poteto-mode router (calls {NC["poteto-mode"]})"><title>poteto-mode: the router</title>'
            f'<rect x="{X0+10}" y="{ry}" width="130" height="104" rx="10"/>'
            f'<rect class="tagbg" x="{X0+18}" y="{ry+9}" width="52" height="14" rx="7"/><text class="tagt" x="{X0+44}" y="{ry+19.5}" text-anchor="middle">ROUTER</text>'
            f'<text class="nn rn" x="{X0+18}" y="{ry+42}">poteto-mode</text><text class="bl rb" x="{X0+18}" y="{ry+58}">picks the right</text><text class="bl rb" x="{X0+18}" y="{ry+70}">playbook</text>'
@@ -79,10 +80,10 @@ out.append(f'<g class="nd rt0 c-router" data-id="poteto-mode" tabindex="0" role=
 # fan-out
 trunk = 196; busA = 26; busB = y1 + rh1 + 38; ynm = ry + 52
 d1 = [centers[c] for c in C4.REACHED1]; d2 = [centers[c] + 34 for c in C4.REACHED2]
-out.append(f'<path class="fan" d="M{X0+140} {ynm} H{trunk} V{busA} H{max(d1)}"/>')
-out.append(f'<path class="fan" d="M{trunk} {ynm} V{busB} H{max(d2)}"/>')
-for x in d1: out.append(f'<path class="fan" d="M{x} {busA} V{ytop-3}" marker-end="url(#ah2)"/>')
-for x in d2: out.append(f'<path class="fan" d="M{x} {busB} V{y2-3}" marker-end="url(#ah2)"/>')
+out.append(f'<path class="fan" data-trunk="router" d="M{X0+140} {ynm} H{trunk} V{busA} H{max(d1)}"/>')
+out.append(f'<path class="fan" data-trunk="router" d="M{trunk} {ynm} V{busB} H{max(d2)}"/>')
+for cid_, x in zip(C4.REACHED1, d1): out.append(f'<path class="fan" data-edge="router {cid_}" d="M{x} {busA} V{ytop-3}" marker-end="url(#ah2)"/>')
+for cid_, x in zip(C4.REACHED2, d2): out.append(f'<path class="fan" data-edge="router {cid_}" d="M{x} {busB} V{y2-3}" marker-end="url(#ah2)"/>')
 # principles lane
 y3 = rb + 36
 groups = d['principleGroups']
@@ -94,12 +95,12 @@ out.append(f'<g class="rg c-principles" data-cat="principles"><rect class="reg" 
 out.append(f'<g class="nd hw c-principles" data-id="__how" tabindex="0" role="button" aria-label="How principles work"><rect x="{W-X0-12-196}" y="{y3+8}" width="196" height="32" rx="16"/><text class="nn hwt" x="{W-X0-12-98}" y="{y3+28}" text-anchor="middle">How principles work</text></g>')
 for gi, g in enumerate(groups):
     x = X0 + 12 + gi * gw
-    out.append(f'<g class="rg c-principles" data-cat="principles"><rect class="reg sub" x="{x}" y="{y3+48}" width="{gw-10}" height="{lh-48-10}" rx="9"/><text class="rt gt" x="{x+10}" y="{y3+68}">{E(g["name"])}</text>')
+    out.append(f'<g class="rg c-principles" data-cat="principles" data-region="pg-{g["id"]}"><rect class="reg sub" x="{x}" y="{y3+48}" width="{gw-10}" height="{lh-48-10}" rx="9"/><text class="rt gt" x="{x+10}" y="{y3+68}">{E(g["name"])}</text>')
     out.append('</g>')
     for j, p in enumerate([p for p in pr if p['principleGroup'] == g['id']]):
-        out.append(f'<g class="nd c-principles" data-id="{E(p["id"])}" tabindex="0" role="button" aria-label="{E(p["name"])}"><title>{E(p["name"])}</title><rect x="{x+8}" y="{y3+48+gh+j*38}" width="{gw-26}" height="32" rx="7"/><text class="nn pn" x="{x+17}" y="{y3+48+gh+j*38+20}">{E(p["name"])}</text></g>')
+        out.append(f'<g class="nd c-principles" data-id="{E(p["id"])}" data-grp="pg-{g["id"]}" tabindex="0" role="button" aria-label="{E(p["name"])}"><title>{E(p["name"])}</title><rect x="{x+8}" y="{y3+48+gh+j*38}" width="{gw-26}" height="32" rx="7"/><text class="nn pn" x="{x+17}" y="{y3+48+gh+j*38+20}">{E(p["name"])}</text></g>')
 H = y3 + lh + 10
-SVG = (f'<svg id="map" viewBox="0 0 {W} {H}" role="group" aria-label="pstack workflow diagram" xmlns="http://www.w3.org/2000/svg"><defs>'
+SVG = (f'<svg class="map" id="map" viewBox="0 0 {W} {H}" role="group" aria-label="pstack workflow diagram" xmlns="http://www.w3.org/2000/svg"><defs>'
        '<symbol id="ic-claude" viewBox="0 0 24 24"><g stroke="#d97757" stroke-width="3.2" stroke-linecap="round"><path d="M12 2.5v19M2.5 12h19M5.3 5.3l13.4 13.4M18.7 5.3L5.3 18.7"/></g></symbol>'
        '<symbol id="ic-cursor" viewBox="0 0 24 24"><path d="M12 2.2l8.5 4.9v9.8L12 21.8l-8.5-4.9V7.1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 12L3.8 7.2M12 12l8.2-4.8M12 12v9.5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M12 12l4.2-2.4v4.8z" fill="currentColor"/></symbol>'
        '<marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ahp"/></marker>'

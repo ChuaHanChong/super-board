@@ -30,3 +30,4 @@ code,.mono,.step i{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monosp
 .src{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;margin-top:12px;padding-top:8px;border-top:1px solid var(--line);font-size:12.5px}
 .src a{display:inline-flex;align-items:center;min-height:40px;color:var(--c)}
 .b-both{color:var(--ok)}.b-claude{color:var(--k-blue)}.b-cursor{color:var(--k-orange)}.badge{font-weight:600;padding:2px 8px;border:1px solid var(--line);border-radius:10px;font-size:11.5px}
+.chev{display:none}
