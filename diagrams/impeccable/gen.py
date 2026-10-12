@@ -55,8 +55,7 @@ parts.append(region("Utilities · use any time, in any order", "util", 24, UTIL_
 for col, cid in enumerate(UTILITIES):
     parts.append(node(cid, commands[cid][1], TRIG[cid], "util", 40 + col * GAP_X, UTIL_Y))
 VW, VH = 40 + 7 * GAP_X + W + 40, UTIL_Y + H + 32
-svg = (f'<svg class="map" viewBox="0 0 {VW} {VH}" role="group" aria-label="impeccable command map">'
+svg = (f'<svg class="map" id="map" viewBox="0 0 {VW} {VH}" role="group" aria-label="impeccable command map">'
        '<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L7 4L0 8z" class="ahead"/></marker></defs>'
        + "".join(parts) + "</svg>")
-Path(__file__).with_name("diagram.svg").write_text(svg, encoding="utf-8")
-print("ok", len(parts), "parts", VW, "x", VH)
+MAPW = VW
