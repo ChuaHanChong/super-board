@@ -16,20 +16,20 @@
   if(s.behindTheScenes)B.push({label:'Behind the scenes',key:'bts',type:'flows',v:s.behindTheScenes.map(function(f){return f.filter(function(x){return x!=='→'})})});
   if(s.calls&&s.calls.length)B.push({label:'Calls these',key:'calls',type:'flows',v:[[s.command||s.name].concat([s.calls.map(function(c){return '@'+c})])]});
   if(s.next&&s.next.length)B.push({label:'Next',key:'next',type:'chips',v:s.next});
-  return {accent:'st-'+st,title:s.name,tags:tags,blocks:B.concat(srcBlock(s.sources))}}
+  return {accent:'st-'+st+' calm',title:s.name,tags:tags,blocks:B.concat(srcBlock(s.sources))}}
  function stageModel(sid){var s=ST[sid]||{},cs=Object.keys(CATS).filter(function(c){return CATS[c].stage===sid}),B=[];
   B.push({label:'What this stage is for',key:'grp',type:'p',v:s.principle||'No skills for this stage in this pack yet.'});
   B.push({type:'note',v:'**This is a stage, not a skill.** You run the skills inside its categories.'});
   if(s.when&&s.when.length)B.push({label:'When X → this stage',key:'when',type:'when',v:s.when});
   if(cs.length)B.push({label:'Categories here',key:'how',type:'chips',v:cs.map(function(c){return 'cat:'+c})});
-  return {accent:'st-'+sid,title:SN[sid]+' stage',tags:[['STAGE '+(PACK.order.indexOf(sid)+1),1],[cs.length+(cs.length===1?' category':' categories')]],blocks:B.concat(srcBlock(s.sources))}}
+  return {accent:'st-'+sid+' calm',title:SN[sid]+' stage',tags:[['STAGE '+(PACK.order.indexOf(sid)+1),1],[cs.length+(cs.length===1?' category':' categories')]],blocks:B.concat(srcBlock(s.sources))}}
  function catModel(cid){var c=CATS[cid],B=[];
   B.push({label:'The principle',key:'grp',type:'p',v:c.principle||c.blurb});
   B.push({label:'When X → pick Y',key:'when',type:'when',v:whenList(c.when)});
   B.push({label:'The chain, in order',key:'how',type:'flows',v:[c.chain.map(function(x,i){return '@'+x})]});
   if(c.chainWhy)B.push({label:'Why this order',key:'bts',type:'p',v:c.chainWhy});
-  return {accent:'st-'+c.stage,title:c.name,tags:[['CATEGORY',1],[SN[c.stage]],[c.chain.length+' skills']],blocks:B.concat(srcBlock(c.sources))}}
- function anyModel(gid){var g=ANY[gid];return {accent:'st-anytime',title:g.name,tags:[['ANYTIME',1],[g.items.length+' items']],blocks:[{label:'What it is for',key:'grp',type:'p',v:g.blurb||''},{type:'note',v:'**Not tied to one stage.** Use these at any point.'},{label:'In this group',key:'how',type:'chips',v:g.items}]}}
+  return {accent:'st-'+c.stage+' calm',title:c.name,tags:[['CATEGORY',1],[SN[c.stage]],[c.chain.length+' skills']],blocks:B.concat(srcBlock(c.sources))}}
+ function anyModel(gid){var g=ANY[gid];return {accent:'st-anytime calm',title:g.name,tags:[['ANYTIME',1],[g.items.length+' items']],blocks:[{label:'What it is for',key:'grp',type:'p',v:g.blurb||''},{type:'note',v:'**Not tied to one stage.** Use these at any point.'},{label:'In this group',key:'how',type:'chips',v:g.items}]}}
  function model(id){if(id.indexOf('stage:')===0)return stageModel(id.slice(6));if(id.indexOf('cat:')===0)return catModel(id.slice(4));if(id.indexOf('any:')===0)return anyModel(id.slice(4));return SK[id]?skillModel(id):null}
  SMPAGE={model:model,label:label,afterFilter:null};
  window.SMDATA={search:{},filt:{}};

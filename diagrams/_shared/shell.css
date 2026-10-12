@@ -69,3 +69,4 @@ html.lock,html.lock body{overflow:hidden}
 .sm-hero.cv [data-id]{cursor:pointer}
 .sm-hero.cv.exp .scroll,.sm-hero.cv:fullscreen .scroll{height:calc(100dvh - 110px)}
 @media (max-width:700px){.sm-hero.cv .scroll{height:70vh}.sm-hero.cv.exp .scroll,.sm-hero.cv:fullscreen .scroll{height:calc(100dvh - 190px)}}
+.tbb[hidden]{display:none}
