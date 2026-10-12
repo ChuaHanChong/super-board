@@ -348,3 +348,99 @@ HOWH = {
 "colorize":"color plan","bolder":"Touches only","quieter":"Reduces color","animate":"reduced-motion","delight":"one idea","overdrive":"waits for your pick",
 "polish":"latest critique","extract":"3 or more times","live":"3 versions","hooks":"turns the checker","doctor":"Fixes safe problems","pin":"/polish",
 }
+
+# ---- v6: stage heads are groups, not commands. Parents = commands that really call others (sources: see impeccable-parent-child.md) ----
+CALLS = {  # parent -> [(child, why)]
+"delight":[("animate","for authored motion")],
+"document":[("init","only in seed mode, if PRODUCT.md is missing")],
+"live":[(c,"") for c in ["bolder","quieter","distill","polish","typeset","colorize","layout","adapt","animate","delight","overdrive"]],
+}
+STAGEX = {
+"ctx":{"for":"Gets the **background facts** in place so ==every later command knows your product==.",
+ "pick":[("init","new project: who is it for?"),("document","code exists: write down the look"),("extract","same UI repeats: share it"),("menu","not sure: ask what is next")],
+ "runT":"Run how many?","run":"Run **only what is missing**. ==Start with init==, then document once code exists. extract and the menu are optional."},
+"plan":{"for":"==Decide before you build==, then build the new screen.",
+ "pick":[("shape","plan only, no code"),("craft","build it (same as just asking for a build)")],
+ "runT":"Run how many?","run":"==Plan with shape, then build.== **craft adds nothing new**: asking for a build does the same."},
+"diag":{"for":"==Find out what is wrong== **before fixing**. Both only report.",
+ "pick":[("critique","does it feel easy to use?"),("audit","is it built right: speed, access, phones?")],
+ "runT":"Run both?","run":"==Either order, or both.== **They do not call each other** and do not run together. Each runs alone; critique first if unsure."},
+"fix":{"for":"==Repair the problems== the review found.",
+ "pick":[("harden","breaks on odd data"),("clarify","words are confusing"),("adapt","wrong on other screens"),("optimize","feels slow"),("onboard","new users get lost"),("distill","too cluttered")],
+ "runT":"Run how many?","run":"==Pick only the ones your findings need.== **Order does not matter**; finish with polish."},
+"style":{"for":"==Improve the look== of what already works.",
+ "pick":[("layout","spacing and order"),("typeset","fonts and sizes"),("colorize","too gray"),("bolder","too bland"),("quieter","too loud")],
+ "runT":"Run how many?","run":"==Pick the one that matches the problem.== **bolder and quieter are opposites**: choose one."},
+"motion":{"for":"==Add life== with movement and charm.",
+ "pick":[("animate","motion that explains"),("delight","one charming moment"),("overdrive","big showpiece effect")],
+ "runT":"Run how many?","run":"==Pick one.== **delight uses animate** for its motion, so you rarely need both."},
+"fin":{"for":"The ==last pass== before you ship.",
+ "pick":[("polish","final tidy-up")],
+ "runT":"Run how many?","run":"==Just polish==, and **always last**, after fixes and styling."},
+}
+
+# ---- v7: synced to impeccable 4.5.2 (upstream pbakaus/impeccable skill-v4.5.2). Adds generate; bare /impeccable is drawn as the router. ----
+VERSION = "4.5.2"
+C.append(("generate","generate","util","one-line variants",
+  ["Parse the sentence: count (default 3, max 8), direction word -> action, element","Reuse the open page, start the live session","Generate the variants (vary along the action's dimension)","Accept or discard; accepted CSS moves into the real stylesheet"],
+  "element + direction + count","Chosen variant written to source","dev server running (web only)","— (calls up to 11 action references)","live","generate.md"))
+UTILITIES = ["hooks", "doctor", "pin", "live", "generate"]
+STAGES[0] = ("ctx", "Setup", "establish context", ["init", "document", "extract"])
+TRIG["generate"] = "quick variants"
+DEF["generate"] = "The fast lane into live mode: name an element, a direction and a count in one sentence and cycle through variants in the browser. Never interviews you for PRODUCT.md or DESIGN.md."
+PAIR["generate"] = "Needs a running dev server (web only). Use live when you want to pick the element by hand."
+ONE["generate"] = "Say the element, the direction and how many, and ==get variants== to flip through in your **browser**."
+WHEN["generate"] = "Use it when your **app is running** and you already know ==which element== to try new looks on."
+HOW["generate"] = ["Reads your sentence: how many (default 3, max 8), which direction, which element","Reuses your open page and starts a live session","Builds the variants and swaps them in","You accept or discard; an accepted one is saved into your real styles"]
+HOWH["generate"] = "how many"
+GET["generate"] = "The variant you chose, saved to your code"
+NEXT["generate"] = "polish"
+FLOWS["generate"] = [["/generate 3 bolder hero","reads count + direction + element","live session on your open page","variants swap in","you accept: saved to code"],["direction words map to","[[bolder]] [[quieter]] [[typeset]] [[colorize]] [[layout]] …"]]
+CALLS["generate"] = list(CALLS["live"])
+# the bare /impeccable command is the router (drawn far left)
+HOW["menu"] = ["Reads your project's state with one quick scan","Runs the design checker once on the files that changed (web only)","Picks the 2-3 most useful next commands","Shows them with the full list. It never runs anything on its own"]
+HOWH["menu"] = "2-3 most useful"
+ONE["menu"] = "The **front door**. It ==reads your project and picks the right command== for you."
+WHEN["menu"] = "Use it when you are **not sure** what to do ==next==, or just ==say what you want in words==."
+GET["menu"] = "2-3 pointed picks, with the exact command to type"
+NEXT["menu"] = "whichever command it picks"
+ROUTE_PICKS = [  # situation -> command(s); from reference/routing.md:9-20
+ ["No `PRODUCT.md` yet","[[init]]"],
+ ["Code, but no `DESIGN.md`","[[document]]"],
+ ["Never reviewed before","[[critique]]"],
+ ["Review score low or P0/P1 problems","[[polish]]"],
+ ["Changes on one screen","[[audit]] or [[polish]] on those files"],
+ ["Dev server running (web)","[[live]] or [[generate]]"],
+ ["Phone app (iOS/Android)","no live or generate"],
+ ["Nothing stands out","groups: build new / improve / try looks"],
+]
+ROUTE_WORDS = [  # free-text routing, SKILL.md:72-75
+ ["\"make it bolder\"","[[bolder]]"],
+ ["\"the words are confusing\"","[[clarify]]"],
+ ["\"build a landing page\"","[[init]] if needed","new-work flow"],
+ ["two commands fit","asks you once"],
+]
+# stages: no router exists. Pick by symptom (symptom -> command)
+STAGEX = {
+"ctx":{"for":"Gets the **background facts** in place so ==every later command knows your product==.",
+ "pick":[("init","no product notes yet"),("document","code, but no design file"),("extract","same UI keeps repeating")],
+ "runT":"Run how many?","run":"Run **only what is missing**. ==Start with init==, then document once code exists."},
+"plan":{"for":"==Decide before you build==, then build the new screen.",
+ "pick":[("shape","want a plan before any code"),("craft","want it built (same as just asking)")],
+ "runT":"Run how many?","run":"==Plan with shape, then build.== **craft adds nothing new**: asking for a build does the same."},
+"diag":{"for":"==Find out what is wrong== **before fixing**. Both only report.",
+ "pick":[("critique","not sure it feels easy to use"),("audit","not sure it is built right: speed, access, phones")],
+ "runT":"Run both?","run":"==Either order, or both.== **They do not call each other** and do not run together. Critique first if unsure."},
+"fix":{"for":"==Repair the problems== the review found.",
+ "pick":[("harden","breaks on odd data or errors"),("clarify","words are confusing"),("adapt","looks wrong on phone or tablet"),("optimize","feels slow"),("onboard","new users get lost"),("distill","too cluttered")],
+ "runT":"Run how many?","run":"==Pick only the ones your findings need.== **Order does not matter**; finish with polish."},
+"style":{"for":"==Improve the look== of what already works.",
+ "pick":[("layout","spacing or order feels off"),("typeset","text looks off"),("colorize","too gray"),("bolder","too bland"),("quieter","too loud")],
+ "runT":"Run how many?","run":"==Pick the one that matches the problem.== **bolder and quieter are opposites**: choose one."},
+"motion":{"for":"==Add life== with movement and charm.",
+ "pick":[("animate","needs movement that explains"),("delight","needs a charming moment"),("overdrive","wants a wow effect")],
+ "runT":"Run how many?","run":"==Pick one.== **delight uses animate** for its motion, so you rarely need both."},
+"fin":{"for":"The ==last pass== before you ship.",
+ "pick":[("polish","about to ship")],
+ "runT":"Run how many?","run":"==Just polish==, and **always last**, after fixes and styling."},
+}
