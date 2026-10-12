@@ -13,6 +13,15 @@ ICON_CL = '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#d97757" strok
 ICON_CU = '<svg viewBox="0 0 24 24" aria-hidden="true" style="color:var(--fg)"><path d="M12 2.2l8.5 4.9v9.8L12 21.8l-8.5-4.9V7.1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 12L3.8 7.2M12 12l8.2-4.8M12 12v9.5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M12 12l4.2-2.4v4.8z" fill="currentColor"/></svg>'
 ICON_CODEX = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>'
 
+STAGE_ICON = dict(
+ plan='<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+ design='<path d="M4 20l1-4L16 5l3 3L8 19z"/><path d="M14 7l3 3"/>',
+ build='<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+ test='<path d="M10 2v7.5a2 2 0 0 1-.2.9L4.7 20.5a1 1 0 0 0 .9 1.5h12.8a1 1 0 0 0 .9-1.5l-5.1-10.1a2 2 0 0 1-.2-.9V2"/><path d="M8.5 2h7M7 16h10"/>',
+ deploy='<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+ maintain='<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+ anytime='<path d="M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8"/>')
+
 def wrapname(n, lim=17):
     if len(n) <= lim: return [n]
     parts = n.split('-'); best = None
@@ -33,19 +42,19 @@ def build(data, mdir):
     def node(sid, x, yy, grp, start=False):
         s = skills[sid]; L = wrapname(s["name"]); nst = skill_stage.get(sid, "anytime")
         ty = yy + (19 if len(L) == 1 else 15)
-        tx = "".join(f'<text class="nn" x="{x+9}" y="{ty+i*12}">{E(l)}</text>' for i, l in enumerate(L))
+        fs = ' style="font-size:%.1fpx"' % max(7.5, 11 * 15.5 / max(len(l) for l in L)) if max(len(l) for l in L) > 15 else ""
+        tx = "".join(f'<text class="nn" x="{x+9}" y="{ty+i*12}"{fs}>{E(l)}</text>' for i, l in enumerate(L))
         tr = f'<text class="nt" x="{x+9}" y="{yy+(36 if len(L)==1 else 41)}">{E(s.get("trigger",""))}</text>'
         sb = f'<rect class="stbg" x="{x+NW-44}" y="{yy-7}" width="40" height="13" rx="6.5"/><text class="stt" x="{x+NW-24}" y="{yy+3}" text-anchor="middle">START</text>' if start else ""
         return (f'<g class="nd st-{nst}" data-id="{E(sid)}" data-grp="{grp}" tabindex="0" role="button" aria-label="{E(s["name"])}: {E(s.get("trigger",""))}">'
                 f'<title>{E(s["name"])}</title><rect x="{x}" y="{yy}" width="{NW}" height="{NH}" rx="8"/>{tx}{tr}{sb}</g>')
 
     def head(grp, num, name, x, yy, kind, n):
-        badge = f'<circle class="sbc" cx="{x+11}" cy="{yy+14}" r="11"/><text class="sbn" x="{x+11}" y="{yy+18}" text-anchor="middle">{num}</text>' if num else ""
-        tx = x + (30 if num else 0)
+        ic = f'<g class="sic" transform="translate({x},{yy+2}) scale(1.05)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{STAGE_ICON.get(grp, STAGE_ICON["anytime"])}</g>'
         return (f'<g class="sh st-{grp}" data-id="{kind}:{grp}" data-grp="{grp}" data-head="1" tabindex="0" role="button" aria-label="{E(name)} ({"a stage" if num else "a band"}, not a skill)">'
-                f'<rect class="hit" x="{x-4}" y="{yy-4}" width="168" height="36" fill="transparent"/>{badge}'
-                f'<text class="stn" x="{tx}" y="{yy+19}">{E(name)}</text>'
-                f'<text class="stc" x="{tx}" y="{yy+34}">{E(n)}</text></g>')
+                f'<rect class="hit" x="{x-4}" y="{yy-4}" width="168" height="36" fill="transparent"/>{ic}'
+                f'<text class="stn" x="{x+32}" y="{yy+13}">{E(name)}</text>'
+                f'<text class="stc" x="{x+32}" y="{yy+28}">{("Stage %d" % num) if num else ""}</text></g>')
 
     per = 2
     colx = lambda i: X0 + i * CW
@@ -58,7 +67,7 @@ def build(data, mdir):
         x = colx(i); cs = cols[sid]; st = stages.get(sid, {})
         out.append(f'<g class="rg{" empty" if not cs else ""}" data-region="{sid}"><rect class="col" x="{x}" y="{Y0}" width="{CW}" height="{H_COL}"/></g>')
         nsk = sum(len(c["chain"]) for c in cs)
-        out.append(head(sid, i + 1, SNAME[sid], x + 18, Y0 + 14, "stage", f"{len(cs)} categories · {nsk} skills" if cs else "no skills here"))
+        out.append(head(sid, i + 1, SNAME[sid], x + 18, Y0 + 14, "stage", ""))
         if i: out.append(f'<line class="div" data-grp="{sid}" x1="{x}" y1="{Y0+4}" x2="{x}" y2="{Y0+H_COL-4}"/>')
         if i < len(STAGES) - 1:
             out.append(f'<path class="arr flowdn" data-edge="{sid} {STAGES[i+1]}" d="M{x+CW-12} {Y0+50} H{x+CW+12}" marker-end="url(#ah)"/>')
@@ -68,7 +77,7 @@ def build(data, mdir):
         ty = Y0 + 76
         for c in cs:
             out.append(f'<g class="ch st-{sid}" data-id="cat:{E(c["id"])}" data-grp="{sid}" tabindex="0" role="button" aria-label="{E(c["name"])} (a category)"><title>Category: {E(c["name"])}. Tap for details.</title>'
-                       f'<rect class="chb" x="{x+14}" y="{ty-3}" width="{CW-28}" height="24" rx="6"/><text class="cht" x="{x+20}" y="{ty+14}">{E(c["name"])}</text><text class="chn" x="{x+CW-20}" y="{ty+14}" text-anchor="end">{len(c["chain"])}</text></g>')
+                       f'<rect class="chb" x="{x+14}" y="{ty-3}" width="{CW-28}" height="24" rx="6"/><text class="cht" x="{x+20}" y="{ty+14}">{E(c["name"])}</text></g>')
             ny = ty + 24 + 14; pos = []
             for j, sk in enumerate(c["chain"]):
                 r, cc = divmod(j, per); px = x + 18 + cc * (NW + GX); py = ny + r * (NH + GY); pos.append((px, py))
@@ -84,19 +93,29 @@ def build(data, mdir):
     y = Y0 + H_COL + 36
     ag = data.get("anytime", [])
     if ag:
-        per_a = max(1, int((TW - 2 * X0 - 36) // (NW + 20)))
-        n = len(ag); gw = (TW - 2 * X0 - 36) / n; percol = max(1, int((gw - 10) // (NW + 20)))
-        rows = max(math.ceil(len(g["items"]) / percol) for g in ag)
-        h = 76 + rows * (NH + 18) + 10
+        AW = TW - 2 * X0 - 36; blocks = []
+        for g in ag:
+            cols_ = 1 if len(g["items"]) == 1 else 2; blocks.append((g, cols_, cols_ * (NW + 20) - 20 + 24))
+        rowsl = [[]]; cur = 0
+        for bl in blocks:
+            if cur + bl[2] > AW and rowsl[-1]: rowsl.append([]); cur = 0
+            rowsl[-1].append(bl); cur += bl[2] + 24
+        rh = [24 + 14 + max(math.ceil(len(g["items"]) / c_) for g, c_, _ in r) * (NH + 18) + 14 for r in rowsl]
+        h = 68 + sum(rh)
         out.append(f'<g class="rg" data-region="anytime"><rect class="col top" x="{X0}" y="{y}" width="{TW-2*X0}" height="{h}"/></g>')
-        out.append(head("anytime", 0, "Anytime", X0 + 18, y + 14, "stage", f"{sum(len(g['items']) for g in ag)} skills, not tied to one stage"))
-        for k, g in enumerate(ag):
-            x = X0 + 18 + k * gw
-            if k: out.append(f'<line class="div" data-grp="anytime" x1="{x-12}" y1="{y+56}" x2="{x-12}" y2="{y+h-10}"/>')
-            out.append(f'<g class="ch st-anytime" data-id="any:{E(g["id"])}" data-grp="anytime" tabindex="0" role="button" aria-label="{E(g["name"])} (a group)"><title>Group: {E(g["name"])}</title>'
-                       f'<rect class="chb" x="{x-4}" y="{y+56}" width="{gw-24}" height="24" rx="6"/><text class="cht" x="{x+2}" y="{y+73}">{E(g["name"])}</text><text class="chn" x="{x+gw-32}" y="{y+73}" text-anchor="end">{len(g["items"])}</text></g>')
-            for j, sk in enumerate(g["items"]):
-                r, cc = divmod(j, percol); out.append(node(sk, x + cc * (NW + 20), y + 94 + r * (NH + 18), "anytime"))
+        out.append(head("anytime", 0, "Anytime", X0 + 18, y + 14, "stage", ""))
+        ry = y + 62
+        for ri, r in enumerate(rowsl):
+            x = X0 + 18
+            if ri: out.append(f'<line class="hdiv" data-grp="anytime" x1="{X0+18}" y1="{ry-8}" x2="{TW-X0-18}" y2="{ry-8}"/>')
+            for k, (g, c_, w_) in enumerate(r):
+                if k: out.append(f'<line class="div" data-grp="anytime" x1="{x-12}" y1="{ry-2}" x2="{x-12}" y2="{ry+rh[ri]-14}"/>')
+                out.append(f'<g class="ch st-anytime" data-id="any:{E(g["id"])}" data-grp="anytime" tabindex="0" role="button" aria-label="{E(g["name"])} (a group)"><title>Group: {E(g["name"])}</title>'
+                           f'<rect class="chb" x="{x-4}" y="{ry}" width="{w_-12}" height="24" rx="6"/><text class="cht" x="{x+2}" y="{ry+17}">{E(g["name"])}</text></g>')
+                for j, sk in enumerate(g["items"]):
+                    rr, cc = divmod(j, c_); out.append(node(sk, x + cc * (NW + 20), ry + 38 + rr * (NH + 18), "anytime"))
+                x += w_ + 24
+            ry += rh[ri]
         y += h
     VH = y + 16
     svg = (f'<svg class="map" id="map" viewBox="0 0 {TW} {VH}" role="group" aria-label="{E(meta["name"])} diagram"><defs>'
@@ -104,7 +123,7 @@ def build(data, mdir):
     css = (":root{" + "".join(f"--st-{k}:{v};" for k, v in LIGHT.items()) + "}\n@media (prefers-color-scheme:dark){:root:not([data-theme=\"light\"]){" + "".join(f"--st-{k}:{v};" for k, v in DARK.items()) + "}}\n:root[data-theme=\"dark\"]{" + "".join(f"--st-{k}:{v};" for k, v in DARK.items()) + "}\n" + "".join(f".st-{k}{{--c:var(--st-{k})}}" for k in LIGHT) + r'''
 .col{fill:none;stroke:none}.empty .stn,.empty .stc,.empty .sbn{opacity:.55}
 .sh{cursor:pointer;outline:none}.stn{fill:var(--c);font:800 16px var(--sans)}.stc{fill:var(--muted);font:11px var(--sans)}
-.sbc{fill:var(--c)}.empty .sbc{fill:var(--muted)}.sbn{fill:var(--bg);font:800 12px var(--sans)}
+.sic{stroke:var(--c)}.empty .sic{stroke:var(--muted)}.hdiv{stroke:var(--border);stroke-width:1;stroke-dasharray:4 4}
 .sh:hover .stn,.sh:focus-visible .stn,.sh.sel .stn{fill:var(--c);text-decoration:underline}
 .div{stroke:var(--border);stroke-width:1.5}.emp{fill:var(--muted);font:600 13px var(--sans)}
 .ch{cursor:pointer;outline:none}.chb{fill:none;stroke:none}.ch:hover .chb,.ch:focus-visible .chb,.ch.sel .chb{fill:color-mix(in srgb,var(--c) 12%,transparent)}
@@ -122,7 +141,7 @@ def build(data, mdir):
     # ---- page js: models built from the same json
     pack = {"stages": stages, "cats": {c["id"]: c for c in cats}, "any": {g["id"]: g for g in ag}, "skills": skills, "order": STAGES,
             "skillStage": skill_stage, "meta": meta, "SN": SNAME}
-    js = "window.SMCANVAS='always';window.SMCOLLAPSED=['anytime'];var PACK=" + json.dumps(pack, ensure_ascii=False).replace("</", "<\\/") + ";\n" + (open(__file__.replace("layout_sdlc.py", "layout_sdlc.js"), encoding="utf-8").read())
+    js = "window.SMCANVAS='always';window.SMNOCOLLAPSE=true;var PACK=" + json.dumps(pack, ensure_ascii=False).replace("</", "<\\/") + ";\n" + (open(__file__.replace("layout_sdlc.py", "layout_sdlc.js"), encoding="utf-8").read())
     plats = sorted({p for s in skills.values() for p in s.get("platforms", [])})
     PL = dict(zip(["claude-code", "cursor", "codex"], ["Claude Code", "Cursor", "Codex"]))
     ICON = {"all": ICON_ALL, "claude-code": ICON_CL, "cursor": ICON_CU, "codex": ICON_CODEX}
