@@ -36,6 +36,21 @@ html:has(dialog.sm[open]){overflow:hidden}
 .sm .exr code{display:block;white-space:pre-wrap;padding:6px 8px}
 .sm .exr ol{padding-left:18px}
 .sm .exn{font-size:12px;color:var(--muted);margin:6px 0 0!important}
+details.sec{margin:10px 0;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+details.sec>summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 12px;cursor:pointer;border-radius:10px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary:hover{background:var(--hov)}details.sec>summary:focus-visible{outline:2px solid var(--fg);outline-offset:-2px}
+details.sec .sl{flex:none;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--l);padding:2px 9px;border-radius:6px;background:color-mix(in srgb,var(--l) 15%,transparent);border:1px solid color-mix(in srgb,var(--l) 40%,transparent)}
+details.sec .sp{flex:1;min-width:0;color:var(--muted);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+details.sec .chv{flex:none;margin-left:auto;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
+details.sec[open]>summary .chv{transform:rotate(45deg)}details.sec[open]>summary .sp{display:none}
+details.sec .sb{padding:2px 12px 12px;animation:smo .16s ease-out}
+@keyframes smo{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){details.sec .sb{animation:none}details.sec .chv{transition:none}}
+.sm .xa{float:right;min-height:44px;margin:-10px 0 0;padding:0 10px;border:0;background:transparent;color:var(--c);font:600 13px var(--sans,inherit);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.sm .xa[hidden]{display:none}.sm .xa:focus-visible{outline:2px solid var(--fg)}
+.sm .showall{margin:2px 0 4px;min-height:40px;padding:0 14px;border:1px dashed var(--c);border-radius:20px;background:transparent;color:var(--c);font:600 13px var(--sans,inherit);cursor:pointer}
+.sm .more[hidden]{display:none}
 @media (max-width:700px){
  dialog.sm{width:100vw;max-width:100vw;height:100vh;height:100dvh;max-height:100dvh;margin:0;border-radius:0;border-left:0;border-top:6px solid var(--c);padding:max(16px,env(safe-area-inset-top,0px)) 16px max(20px,env(safe-area-inset-bottom,0px))}
  .sm h3{font-size:20px}.sm .chip{min-height:40px}.sm .exr{grid-template-columns:1fr;gap:2px;margin:8px 0}
