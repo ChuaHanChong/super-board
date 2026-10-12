@@ -175,7 +175,7 @@ is  "Sentry 441 is not a duplicate of Sentry 4411" \
 echo "── SKILL.md setup step 3: source the gh guard, then sb_gh_guard_check"
 if command -v zsh >/dev/null; then
   RC=0; (cd "$WORK" && zsh -c "source '$REPO_ROOT/scripts/super-board-gh-guard.sh'; sb_gh_halt_check" >/dev/null 2>&1) || RC=$?
-  xfail "gh guard works when sourced from zsh (BASH_SOURCE is unset there: super-board-gh-guard.sh:25)" 0 "$RC"
+  is "gh guard works when sourced from zsh" 0 "$RC"
 fi
 RC=0; (cd "$WORK" && bash -c "source '$REPO_ROOT/scripts/super-board-gh-guard.sh'; sb_gh_halt_check" >/dev/null 2>&1) || RC=$?
 is "gh guard works when sourced from bash" 0 "$RC"
