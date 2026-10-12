@@ -9,9 +9,10 @@ DARK = dict(plan="#fbbf24", design="#a78bfa", build="#60a5fa", test="#34d399", d
 W = 1440; X0 = 16; NW = 132; NH = 64; GX = 30; GY = 26; PADX = 14; CW = 330
 
 ICON_ALL = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>'
-ICON_CL = '<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="#d97757" stroke-width="3.2" stroke-linecap="round"><path d="M12 2.5v19M2.5 12h19M5.3 5.3l13.4 13.4M18.7 5.3L5.3 18.7"/></g></svg>'
-ICON_CU = '<svg viewBox="0 0 24 24" aria-hidden="true" style="color:var(--fg)"><path d="M12 2.2l8.5 4.9v9.8L12 21.8l-8.5-4.9V7.1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 12L3.8 7.2M12 12l8.2-4.8M12 12v9.5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M12 12l4.2-2.4v4.8z" fill="currentColor"/></svg>'
-ICON_CODEX = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>'
+import platforms
+ICON_CL = platforms.svg("claude-code")
+ICON_CU = platforms.svg("cursor")
+ICON_CODEX = platforms.svg("codex")
 
 STAGE_ICON = dict(
  plan='<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
@@ -145,7 +146,7 @@ def build(data, mdir):
     # ---- page js: models built from the same json
     pack = {"stages": stages, "cats": {c["id"]: c for c in cats}, "any": {g["id"]: g for g in ag}, "skills": skills, "order": STAGES,
             "skillStage": skill_stage, "meta": meta, "SN": SNAME}
-    js = "window.SMCANVAS='always';window.SMNOCOLLAPSE=true;var PACK=" + json.dumps(pack, ensure_ascii=False).replace("</", "<\\/") + ";\n" + (open(__file__.replace("layout_sdlc.py", "layout_sdlc.js"), encoding="utf-8").read())
+    js = "window.SMPLAT=" + json.dumps({k: platforms.svg(k) for k in platforms.FILES}) + ";window.SMCANVAS='always';window.SMNOCOLLAPSE=true;var PACK=" + json.dumps(pack, ensure_ascii=False).replace("</", "<\\/") + ";\n" + (open(__file__.replace("layout_sdlc.py", "layout_sdlc.js"), encoding="utf-8").read())
     plats = sorted({p for s in skills.values() for p in s.get("platforms", [])})
     PL = dict(zip(["claude-code", "cursor", "codex"], ["Claude Code", "Cursor", "Codex"]))
     ICON = {"all": ICON_ALL, "claude-code": ICON_CL, "cursor": ICON_CU, "codex": ICON_CODEX}

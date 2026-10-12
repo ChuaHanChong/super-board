@@ -9,7 +9,7 @@
  function sources(list){return {type:'node',label:'Sources',key:'use',v:function(body){var u=SM.el('ul');(list||[]).forEach(function(s){var li=SM.el('li'),a=SM.el('a',null,s.label);a.href=s.url;a.target='_blank';a.rel='noopener';a.style.color='var(--c)';li.appendChild(a);u.appendChild(li)});body.appendChild(u)}}}
  function srcBlock(list){if(!list||!list.length)return [];return [{label:'Sources',key:'use',type:'node',v:function(body){var u=SM.el('ul');list.forEach(function(s){var li=SM.el('li'),a=SM.el('a',null,s.label);a.href=s.url;a.target='_blank';a.rel='noopener';a.style.color='var(--c)';li.appendChild(a);u.appendChild(li)});body.appendChild(u)}}]}
  function skillModel(id){var s=SK[id],st=PACK.skillStage[id]||'anytime',B=[];
-  var tags=[[s.command||s.name,1]];if(s.trigger)tags.push([s.trigger]);tags.push([st==='anytime'?'Anytime':SN[st]]);(s.platforms||[]).forEach(function(p){tags.push([PL[p]||p])});
+  var tags=[[s.command||s.name,1]];if(s.trigger)tags.push([s.trigger]);tags.push([st==='anytime'?'Anytime':SN[st]]);(s.platforms||[]).forEach(function(p){tags.push([PL[p]||p,0,p])});
   B.push({label:'When to use it',key:'when',type:'when',v:whenList(s.when)});B.push({label:'What it is',key:'is',type:'p',v:s.whatItIs});
   if(s.howItWorks)B.push({label:'How it works',key:'how',type:'ol',v:s.howItWorks});
   if(s.example){var e=s.example;B.push({label:'Example',key:'ex',type:'example',note:'Example',v:[['Situation',e.situation],['You type',e.youType,'code'],['What happens',e.whatHappens],['You get',e.youGet]]})}

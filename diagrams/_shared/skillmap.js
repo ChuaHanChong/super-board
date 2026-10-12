@@ -29,7 +29,7 @@ var SM=(function(){
    b.appendChild(row)});b.appendChild(el('p','exn',note||'Example'));T.appendChild(b)}
   function chips(ids){var h=el('div','hl');ids.forEach(function(n){h.appendChild(chip(n))});T.appendChild(h)}
   function note(s){var n=el('p','note2');md(n,s);T.appendChild(n)}
-  function tags(a){var t=el('div','tags');a.forEach(function(x){t.appendChild(el('span','tag'+(x[1]?' k':''),x[0]))});body.appendChild(t)}
+  function tags(a){var t=el('div','tags');a.forEach(function(x){var sp=el('span','tag'+(x[1]?' k':''));if(x[2]&&window.SMPLAT&&SMPLAT[x[2]])sp.innerHTML=SMPLAT[x[2]];sp.appendChild(document.createTextNode(x[0]));t.appendChild(sp)});body.appendChild(t)}
   /* model: {accent, title, tags:[[text,key?]], blocks:[{label,key,type,v,note}]}; type: p ul ol when flows example chips note node */
   var OPEN={when:1,is:1,grp:1,warn:1};
   function plain(x){return String(x).replace(/\[\[([^\]]+)\]\]/g,function(_,i){return opts.label?opts.label(i):i}).replace(/\*\*|==|`/g,'')}
