@@ -185,17 +185,15 @@ class SentryFixture(unittest.TestCase):
         self.assertEqual(rc, 2)
         self.assertEqual(out["status"], "unavailable")
 
-    @unittest.expectedFailure
-    def test_known_bug_unreachable_host_reports_unavailable(self):
-        """SKILL.md:36-37: a fetcher that cannot reach its source prints status unavailable and
-        exits 2. collect_sentry.api() only catches HTTPError, so a DNS / connection failure
-        (URLError) escapes as a traceback (collect_sentry.py:63-73)."""
-        with cli(sn, {"sentry": SENTRY}) as (run, _):
-            with mock.patch.object(fixture_http.Urlopen, "answer",
-                                   side_effect=sn.urllib.error.URLError("nodename nor servname provided")):
-                rc, out = run("list")
-        self.assertEqual(rc, 2)
-        self.assertEqual(out["status"], "unavailable")
+    def test_unreachable_host_reports_unavailable(self):
+        """SKILL.md:36-37: a fetcher that cannot reach its source (DNS failure, connection
+        refused, timeout) prints status unavailable and exits 2, never a traceback."""
+        for err in (sn.urllib.error.URLError("nodename nor servname provided"), TimeoutError("timed out")):
+            with self.subTest(err=err), cli(sn, {"sentry": SENTRY}) as (run, _):
+                with mock.patch.object(fixture_http.Urlopen, "answer", side_effect=err):
+                    rc, out = run("list")
+                self.assertEqual(rc, 2)
+                self.assertEqual(out["status"], "unavailable")
 
 
 class PostHogFixture(unittest.TestCase):
@@ -224,15 +222,14 @@ class PostHogFixture(unittest.TestCase):
         self.assertTrue(out["stopped"])
         self.assertEqual(out["issueStatus"], "active")
 
-    @unittest.expectedFailure
-    def test_known_bug_unreachable_host_reports_unavailable(self):
-        """Same contract as Sentry; collect_posthog._request() only catches HTTPError
-        (collect_posthog.py:120-124)."""
-        with cli(ph, {"posthog": POSTHOG}) as (run, _):
-            with mock.patch.object(fixture_http.Urlopen, "answer",
-                                   side_effect=ph.urllib.error.URLError("connection refused")):
-                rc, out = run("list")
-        self.assertEqual(rc, 2)
+    def test_unreachable_host_reports_unavailable(self):
+        """Same contract as Sentry."""
+        for err in (ph.urllib.error.URLError("connection refused"), TimeoutError("timed out")):
+            with self.subTest(err=err), cli(ph, {"posthog": POSTHOG}) as (run, _):
+                with mock.patch.object(fixture_http.Urlopen, "answer", side_effect=err):
+                    rc, out = run("list")
+                self.assertEqual(rc, 2)
+                self.assertEqual(out["status"], "unavailable")
 
 
 class PRsFixture(unittest.TestCase):
