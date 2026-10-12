@@ -323,6 +323,12 @@ Object.keys(DATA.groupsInfo).forEach(function(c){SMDATA.search['grp:'+c]=DATA.gr
    var cl=(g.region.getAttribute('class')||'').split(' ').filter(function(x){return /^(c-|g-)/.test(x)}).join(' ');c.setAttribute('class','gchev '+cl);t.setAttribute('class','gcount '+cl);
    g.region.parentNode.appendChild(t);g.region.parentNode.appendChild(c)}});
  Object.keys(G).forEach(function(id){var g=G[id];if(g.fit){var mb=0;g.fit.forEach(function(f){if(G[f])mb=Math.max(mb,G[f].y0+G[f].h0)});g.pad0=g.y0+g.h0-mb}});
+ /* reserve a slot for the chevron: ellipsize labels that would run under it */
+ Object.keys(G).forEach(function(id){var g=G[id];if(!g.chev)return;var lim=g.x0+g.w0-30;
+  $a('text',g.region).concat(g.head?$a('text.rt',g.head):[]).forEach(function(t){if(t.classList.contains('gcount')||t.classList.contains('chev'))return;
+   var x=+t.getAttribute('x')||0,full=t.textContent,w=t.getComputedTextLength?t.getComputedTextLength():0;
+   if(x+w<=lim||!w)return;var n=full.length;while(n>3&&x+t.getComputedTextLength()>lim){n--;t.textContent=full.slice(0,n).trim()+'…'}
+   var ti=document.createElementNS(NS,'title');ti.textContent=full;t.appendChild(ti)})});
  /* rows: groups whose boxes share a top edge */
  var rows=[],rowOf={};
  (function(){var gs=Object.keys(G).map(function(i){return G[i]}).filter(function(g){return g.rect&&!g.fit}).sort(function(a,b){return a.y0-b.y0});
