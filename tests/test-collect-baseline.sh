@@ -128,8 +128,10 @@ is  "refactor without Fix is refused" 66 "$(code --type refactor --source archit
 drop Context "$TICKETS/bug-sentry-4411.md" > "$WORK/bug-no-context.md"
 is  "bug without Context is refused on --yes (QA filer)" 66 "$(code "${BUG[@]/$TICKETS\/bug-sentry-4411.md/$WORK/bug-no-context.md}" --yes)"
 lacks "…and nothing is created" "$(cat "$GH_LOG")" "issue create"
-xfail "bug without Context is refused on the dry-run too (plan says would-file, --yes then exits 66)" \
+is  "bug without Context is refused on the dry-run too" \
   66 "$(code "${BUG[@]/$TICKETS\/bug-sentry-4411.md/$WORK/bug-no-context.md}")"
+has "…and the dry-run error names the section" "$(cat "$WORK/err")" "missing required section(s): Context"
+lacks "…and the dry-run writes nothing" "$(awk "$WRITES" "$GH_LOG")" "issue"
 sed 's/^| Logs .*$//' "$TICKETS/bug-sentry-4411.md" > "$WORK/bug-11-rows.md"
 is  "bug Evidence table needs all 12 rows" 66 "$(code "${BUG[@]/$TICKETS\/bug-sentry-4411.md/$WORK/bug-11-rows.md}" --yes)"
 
