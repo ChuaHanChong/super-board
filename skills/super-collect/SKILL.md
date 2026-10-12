@@ -145,7 +145,8 @@ $S/super-collect-file.sh --config <cfg> --adopt <n> --type <t> [--yes]
 ```
 
 - `bug`, `feature`, `fix` → `super-qa-file-bug.sh` (`fix` files as `tech-debt`); `refactor` →
-  `super-review-file-refactor.sh`. Every body uses the ticket format in
+  `super-review-file-refactor.sh`. `--title` is the bare problem: the filers add the
+  `<emoji> [<kind>] <scope>:` prefix, so never pass one (`🐛 [bug] …` would appear twice). Every body uses the ticket format in
   `.claude/skills/super-board/references/writing-standard.md` § 3: Problem · Context (lettered
   steps under Where) · Fix · Acceptance Criteria (checklist) · Risk; bugs add the folded 12-row
   Evidence table (a missing row says `n/a — why`), fixes add an Evidence section. Evidence is
