@@ -8,9 +8,16 @@ SH = Path(__file__).resolve().parent
 name = sys.argv[1]
 mdir = SH.parent / name
 sys.path.insert(0, str(mdir))
-spec = importlib.util.spec_from_file_location(name + "_map", mdir / "map.py")
-mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
-m = mod.build()
+if (mdir / "map.json").exists():  # data-only map: rendered by a shared layout
+    sys.path.insert(0, str(SH))
+    data = json.loads((mdir / "map.json").read_text(encoding="utf-8"))
+    import layout_sdlc
+    m = layout_sdlc.build(data, mdir)
+    if m.get("out"): mdir = SH.parent / m["out"]; mdir.mkdir(exist_ok=True)
+else:
+    spec = importlib.util.spec_from_file_location(name + "_map", mdir / "map.py")
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    m = mod.build()
 rd = lambda f: (SH / f).read_text(encoding="utf-8")
 e = html.escape
 NAV = rd("sitenav.html")

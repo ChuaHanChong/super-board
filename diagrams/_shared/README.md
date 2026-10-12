@@ -18,3 +18,6 @@ Files: `sitenav.html` (site nav, same markup as /onboarding/), `shell.css` + `sh
 - `data-grp="gid"` on each member node; add `data-head="1"` on the group's title node,
 - `data-edge="fromGid toGid"` on each arrow path/line (redrawn as an elbow once an end moves or collapses),
 - `data-trunk="gid"` on a shared trunk line that should hide once that group moves.
+
+## Layout `sdlc` (data-only maps)
+A map directory with `map.json` (no `map.py`) renders through `layout_sdlc.py`: six stage layers (Plan, Design, Build, Test, Deploy, Maintain) as straight-line bands with a corner tag, categories side by side with dividers, each a chain of skills in trigger order, an optional Anytime band, empty stages greyed. Click a stage tag, category header or skill for its dialog. Build: `python3 diagrams/_shared/build_skillmap.py <dir>`; `meta.out` redirects the output folder. Sample data: `diagrams/_sample-sdlc/map.json` (preview at `/sdlc-template/`). Schema: stages, categories (stage, chain, principle, when, chainWhy, sources), anytime, skills (when, whatItIs, howItWorks, example, behindTheScenes, calls, next, sources).
