@@ -25,89 +25,89 @@
     {
      "aspect": "When",
      "values": {
-      "mattpocock": "Stress-test ==any== plan",
-      "superpowers": "Before ==any== new build"
+      "mattpocock": "Poke holes in ==any== plan",
+      "superpowers": "Before ==anything new== gets built"
      },
      "details": {
-      "mattpocock": "Use it when you already have a plan or idea and want it poked at. Example: you say 'I want a billing page' and it quizzes every branch of that decision.",
-      "superpowers": "Its description says you MUST use it before creating features or changing behavior. Example: 'add a dark mode toggle' triggers it, unless the request is fully specified like 'make the icon cornflower blue'."
+      "mattpocock": "Use it when you already have a plan or idea and want it questioned hard. E.g. you say 'I want a billing page' and it quizzes you on every choice inside that.",
+      "superpowers": "Its rules say to use it before building anything new or changing how something works. E.g. 'add a dark mode switch' starts it, but a fully clear ask like 'make the icon cornflower blue' just gets done."
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "mattpocock": "Wait ==before== acting",
-      "superpowers": "==Hard gate==, approve first"
+      "mattpocock": "Waits for your ==OK==",
+      "superpowers": "==Locked== until you approve"
      },
      "details": {
-      "mattpocock": "It does not act until you confirm you both understand the plan. There is no written gate, just that rule.",
-      "superpowers": "Nothing gets built (no code, scaffolding, installs) until you approve the description. Example: it will not create the project folder until you say the design doc is good."
+      "mattpocock": "It does nothing until you both agree you see the plan the same way. That one rule is all; there is no formal checkpoint. E.g. even after a great round 3, it waits for you to say 'yes, we agree'.",
+      "superpowers": "Nothing gets built until you approve the written description: no code, no installs, not even a project folder. Reading and looking around are fine. E.g. it will not create the project folder until you say the design doc is good."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "mattpocock": "Question ==rounds==, repeat",
-      "superpowers": "Ask, ==play back==, size"
+      "mattpocock": "Ask a ==batch==, repeat",
+      "superpowers": "Ask, ==retell==, pick size"
      },
      "details": {
-      "mattpocock": "Each round it asks every question that can be asked now, then waits for answers, then asks the next batch. Example: round 1 asks 5 settled-prereq questions, your answers unlock round 2.",
-      "superpowers": "It alternates open questions with 200-300 word play-backs, then picks a size and writes it up. Example: after 4 answers it summarizes the audience part and asks what is wrong."
+      "mattpocock": "Each round it asks every question it can ask right now, waits for your answers, then asks the next batch. E.g. your answer 'use Stripe' opens new questions for round 2, like 'monthly or yearly plans?'",
+      "superpowers": "It asks open questions, then retells each part back to you in about 200-300 words, and repeats. At the end it picks how big the job is and writes it up. E.g. after a few answers it sums up who the app is for and asks 'what did I get wrong?'"
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
-      "mattpocock": "==Many== per round",
-      "superpowers": "==One== at a time"
+      "mattpocock": "==Many== questions at once",
+      "superpowers": "==One== question at a time"
      },
      "details": {
-      "mattpocock": "You get a numbered batch of questions at once, not one at a time. Example: Q1 to Q5 in one message, each with its own recommended answer.",
-      "superpowers": "Every message ends with exactly one question, kept open and plain. Example: 'Tell me about the last time this annoyed you?' with no list of options."
+      "mattpocock": "You get a numbered batch of questions in one message, each with its suggested answer. E.g. Q1 to Q5 arrive together, and you reply 'yes, yes, no, yes, yes'.",
+      "superpowers": "Every message ends with one open, plain question and no list of choices. E.g. 'What is the moment you wish this existed?'"
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "mattpocock": "Shared ==understanding==, no file",
-      "superpowers": "Written ==design doc=="
+      "mattpocock": "Agreement in chat, ==no file==",
+      "superpowers": "A written ==design doc=="
      },
      "details": {
-      "mattpocock": "Grilling itself saves nothing; the result is the agreed answers in the chat. Example: you leave with 'yes, use Stripe, no free tier' but no document.",
-      "superpowers": "For a project it writes a document to docs/superpowers/specs/YYYY-MM-DD-topic-design.md and commits it. Example: goals, non-goals, constraints, what you decided."
+      "mattpocock": "It saves nothing; what you get is the answers you both agreed on in the chat. E.g. you leave with 'yes, use Stripe, no free plan' but no document.",
+      "superpowers": "For a project it writes a design doc and saves it in the project. E.g. a file listing the goals, what is out of scope, the limits, and what you decided."
      }
     },
     {
      "aspect": "Calls",
      "values": {
-      "mattpocock": "Sub-agents fetch ==facts==",
-      "superpowers": "==Builder-check== sub-agent"
+      "mattpocock": "Helpers ==look up== facts",
+      "superpowers": "A helper ==checks the doc=="
      },
      "details": {
-      "mattpocock": "When a question needs a fact from your files or tools, it sends a sub-agent to look it up instead of asking you. Example: 'which ORM do we use?' gets looked up, not asked.",
-      "superpowers": "A fresh sub-agent reads the finished design as a stranger builder and lists what it would still need to guess. It then hands off to writing-plans after approval."
+      "mattpocock": "When a question needs a fact from your files or tools, it sends a helper AI to look it up instead of asking you. E.g. 'which database library do we use?' gets looked up, not asked.",
+      "superpowers": "A fresh helper AI reads the finished doc as a stranger who must build from it, and lists what it would still have to guess. After you approve, it hands off to the writing-plans skill. E.g. 'Which payment company? A wrong guess changes the plan.'"
      }
     },
     {
      "aspect": "Best size",
      "values": {
       "mattpocock": "Any size, ==quick==",
-      "superpowers": "Small to ==big project=="
+      "superpowers": "Sizes the ==job== first"
      },
      "details": {
-      "mattpocock": "It scales from one small decision to a whole product because it is just a question loop. Example: grill a one-line API choice in one round.",
-      "superpowers": "It sizes the work: quick task just do it, small change in chat, project gets a doc. Example: 'make the icon blue' skips questions; a new app gets a design doc."
+      "mattpocock": "It works for one small choice or a whole product, because it is just rounds of questions. E.g. you can check one small choice, like a button label, in a single round.",
+      "superpowers": "It sorts the work: a quick task it just does, a small change is agreed in chat, a project gets a written doc. E.g. 'make the icon blue' skips the questions; a new app gets a design doc."
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "mattpocock": "==Recommended answer== each",
-      "superpowers": "==Mockups== and spikes"
+      "mattpocock": "==Suggested answer== on each",
+      "superpowers": "==Mockups== and throwaway builds"
      },
      "details": {
-      "mattpocock": "Each question carries its suggested answer, worded so a plain 'yes' accepts it. Example: 'Use Postgres? -> Yes, you already run it.'",
-      "superpowers": "It can open a browser tab with visual mockups and offer a throwaway spike build to feel things out. Example: show three layouts side by side before you pick."
+      "mattpocock": "Every question comes with its own suggested answer, worded so a plain 'yes' accepts it. E.g. 'Use Postgres? Suggested: yes, you already run it.'",
+      "superpowers": "It can open a browser tab with picture mockups, and offer a quick throwaway build to try an idea. E.g. three page layouts side by side before you pick one."
      }
     }
    ],
@@ -131,12 +131,12 @@
    ],
    "best": {
     "overall": "mattpocock",
-    "why": "Faster, lighter; recommended answers cut effort",
+    "why": "Faster, lighter; suggested answers save effort",
     "cases": [
      {
       "case": "Stress-test a plan",
       "winner": "mattpocock",
-      "why": "Batched questions, recommended answers, no ceremony"
+      "why": "Batched questions, suggested answers, no fuss"
      },
      {
       "case": "Vague idea, non-technical",
@@ -146,33 +146,32 @@
      {
       "case": "Need written spec",
       "winner": "superpowers",
-      "why": "Writes and builder-checks a design doc"
+      "why": "Writes a design doc, then checks it"
      },
      {
       "case": "Want to skip questions",
       "winner": "superpowers",
-      "why": "First message offers skip"
+      "why": "First message offers to skip"
      },
      {
       "case": "Hurry, many decisions",
       "winner": "mattpocock",
-      "why": "Whole frontier per round"
+      "why": "Asks every ready question each round"
      }
     ]
    },
    "glossary": {
-    "design tree": "A map where each decision leads to the follow-up decisions that depend on it. Example: 'which database' must be settled before 'which migration tool'.",
-    "frontier": "The questions you can ask right now because everything they depend on is already settled. Example: once you pick the database, 'which host?' joins the frontier.",
-    "round": "One batch of questions sent together, then a wait for your answers. Example: 5 numbered questions, you reply 'yes, yes, no, yes, 3'.",
-    "recommended answer": "The agent's own suggested reply written under each question so you can just say yes. Example: 'Q2: Free trial? Recommended: 14 days.'",
-    "sub-agent": "A helper AI the main agent spawns for one job and gets a short report from. Example: one helper reads the repo to find the auth library.",
-    "hard gate": "A rule that blocks all building until you approve. Example: the agent cannot even run npm install until you say the design is approved.",
-    "design doc": "A plain written description of what to build and why, detailed enough that a builder could plan from it. Example: goals, non-goals, constraints.",
-    "play back": "The agent retells in its own words what it understood so you can correct it. Example: 'So the app is for freelancers, and invoices must be one click, right?'",
-    "builder check": "A fresh sub-agent plays a stranger who must plan from the doc and lists what is still unclear. Example: 'Which payment provider? A wrong guess changes the plan.'",
-    "mockup": "A quick visual picture of a screen or layout to react to, shown in a browser tab. Example: three dashboard layouts side by side.",
-    "spike": "A fast throwaway build made to learn something, not to keep. Example: a 10-minute hacked page to feel whether the flow works.",
-    "anti-goal": "Something that would make the project a failure even if it technically works. Example: 'it works but takes 10 clicks' for a one-click tool."
+    "grill": "To question a plan hard, one point after another. Like a friend asking 'but what about...?' until your idea has no holes.",
+    "stress-test": "Push on a plan to find where it breaks before you build it. Like jumping on a bridge model before you build the real one.",
+    "round": "One batch of questions sent together, then a wait for your answers. Like a quiz sheet you hand back before getting the next one.",
+    "suggested answer": "The AI's own best guess, written under each question, so you can just say yes. Like a waiter saying 'the usual?' before you order.",
+    "design doc": "A plain written description of what to build and why. Like a house blueprint a builder could work from without calling you.",
+    "spec": "A written description of what to build. Like a recipe card before you cook.",
+    "mockups": "Quick pictures of a screen to react to before anything is built. Like a sketch of a room layout before moving furniture.",
+    "throwaway builds": "Quick rough versions made only to learn, then thrown away. Like a cardboard model of a chair before you build the real one.",
+    "writing-plans": "The superpowers skill that turns an approved design doc into a step-by-step build plan. It is the next step after this one.",
+    "Stripe": "A popular service apps use to take online payments. Like a card machine for websites.",
+    "Postgres": "A popular database, the place an app stores its data. Like a very organized filing cabinet."
    }
   },
   {
@@ -208,105 +207,105 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "==Huge==, no playbook fits",
-      "mattpocock": "Spec to ==tickets==",
-      "superpowers": "Spec to ==steps=="
+      "pstack": "==Huge== job, no skill fits",
+      "mattpocock": "Plan into ==tickets==",
+      "superpowers": "Spec into ==exact steps=="
      },
      "details": {
-      "pstack": "Use it for a large migration or a multi-part change that no narrower skill covers. Example: moving a whole app from REST to GraphQL over several days.",
-      "mattpocock": "You already have a spec or conversation and want it cut into issues. Example: turn a 'user accounts' spec into 6 tickets with blockers.",
-      "superpowers": "You have a spec and need an exact task list before touching code. Example: 'add CSV export' becomes 5 tasks, each with test and commit steps."
+      "pstack": "Use it for a big move or a many-part change when no narrower skill covers it. E.g. moving a whole app to a new database over several days.",
+      "mattpocock": "Use it when you already have a spec, or a chat about the work, and want it cut into tickets. E.g. a 'user accounts' spec becomes 6 tickets, each saying which ones must finish first.",
+      "superpowers": "Use it when you have a spec and need an exact task list before touching code. E.g. 'add a download button' becomes 5 tasks, each with its own test and commit step."
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "pstack": "==Rigor== scales with risk",
-      "mattpocock": "==Approve== slices first",
-      "superpowers": "==Exact==, checkable steps"
+      "pstack": "Care ==grows with risk==",
+      "mattpocock": "You ==approve== tickets first",
+      "superpowers": "Every step ==exact==, checkable"
      },
      "details": {
-      "pstack": "You pick how many checks and logs to use based on how risky the work is; it leans high. Example: a one-way database change gets more gates than a copy edit.",
-      "mattpocock": "It will not publish until you approve the breakdown. Example: you say 'merge tickets 3 and 4' and it revises before posting.",
-      "superpowers": "Every step must let the builder write exactly one reasonable thing. Example: 'Run pytest tests/x.py, expect FAIL: function not defined.'"
+      "pstack": "It picks how many checks and records to use based on how risky the work is, and leans toward more. E.g. deleting a database table gets more checks than fixing a typo.",
+      "mattpocock": "It will not post the tickets until you approve the breakdown. E.g. you say 'merge tickets 3 and 4' and it redoes the list before posting.",
+      "superpowers": "Each step must leave the builder only one sensible thing to write. E.g. 'Run the test file, expect it to FAIL with function not defined.'"
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Frame, design, ==loop==, log, verify",
-      "mattpocock": "Explore, slice, ==quiz==, publish",
-      "superpowers": "File map, ==tasks==, self-review"
+      "pstack": "Frame, plan, ==loop==, log, check",
+      "mattpocock": "Read, slice, ==quiz you==, post",
+      "superpowers": "File map, ==tasks==, self-check"
      },
      "details": {
-      "pstack": "Five phases: frame the goal, design the workflow, run each unit as an experiment, log decisions, verify the whole. Example: one unit = state hypothesis, smallest change, measure, keep or revert.",
-      "mattpocock": "It reads the code, drafts vertical slices, quizzes you on size and blockers, then publishes. Example: it asks 'too coarse or too fine?' before posting.",
-      "superpowers": "It maps files first, writes bite-sized tasks, then checks the plan against the spec itself. Example: self-review catches a function named differently in task 3 and task 7."
+      "pstack": "Five phases: define done, design the steps, run each step as an experiment, write down decisions, then check the whole thing. E.g. one step: guess 'saving in groups is faster', make the smallest change, measure, keep it or undo it.",
+      "mattpocock": "It reads the code, drafts thin end-to-end slices, quizzes you on size and order, then posts them. E.g. it asks 'are these too big or too small?' before posting.",
+      "superpowers": "It first lists which files will change, then writes small tasks, then checks the plan against the spec itself. E.g. it catches a function called one name in task 3 and another name in task 7."
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
-      "pstack": "One ==checkpoint== on long runs",
-      "mattpocock": "==Quizzes== you till approved",
-      "superpowers": "==Review== plan, pick runner"
+      "pstack": "One ==check-in== on long runs",
+      "mattpocock": "==Quizzes== you until approved",
+      "superpowers": "==Review==, then pick builder"
      },
      "details": {
-      "pstack": "It shows the framing and trade-offs once before a multi-hour run, then proceeds. Example: 'here is the rigor level and phase list, go?'",
-      "mattpocock": "It loops on granularity, blocking edges, merge or split until you approve. Example: 'Is ticket 2 really blocked by ticket 1?'",
-      "superpowers": "After saving it asks you to review and choose subagent-driven or inline execution. Example: it recommends one with a one-sentence reason."
+      "pstack": "Before a run of many hours it shows you the plan and the trade-offs once, then keeps going. E.g. 'here is how careful I will be and the phase list, go?'",
+      "mattpocock": "It keeps asking about size, order, and merge-or-split until you approve. E.g. 'Does ticket 2 really have to wait for ticket 1?'",
+      "superpowers": "After saving, it asks you to review the plan and pick how it gets built: a fresh helper AI per task, or itself in this chat. E.g. it recommends one with a one-sentence reason."
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "pstack": "Workflow + ==decision log==",
-      "mattpocock": "==Tickets== with blockers",
-      "superpowers": "==Plan file== with steps"
+      "pstack": "Plan + ==decision log==",
+      "mattpocock": "==Tickets== with wait-for links",
+      "superpowers": "A ==plan file== of steps"
      },
      "details": {
-      "pstack": "You get the designed phase list plus an audit trail a human can read later. Example: a log row per step in the PR.",
-      "mattpocock": "One ticket per slice, each naming the tickets that block it. Example: .scratch/feature/issues/03-login-ui.md, 'Blocked by: 01, 02'.",
-      "superpowers": "A markdown file under docs/superpowers/plans/ with exact paths, signatures and test steps. Example: 'Task 2: Create src/export.py, test tests/test_export.py'."
+      "pstack": "You get the step list plus a written trail of choices a person can check later. E.g. one log line per step, saved with the code so the reviewer can read it.",
+      "mattpocock": "One ticket per slice, each naming the tickets it must wait for. E.g. ticket 03 'login screen' says 'Blocked by: 01, 02'.",
+      "superpowers": "A text file in the project with exact file paths, function names, and test steps. E.g. 'Task 2: create src/export.py, test it in tests/test_export.py'."
      }
     },
     {
      "aspect": "Calls",
      "values": {
-      "pstack": "architect, ==show-me-your-work==",
-      "mattpocock": "Issue ==tracker== (GitHub, files)",
-      "superpowers": "==subagent-driven== or executing-plans"
+      "pstack": "Design and ==log== skills",
+      "mattpocock": "Posts to ==your tracker==",
+      "superpowers": "Names the ==builder skill=="
      },
      "details": {
-      "pstack": "It runs architect on one-way-door design choices and logs decisions with show-me-your-work. Example: the log is committed so a reviewer reads it.",
-      "mattpocock": "It publishes to whatever tracker was set up, local files or a real issue board. Example: native blocking links on GitHub.",
-      "superpowers": "Its output tells the builder to use one of those two skills. Example: a plan header names subagent-driven-development as the recommended runner."
+      "pstack": "It runs the architect skill on choices that are hard to undo, and the show-me-your-work skill to keep the log. E.g. the log gets saved with the code so a reviewer can read it.",
+      "mattpocock": "It posts to whatever ticket list was set up: plain files in the project, or a real board like GitHub Issues. E.g. on GitHub it uses real 'blocked by' links.",
+      "superpowers": "The top of the plan tells the builder to use one of two build skills: a fresh helper AI per task, or one session doing every task. E.g. it marks the fresh-helper one as recommended."
      }
     },
     {
      "aspect": "Best size",
      "values": {
-      "pstack": "==Migration==, many hours",
-      "mattpocock": "==Feature==, parallel slices",
-      "superpowers": "One ==subsystem==, solo"
+      "pstack": "==Big move==, many hours",
+      "mattpocock": "==Feature==, many small tickets",
+      "superpowers": "One ==part== at a time"
      },
      "details": {
-      "pstack": "Built for the ambitious or reviewable-after-you-leave job. Example: start it, step away, return to a trail you can audit.",
-      "mattpocock": "Slices each fit one fresh context so several agents can grab ready ones. Example: ticket 1 and 2 start now, ticket 3 waits.",
-      "superpowers": "If the spec spans several independent subsystems it tells you to write separate plans. Example: auth and billing become two plans."
+      "pstack": "Built for big jobs you start, walk away from, and check later. E.g. start it, go to lunch, come back to a trail you can read.",
+      "mattpocock": "Each ticket fits in one fresh AI chat, so several AIs can grab tickets that are ready. E.g. tickets 1 and 2 start now, ticket 3 waits for them.",
+      "superpowers": "If the spec covers several separate parts of the app, it tells you to write one plan per part. E.g. login and billing become two plans."
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "pstack": "Riskiest ==unknown== first",
-      "mattpocock": "==Expand-contract== wide refactors",
-      "superpowers": "==Review Focus== risk list"
+      "pstack": "==Scariest unknown== first",
+      "mattpocock": "Big renames in ==safe batches==",
+      "superpowers": "Lists ==five risks== to test"
      },
      "details": {
-      "pstack": "It sequences work with the scariest unknown first and builds the check before the feature. Example: capture a baseline before the migration.",
-      "mattpocock": "For a rename touching thousands of call sites, it adds the new form, migrates callers in batches, then deletes the old. Example: rename a column in three tickets.",
-      "superpowers": "It lists five likely failure inputs the spec forgot and puts a test for each in the owning task. Example: empty file input for an import feature."
+      "pstack": "It does the riskiest unknown part first, and builds the check before the feature. E.g. it records today's numbers before the move, so it can compare after.",
+      "mattpocock": "For a rename that touches thousands of spots, it adds the new name, moves code over in batches, then deletes the old name. E.g. renaming a database column becomes add, move-in-batches, and remove tickets.",
+      "superpowers": "It lists five likely problem inputs the spec forgot, and adds a test for each to the right task. E.g. someone uploads an empty file to an import feature."
      }
     }
    ],
@@ -339,49 +338,53 @@
    ],
    "best": {
     "overall": "mattpocock",
-    "why": "Small parallel tickets; you approve slices",
+    "why": "Small tickets AIs can share; you approve",
     "cases": [
      {
       "case": "Huge risky migration",
       "winner": "pstack",
-      "why": "Rigor scales, decision log, riskiest first"
+      "why": "More checks, decision log, riskiest part first"
      },
      {
       "case": "Parallel agents on feature",
       "winner": "mattpocock",
-      "why": "Blocking edges let agents grab ready work"
+      "why": "Wait-for links show which tickets are ready"
      },
      {
       "case": "Solo, step-by-step build",
       "winner": "superpowers",
-      "why": "Exact test-and-commit steps for fresh engineer"
+      "why": "Exact steps a newcomer can follow"
      },
      {
       "case": "Rename across codebase",
       "winner": "mattpocock",
-      "why": "Expand-contract keeps CI green per batch"
+      "why": "Safe batches keep every test passing"
      },
      {
       "case": "Reviewer reads after you leave",
       "winner": "pstack",
-      "why": "Committed audit trail plus diff"
+      "why": "Saved decision trail plus the code changes"
      }
     ]
    },
    "glossary": {
-    "vertical slice": "A thin piece that cuts through every layer (database, API, screen, tests) and works on its own. Example: 'user can log in' end to end, not 'all database tables'.",
-    "tracer bullet": "The first thin end-to-end slice used to prove the path works. Example: one button that saves one record through the real stack.",
-    "blocking edge": "A link saying ticket B cannot start until ticket A is done. Example: 'Login UI is blocked by Auth API'.",
-    "frontier": "The tickets whose blockers are all finished, so they can start now. Example: with tickets 1 and 2 done, ticket 3 joins the frontier.",
-    "expand-contract": "A safe way to change something used everywhere: add the new form, move callers over, then delete the old. Example: add column new_name, migrate code, drop old_name.",
-    "wide refactor": "One mechanical change that touches thousands of places at once. Example: renaming a shared type used in every file.",
-    "decision log": "A written trail of choices and why you made them, so a person can audit later. Example: 'chose Postgres over Mongo because of joins'.",
-    "rigor": "How many checks, gates and records the work gets. Example: high rigor means a baseline, a verification script and a log; low means just do it.",
-    "hypothesis loop": "Treat each change as an experiment: guess, make smallest change, measure, keep or undo. Example: 'if I batch the writes, load time drops 2x' then measure.",
-    "one-way door": "A decision that is hard or impossible to undo. Example: dropping a production table.",
-    "plan file": "A markdown file listing exact tasks, files, signatures and test steps for a builder who has not seen the code. Example: docs/superpowers/plans/2026-10-12-export.md.",
-    "executor": "The thing that carries out the plan, either fresh sub-agents per task or one inline session. Example: subagent-driven-development.",
-    "tracker": "The place tickets live, like GitHub Issues, Linear, or local files. Example: .scratch/feature/issues/01-setup.md."
+    "spec": "A written description of what to build. Like a recipe card before you cook.",
+    "tickets": "Small to-do cards, one per piece of work. Like sticky notes on a board, one job each.",
+    "tracker": "The place tickets live, like GitHub Issues or plain files in the project. Like the board the sticky notes hang on.",
+    "GitHub Issues": "GitHub's built-in to-do list for a project. Each issue is one ticket.",
+    "Blocked by": "A note that a ticket cannot start until other tickets finish. Like 'paint after the wall is built'.",
+    "slice": "One thin piece of a feature that works end to end, from screen to saved data. Like one full slice of cake, every layer included.",
+    "loop": "Do one small step, check it, keep it or undo it, then do the next. Like tasting the soup, adding salt, and tasting again.",
+    "decision log": "A written list of the choices made and why. Like a captain's logbook someone can read later.",
+    "plan file": "A text file listing exact tasks, files, and test steps for a builder who has never seen the code. Like flat-pack furniture instructions.",
+    "commit": "Saving a snapshot of your code changes, with a short note. Like a save point in a video game.",
+    "architect": "A pstack skill that sketches the code's shape before building it. Like drawing a floor plan before pouring concrete.",
+    "show-me-your-work": "A pstack skill that writes down each decision as the work happens. Like showing your math on a test.",
+    "migration": "Moving an app from one setup to another, like a new database. Like moving house with all your stuff.",
+    "database column": "One named field in a database table. Like the 'email' column in a spreadsheet.",
+    "codebase": "All the code for one project. Like every page of one book.",
+    "Parallel agents": "Several AI helpers working on different tickets at the same time. Like three cooks each making a different dish.",
+    "fresh engineer": "A builder who has never seen this code or this plan. The plan must spell out everything they cannot guess."
    }
   },
   {
@@ -409,89 +412,89 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "Non-trivial, ==new shape==",
-      "mattpocock": "==Interface== or seam unclear"
+      "pstack": "Big change, ==new shape==",
+      "mattpocock": "Unsure where ==parts connect=="
      },
      "details": {
-      "pstack": "Use it when jumping to code would lock in the wrong structure. Example: adding a payments module that touches orders, users and email.",
-      "mattpocock": "Use it while designing or improving a module's interface or deciding where a seam goes. Example: should 'checkout' expose three methods or one?"
+      "pstack": "Use it when jumping straight into code could lock in the wrong structure. E.g. adding payments that touch orders, users, and emails.",
+      "mattpocock": "Use it when you design how other code talks to a module, or where one piece plugs into another. E.g. should 'checkout' offer three functions or just one?"
      }
     },
     {
      "aspect": "Strict",
      "values": {
       "pstack": "==Two designs== required",
-      "mattpocock": "==Vocabulary== only, no process"
+      "mattpocock": "==Word list== only, no steps"
      },
      "details": {
-      "pstack": "It needs at least two structurally different candidates before synthesis, even if the first looks fine. Example: one event-based design and one direct-call design.",
-      "mattpocock": "It is a reference of terms and principles, not a procedure; you just apply it. Example: call it 'seam', not 'boundary' or 'service'."
+      "pstack": "It must come up with at least two truly different designs before picking, even if the first looks fine. E.g. one where parts send each other messages, and one where they call each other directly.",
+      "mattpocock": "It is a set of terms and rules of thumb, not a step-by-step process; you just use them. E.g. you always say 'seam', never 'boundary' or 'service'."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Ground, sketch, agree, build, ==scrap==",
-      "mattpocock": "Learn words, ==apply==, test"
+      "pstack": "Map, sketch, agree, build, ==scrap==",
+      "mattpocock": "Learn words, ==apply== them"
      },
      "details": {
-      "pstack": "Five phases: map the system, sketch with rival designs, optionally agree, implement against the sketch, scrap if wrong. Example: phase B runs the arena skill for 2+ candidates.",
-      "mattpocock": "Read the glossary and principles, then shape the module with them. Example: check the interface with the deletion test."
+      "pstack": "Five phases: map the code it touches, sketch rival designs, optionally get your OK, build to the sketch, and throw the sketch out if it proves wrong. E.g. in the sketch phase, several AI models each draft a design.",
+      "mattpocock": "Read the terms and rules, then shape your code with them. E.g. check a module with the deletion test."
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
-      "pstack": "==Opt-in== checkpoint only",
-      "mattpocock": "==Presents== designs, recommends"
+      "pstack": "Only ==if you ask==",
+      "mattpocock": "Shows designs, ==picks one=="
      },
      "details": {
-      "pstack": "By default it goes straight to building; it stops only if you say 'show me before implementing'. Example: '/architect with checkpoint'.",
-      "mattpocock": "In design-it-twice it shows each design, compares them, and gives its own pick. Example: 'design 2 is strongest, borrow design 3's error handling.'"
+      "pstack": "By default it goes straight to building; it stops for your OK only if you ask it to. E.g. you type '/architect with checkpoint'.",
+      "mattpocock": "In its optional design-it-twice mode it shows each design, compares them, and says which it likes best. E.g. 'design 2 is strongest; borrow how design 3 handles errors.'"
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "pstack": "Type ==sketch== + rationale",
+      "pstack": "==Outline== of code + reasons",
       "mattpocock": "No file, ==shared words=="
      },
      "details": {
-      "pstack": "A file of types and signatures with 'not implemented' bodies, plus a rationale with the usage sketch and synthesis decision. Example: createOrder(items): Order with a stub body.",
-      "mattpocock": "It produces a shared language, not an artifact. Example: your team says 'deep module' and 'adapter' the same way every time."
+      "pstack": "A file of function names and types with empty bodies, plus a note on why this design won. E.g. 'createOrder(items) returns Order', with the body saying 'not implemented' for now.",
+      "mattpocock": "It gives you a shared set of words, not a file. E.g. everyone on the team means the same thing by 'deep module' and 'adapter'."
      }
     },
     {
      "aspect": "Calls",
      "values": {
-      "pstack": "how, why, ==arena==, interrogate",
-      "mattpocock": "==Sub-agents== design-it-twice"
+      "pstack": "Helper skills, ==design race==",
+      "mattpocock": "Helpers draft ==3+ designs=="
      },
      "details": {
-      "pstack": "It traces systems with how and why, races candidates in arena, and can attack the result with interrogate. Example: arena returns one synthesized design.",
-      "mattpocock": "The optional DESIGN-IT-TWICE file spawns 3+ sub-agents with different constraints. Example: one minimizes the interface, one maximizes flexibility."
+      "pstack": "It uses the skills named how and why to trace the existing code, the arena skill to race designs, and can use interrogate to attack the winner. E.g. arena returns one combined best design.",
+      "mattpocock": "Its optional design-it-twice guide sends out 3 or more helper AIs, each with a different goal. E.g. one keeps the interface tiny, another makes it as flexible as possible."
      }
     },
     {
      "aspect": "Best size",
      "values": {
-      "pstack": "==Big==, crosses boundaries",
+      "pstack": "==Big==, crosses many parts",
       "mattpocock": "==Small== to mid module"
      },
      "details": {
-      "pstack": "Fits work that spans modules and could set the pattern for the repo. Example: a new service layer.",
-      "mattpocock": "Fits one module, one cluster of shallow modules, or one seam decision. Example: merge three thin wrappers into one deep module."
+      "pstack": "Fits work that spans several modules and could set the pattern for the whole project. E.g. a new layer that every request passes through.",
+      "mattpocock": "Fits one module, a few thin modules to merge, or one plug-in point to decide. E.g. merge three thin pass-along pieces into one module that does real work."
      }
     },
     {
      "aspect": "Edge",
      "values": {
       "pstack": "==Scraps== sketch when wrong",
-      "mattpocock": "==Deletion test==, two adapters"
+      "mattpocock": "==Deletion test== for value"
      },
      "details": {
-      "pstack": "If the same workaround shows up repeatedly it throws the sketch away and redesigns smaller. Example: casts and 'any' needed everywhere.",
-      "mattpocock": "Imagine deleting the module: if complexity spreads to callers it earned its keep; one adapter is a fake seam, two is real. Example: only add a port if prod and test both vary."
+      "pstack": "If the same kind of workaround keeps showing up, it throws the sketch away and redesigns it smaller. E.g. the same ugly hack keeps appearing in unrelated files.",
+      "mattpocock": "Imagine deleting the module: if the code using it would get more complex, it was useful. Only make a plug-in point when two different adapter versions exist. E.g. a real payment adapter for the live app and a fake one for tests."
      }
     }
    ],
@@ -524,7 +527,7 @@
      {
       "case": "Brand-new module or service",
       "winner": "pstack",
-      "why": "Two designs, signature sketch, then build"
+      "why": "Two designs, an outline, then build"
      },
      {
       "case": "Tidy one messy module",
@@ -534,33 +537,34 @@
      {
       "case": "Team needs shared words",
       "winner": "mattpocock",
-      "why": "Common terms: seam, depth, adapter"
+      "why": "Common terms: seam, deep module, adapter"
      },
      {
       "case": "Design keeps hitting friction",
       "winner": "pstack",
-      "why": "Scrap rule redesigns instead of patching"
+      "why": "Throws it out instead of patching"
      },
      {
       "case": "Compare rival interfaces",
       "winner": "mattpocock",
-      "why": "Design-it-twice spawns 3+ constraint agents"
+      "why": "3+ helpers each draft a different design"
      }
     ]
    },
    "glossary": {
-    "module": "Anything with an interface and an implementation, big or small. Example: a function, a class, or a package.",
-    "interface": "Everything a caller must know to use the module, not just the types. Example: method names plus ordering rules, error cases and config.",
-    "seam": "A place where you can change behavior without editing that spot; where the interface lives. Example: a payment gateway you can swap for a fake in tests.",
-    "deep module": "A lot of behavior behind a small interface. Example: one save() call that handles retries, validation and storage.",
-    "shallow module": "An interface almost as complicated as what it does, so it hides little. Example: a wrapper that just forwards every call.",
-    "adapter": "A concrete thing that fills a slot at a seam. Example: a Stripe adapter in production, an in-memory adapter in tests.",
-    "deletion test": "Imagine deleting the module. If nothing gets harder it was a pass-through; if complexity appears in many callers it was useful. Example: deleting a pure forwarder changes nothing.",
-    "leverage": "What callers gain from a deep module: more capability per thing they must learn. Example: one call replaces ten.",
-    "locality": "Change and bugs concentrate in one place rather than spreading. Example: fix retry logic once, fixed everywhere.",
-    "signature sketch": "Function and type outlines with empty or 'not implemented' bodies, written before the real code. Example: function charge(order): Receipt { throw new Error('not implemented') }.",
-    "arena": "A pstack skill that runs several models on the same task and combines their results. Example: four models each propose a design, one synthesis comes back.",
-    "design it twice": "Produce at least two very different designs before choosing, because the first idea is rarely best. Example: one callback-based, one queue-based."
+    "module": "Any piece of code with an outside and an inside, big or small. Like a function, a file, or a whole package.",
+    "interface": "Everything other code must know to use a module: names, rules, errors. Like the buttons on a microwave, not the wiring inside.",
+    "interfaces": "Everything other code must know to use a module: names, rules, errors. Like the buttons on a microwave, not the wiring inside.",
+    "service": "A separate program or part that does one job for the rest of the app. Like the payments desk in a store.",
+    "seam": "A spot where one piece of code plugs into another, so you can swap what is behind it. Like a power socket.",
+    "deep module": "A lot of work hidden behind a few simple buttons. Like a dishwasher: one start button, lots happening inside.",
+    "adapter": "The actual thing plugged into a seam. Like a real charger in the socket, or a test charger.",
+    "deletion test": "Imagine deleting a module and ask if things get harder. If nothing changes, it was just passing things along.",
+    "design-it-twice": "Make at least two very different designs before choosing, because the first idea is rarely best. Like sketching two floor plans before building.",
+    "types": "Labels that say what kind of data something is, like number or text. They let code check it gets the right thing.",
+    "arena": "A pstack skill that has several AI models solve the same task, then combines the best parts. Like a cook-off with one final dish.",
+    "interrogate": "A pstack skill that attacks a design to find its weak spots. Like a friend trying hard to break your plan.",
+    "friction": "Code that keeps fighting the design, needing hacks and special cases. Like a drawer that sticks every time you open it."
    }
   },
   {
@@ -596,105 +600,105 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "Bugs with ==cheap== test",
-      "mattpocock": "Features, ==integration== tests",
-      "superpowers": "==Every== feature and bugfix"
+      "pstack": "Bugs with an ==easy== test",
+      "mattpocock": "Features or fixes, ==test-first==",
+      "superpowers": "==Every== feature and fix"
      },
      "details": {
-      "pstack": "Only when you ask for TDD or a regression test, or the bug has an obvious easy test target. Example: a function returns the wrong value and a unit test already exists nearby.",
-      "mattpocock": "When you want to build or fix test-first, or say red-green-refactor. Example: 'build checkout test-first' triggers it.",
-      "superpowers": "It says always: features, bug fixes, refactors, behavior changes. Only throwaway, generated code and config need your OK to skip."
+      "pstack": "Use it when you ask for test-first, or when a bug is easy to catch with one small test. E.g. a price function returns 0 instead of 5, and a test file for it already exists.",
+      "mattpocock": "Use it when you want to build or fix something by writing the test first. E.g. you say 'build the checkout page test-first'.",
+      "superpowers": "It says use it every time: new features, bug fixes, cleanups, any change in behavior. E.g. even a one-line fix starts with a test; only throwaway demos, generated code and config files may skip, and only with your OK."
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "pstack": "==Soft==, skip if costly",
-      "mattpocock": "==Firm== loop rules",
-      "superpowers": "==Iron law==, no exceptions"
+      "pstack": "==Soft==, skips bad tests",
+      "mattpocock": "==Firm== rules every round",
+      "superpowers": "==No exceptions== at all"
      },
      "details": {
-      "pstack": "If the test needs broad setup, slow end-to-end, or brittle mocks, skip it and use the closest check. Example: use a repro script instead.",
-      "mattpocock": "Red before green, one slice at a time, tests only at agreed seams. Example: no test at a seam you did not confirm.",
-      "superpowers": "No production code without a failing test first; code written early must be deleted. Example: wrote the function first? delete it, start over."
+      "pstack": "If a test would be slow, fragile, or need lots of setup, it skips it and checks the fix another way. E.g. it runs a tiny script that shows the bug is gone.",
+      "mattpocock": "The test fails first, then the code; one small piece at a time; tests only at spots you agreed on. E.g. it will not test a spot you never said yes to.",
+      "superpowers": "No real code until a test has failed first. E.g. if you wrote the function before its test, you delete it and start over."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Test, ==quote== failure, fix, rerun",
-      "mattpocock": "Agree seams, ==one slice== each",
-      "superpowers": "Red, green, ==refactor=="
+      "pstack": "Test, ==show== fail, fix, rerun",
+      "mattpocock": "Agree spots, ==one piece== each",
+      "superpowers": "Fail, pass, ==tidy==, repeat"
      },
      "details": {
-      "pstack": "Write the smallest failing test, run it, quote the failure content to prove it fails for the right reason, fix, rerun. Example: quote 'expected 5, got 0', not just the assertion line.",
-      "mattpocock": "Confirm seams first, then repeat one test, one minimal implementation. Example: seam 'checkout()', first test 'valid cart confirms'.",
-      "superpowers": "Write failing test, watch it fail, minimal code, watch it pass, clean up, repeat. Example: after green, extract duplicate validation while tests stay green."
+      "pstack": "It writes one small test, runs it, and copies the error to prove it fails for the right reason, then fixes and reruns. E.g. it shows 'expected 5, got 0', not just 'test failed'.",
+      "mattpocock": "First you agree where to test, then it repeats: one test, just enough code to pass it. E.g. spot 'checkout()', first test 'a full cart can check out'.",
+      "superpowers": "Write a test and watch it fail, write just enough code to pass, then tidy up. E.g. once it passes, it merges two copies of the same email check, and the tests still pass."
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
-      "pstack": "==Never==, reports evidence",
-      "mattpocock": "==Confirm seams== before tests",
-      "superpowers": "==Only== for exceptions"
+      "pstack": "==Never==, shows proof",
+      "mattpocock": "==Yes==, where to test",
+      "superpowers": "==Only== to skip tests"
      },
      "details": {
-      "pstack": "No human check-in; it reports the failing-before and passing-after evidence at the end. Example: final reply quotes the red output.",
-      "mattpocock": "It writes down seams with a one-line note on what each catches and misses, and waits for you. Example: 'seam: checkout(); catches pricing bugs, misses UI'.",
-      "superpowers": "It asks your human partner only when you want to skip TDD or when stuck. Example: 'config file, skip tests?'"
+      "pstack": "It does not stop to ask; at the end it shows the test failing before the fix and passing after. E.g. its last message pastes the error it saw before the fix.",
+      "mattpocock": "Before any test, it lists the spots it wants to test, what each one catches and misses, and waits for your OK. E.g. 'test checkout(): catches price bugs, misses the screen layout'.",
+      "superpowers": "It only asks when you want to skip tests or when it is stuck. E.g. 'This is just a config file. Skip tests?'"
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "pstack": "One ==regression test==",
-      "mattpocock": "Tests at ==seams==",
+      "pstack": "One test ==for the bug==",
+      "mattpocock": "Tests that ==survive cleanups==",
       "superpowers": "Tests + ==checklist=="
      },
      "details": {
-      "pstack": "A single focused test that fails before the fix and passes after. Example: test_empty_email_rejected.",
-      "mattpocock": "Behavior tests through the public interface that survive refactors. Example: 'user can checkout with valid cart'.",
-      "superpowers": "Tests plus a verification checklist: every function tested, each watched failing, suite green. Example: unchecked box means you skipped TDD."
+      "pstack": "One small test that fails before the fix and passes after, so the bug cannot sneak back. E.g. a test named 'empty email is rejected'.",
+      "mattpocock": "Tests that use the code the way a caller would, so they still pass when you rewrite the insides. E.g. 'a user can check out with a full cart'.",
+      "superpowers": "Tests plus a tick-box list: every function has a test, each one failed first, all tests pass. E.g. one empty box means you skipped a step and start over."
      }
     },
     {
      "aspect": "Best size",
      "values": {
       "pstack": "==Tiny== bug fix",
-      "mattpocock": "==Feature==, many slices",
+      "mattpocock": "==Feature==, many pieces",
       "superpowers": "==Any== size, strict team"
      },
      "details": {
-      "pstack": "Fits one bug with a small obvious test. Example: a wrong default value.",
-      "mattpocock": "Fits a feature built across several vertical slices. Example: checkout built as cart, payment, receipt slices.",
-      "superpowers": "Applies to everything, small or large. Example: a one-line fix still needs a failing test first."
+      "pstack": "Fits one bug that needs one small test. E.g. a wrong default, like a timeout set to 0.",
+      "mattpocock": "Fits a feature built as several small pieces, each one working end to end. E.g. checkout built as cart, then payment, then receipt.",
+      "superpowers": "Applies to everything, big or small. E.g. even a one-line fix needs a failing test first."
      }
     },
     {
      "aspect": "Speed",
      "values": {
-      "pstack": "==Fastest==, low ceremony",
-      "mattpocock": "==Medium==, seam talk",
-      "superpowers": "==Slowest==, full suite run"
+      "pstack": "==Fastest==, little fuss",
+      "mattpocock": "==Medium==, agree first",
+      "superpowers": "==Slowest==, runs all tests"
      },
      "details": {
-      "pstack": "One test, one fix, short report. Skips when a test costs more than the fix.",
-      "mattpocock": "You spend a few minutes agreeing seams before the first test.",
-      "superpowers": "Runs and watches every red and green, and runs the whole project suite before done. Example: bare pytest, not just your file."
+      "pstack": "One test, one fix, a short report, and no test at all when writing it costs more than the fix. E.g. a typo fix gets checked another way, with no new test.",
+      "mattpocock": "You spend a few minutes agreeing where to test before the first test. E.g. a short chat about which functions matter most.",
+      "superpowers": "It watches every test fail and pass, then runs all the project's tests before it says done. E.g. it runs the full 'npm test', not just your one file."
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "pstack": "==Prefer no test== over bad",
-      "mattpocock": "No ==horizontal== slicing",
+      "pstack": "==No test== beats bad test",
+      "mattpocock": "Never ==all tests first==",
       "superpowers": "Code first? ==Delete== it"
      },
      "details": {
-      "pstack": "Better no test than one that mostly tests mocks or timing. Example: skip a test needing a full browser for a typo fix.",
-      "mattpocock": "Do not write all tests first then all code; one test, one implementation, repeat. Example: no 20 tests before any code.",
-      "superpowers": "If code came before the test, delete it and start from tests. Example: no 'keep as reference'."
+      "pstack": "A test that mostly checks fakes or timing is worse than no test. E.g. it will not open a whole browser just to test a typo fix.",
+      "mattpocock": "Do not write every test first and then all the code; do one test, then its code, then repeat. E.g. not 20 tests before any code exists.",
+      "superpowers": "If code came before its test, delete it and start again from the test. E.g. you cannot even keep it open 'for reference'."
      }
     }
    ],
@@ -719,48 +723,50 @@
    ],
    "best": {
     "overall": "mattpocock",
-    "why": "Agreed seams keep tests meaningful, not heavy",
+    "why": "Agreed test spots keep tests useful, not heavy",
     "cases": [
      {
       "case": "Quick bug fix",
       "winner": "pstack",
-      "why": "Cheap test or skip; short report"
+      "why": "One easy test, or none; short report"
      },
      {
       "case": "New feature, solo",
       "winner": "mattpocock",
-      "why": "One slice at a time, agreed seams"
+      "why": "One small piece at a time"
      },
      {
       "case": "Strict team discipline",
       "winner": "superpowers",
-      "why": "Iron law, no exceptions, delete early code"
+      "why": "No exceptions; early code gets deleted"
      },
      {
       "case": "Legacy code, hard to test",
       "winner": "pstack",
-      "why": "Prefers no test over a bad one"
+      "why": "Skips a test that would be bad"
      },
      {
       "case": "Big refactor safety net",
       "winner": "mattpocock",
-      "why": "Behavior tests at seams survive refactors"
+      "why": "Tests survive rewrites of the insides"
      }
     ]
    },
    "glossary": {
-    "red-green": "Red means a new test fails; green means you wrote just enough code to pass it. Example: red 'expected 15, got undefined', green after adding sum().",
-    "refactor": "Clean up code after green without changing behavior. Example: rename variables, remove duplication, tests still pass.",
-    "cheap test": "A test you can write quickly with no heavy setup. Example: a unit test calling one function with a literal input.",
-    "regression test": "A test that locks in a fixed bug so it cannot quietly return. Example: a test that an empty email is rejected.",
-    "seam": "The public boundary where you test and can observe behavior without reaching inside. Example: the checkout() function and its results.",
-    "vertical slice": "One thin end-to-end behavior built from one test to one implementation. Example: 'cart total with discount' before 'tax'.",
-    "horizontal slicing": "Writing all the tests first, then all the code. It tests imagined behavior and goes out of sync. Example: 20 tests written before any implementation.",
-    "iron law": "A rule with no exceptions, named as absolute. Example: no production code without a failing test first.",
-    "tautological test": "A test whose expected value is computed the same way as the code, so it can never fail. Example: expect(add(a,b)).toBe(a+b).",
-    "tracer bullet": "A first thin slice that proves the path end to end and teaches you what to do next. Example: one test through the real interface.",
-    "mock": "A fake stand-in for something external during a test. Example: a fake payment client instead of calling Stripe.",
-    "verification checklist": "A list of boxes to tick before calling work done. Example: 'watched each test fail first'."
+    "test-first": "Write the test before the code. Like deciding what a clean room looks like before you start cleaning.",
+    "red-green": "Red is a new test failing because the code is not there yet. Green is the same test passing once you add just enough code.",
+    "red-green-refactor": "The test-first loop: a test fails (red), code makes it pass (green), then you tidy up (refactor). Like a traffic light, then sweeping the road.",
+    "refactor": "Tidying code without changing what it does. Like cleaning your room: same stuff, easier to find.",
+    "cheap test": "A test that takes a minute to write and a second to run. Like checking that add(2, 2) gives 4.",
+    "regression test": "A test that makes sure a bug you fixed never comes back. Like a smoke alarm for one old fire.",
+    "seam": "A spot where one piece of code plugs into another, like a power socket. Tests plug in there.",
+    "vertical slice": "One small feature built all the way through, from test to working code. Like baking one whole cupcake before starting the next.",
+    "horizontal slicing": "Writing all the tests first, then all the code. Like packing for a trip before you know where you are going.",
+    "iron law": "A rule with zero exceptions. Like 'no shoes in the house', not even for one second.",
+    "tautological test": "A test that checks the code against itself, so it can never fail. Like grading your own quiz with your own answers.",
+    "tracer bullet": "A first tiny piece that runs all the way through the app to prove the path works. Like pulling one string through a pipe before the real cable.",
+    "mock": "A fake version of a real thing, used only in tests. Like a toy cash register instead of a real bank.",
+    "verification checklist": "A list of boxes to tick before you call the work done. Like a pilot's checklist before takeoff."
    }
   },
   {
@@ -796,105 +802,105 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "While ==debugging==, any symptom",
+      "pstack": "Any time you ==debug==",
       "mattpocock": "==Hard== or slow bugs",
       "superpowers": "Any bug, ==before== fixing"
      },
      "details": {
-      "pstack": "It is a background principle applied whenever you debug. Example: a crash from a nil value.",
-      "mattpocock": "For broken, throwing, failing, or slow things, or when you say diagnose. Example: a checkout that fails one time in twenty.",
-      "superpowers": "For any test failure, production bug, performance problem, or build failure, especially under time pressure. Example: CI is red and you want a quick patch."
+      "pstack": "It is a background rule the AI follows whenever it debugs; you do not run it yourself. E.g. the app crashes because a value is empty.",
+      "mattpocock": "Use it when something is broken, throws errors, fails, or is slow, or when you say 'diagnose'. E.g. checkout fails one time in twenty.",
+      "superpowers": "Use it for any failing test, live bug, slow code, or broken build, most of all when you are in a rush. E.g. CI is red and you want a quick patch."
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "pstack": "==Principle==, few rules",
-      "mattpocock": "==Six phases==, skip if justified",
-      "superpowers": "==Iron law==, four phases"
+      "pstack": "==Light== rules, no steps",
+      "mattpocock": "==Six phases==, skip with reason",
+      "superpowers": "==No exceptions==, four phases"
      },
      "details": {
-      "pstack": "Five short tips, no fixed procedure. Example: reproduce first, never add a guard to silence.",
-      "mattpocock": "A full discipline you may shorten only with a stated reason. Example: skip Minimise only if the bug is already tiny.",
-      "superpowers": "No fixes without root cause investigation first; you must finish each phase before the next. Example: no patch until you have traced the bad value."
+      "pstack": "Six short rules and no fixed process. E.g. reproduce the bug first, and never add a check just to hide a crash.",
+      "mattpocock": "A full process; it may skip a phase only with a stated reason. E.g. it skips the shrinking phase only if the bug is already tiny.",
+      "superpowers": "No fix until the real cause is found, and each phase must finish before the next. E.g. no patch until it has traced where the bad value came from."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Reproduce, ask ==why==, grep",
-      "mattpocock": "Loop, shrink, ==hypothesize==, fix",
-      "superpowers": "Evidence, compare, ==one hypothesis==, fix"
+      "pstack": "Reproduce, ask ==why==, search",
+      "mattpocock": "Loop, shrink, ==guess==, fix",
+      "superpowers": "Evidence, compare, ==one guess==, fix"
      },
      "details": {
-      "pstack": "Reproduce, keep asking why, then fix every instance of the pattern. Example: grep for the same nil-check bug elsewhere.",
-      "mattpocock": "Build a pass-fail loop first, shrink the repro, rank 3-5 hypotheses, probe, fix with a test, clean up. Example: a 2-second script that fails on this bug.",
-      "superpowers": "Read errors, compare to working code, test one hypothesis at a time, then fix once. Example: log each component boundary to see where data breaks."
+      "pstack": "Make the bug happen again, keep asking 'why?', then fix every copy of the same mistake. E.g. search the code for the same missing check in other files.",
+      "mattpocock": "Build a quick pass-fail check first, shrink the example, rank 3-5 guesses, test them, fix with a test, then clean up. E.g. a 2-second script that fails only when this bug happens.",
+      "superpowers": "Read the errors, compare with code that works, test one guess at a time, then make one fix. E.g. log what goes in and out of each part to see where the data breaks."
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
-      "pstack": "==No== human step",
-      "mattpocock": "Shows ranked ==hypotheses==",
-      "superpowers": "Asks after ==3 fails=="
+      "pstack": "==Never== stops to ask",
+      "mattpocock": "Shows ==ranked guesses==",
+      "superpowers": "Asks after ==3 failed fixes=="
      },
      "details": {
-      "pstack": "The skill lists no check-ins; it just applies the rules while you work.",
-      "mattpocock": "It shows the ranked list before testing and does not block if you are away. Example: you reply 'we deployed #3 yesterday.'",
-      "superpowers": "After three failed fixes it stops and discusses architecture with you. Example: each fix breaks something new."
+      "pstack": "It has no check-ins; the rules just apply while the AI works. E.g. it fixes the crash without asking you anything.",
+      "mattpocock": "Before testing, it shows you its ranked guesses, but keeps going if you are away. E.g. you reply 'we changed #3 yesterday' and it moves that guess up.",
+      "superpowers": "After three fixes fail, it stops and talks with you about the overall design. E.g. each fix breaks something new somewhere else."
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "pstack": "Pattern-wide ==root fix==",
-      "mattpocock": "Regression test + ==hypothesis== note",
+      "pstack": "Fix at the ==root==, everywhere",
+      "mattpocock": "Test + ==cause noted==",
       "superpowers": "Failing test, ==one== fix"
      },
      "details": {
-      "pstack": "A fix at the cause, applied everywhere the pattern appears. Example: fix all callers, not one.",
-      "mattpocock": "Failing test at a correct seam if one exists, the cause stated in the commit message. Example: 'Cause: stale cache after restart.'",
-      "superpowers": "A reproduction test first, then a single change. Example: no 'while I'm here' refactors."
+      "pstack": "A fix at the real cause, applied everywhere the same mistake shows up. E.g. fix all the places that pass the empty value, not just one.",
+      "mattpocock": "A test that fails before the fix, if there is a good spot for it, and the cause written in the commit message. E.g. 'Cause: a saved settings file went stale after restart.'",
+      "superpowers": "First a test that shows the bug, then one single change. E.g. no 'while I'm here' cleanups bundled in."
      }
     },
     {
      "aspect": "Calls",
      "values": {
-      "pstack": "==None==, a mindset",
-      "mattpocock": "==GLOSSARY== and ADRs",
-      "superpowers": "==TDD== and verification skills"
+      "pstack": "==None==, just a mindset",
+      "mattpocock": "Reads ==project notes== first",
+      "superpowers": "==Test and check== skills"
      },
      "details": {
-      "pstack": "It cites no other skills; it is a principle.",
-      "mattpocock": "Reads the glossary and decision records in the area first. Example: use the module names the project already uses.",
-      "superpowers": "Uses test-driven-development for the failing test and verification-before-completion before claiming success. Example: run the test before saying fixed."
+      "pstack": "It points to no other skills; it is just a way of thinking. E.g. it shapes how the AI fixes a crash, with no extra tools.",
+      "mattpocock": "It first reads the project's word list and past decision notes for that area. E.g. it uses the same names for parts of the code that the project already uses.",
+      "superpowers": "It uses the test-driven-development skill for the failing test, and verification-before-completion before saying it worked. E.g. it reruns the test before saying 'fixed'."
      }
     },
     {
      "aspect": "Best size",
      "values": {
       "pstack": "==Any== size, light",
-      "mattpocock": "==Hard== flaky or slow",
-      "superpowers": "==Stubborn== bug, under pressure"
+      "mattpocock": "==Hard==, flaky or slow",
+      "superpowers": "==Stubborn== bug, in a rush"
      },
      "details": {
-      "pstack": "Light enough for a quick crash. Example: a one-line null reference.",
-      "mattpocock": "Strongest when the bug is intermittent or a performance regression. Example: raise a 1% flake to a high repro rate.",
-      "superpowers": "Meant for repeat failures and 'just one quick fix' moments. Example: second fix did not work."
+      "pstack": "Light enough for a quick crash. E.g. a one-line fix for an empty value.",
+      "mattpocock": "Strongest when a bug only happens sometimes, or when something got slower. E.g. it makes a bug that shows up 1 time in 100 show up much more often, so it can be studied.",
+      "superpowers": "Meant for repeat failures and 'just one quick fix' moments. E.g. your second fix did not work either."
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "pstack": "Guards are ==band-aids==",
+      "pstack": "Hiding checks are ==band-aids==",
       "mattpocock": "==Tagged== debug logs",
-      "superpowers": "==3 fails==, question architecture"
+      "superpowers": "==3 fails== means bad design"
      },
      "details": {
-      "pstack": "A nil check that silences a crash is a symptom fix. Example: fix why it was nil.",
-      "mattpocock": "Every debug log gets a unique prefix like [DEBUG-a4f2] so cleanup is one grep. Example: grep removes them all.",
-      "superpowers": "Three failed fixes signal a wrong design, not a bad hypothesis. Example: shared state causes new symptoms each time."
+      "pstack": "An 'if empty, skip' check that only stops a crash hides the bug instead of fixing it. E.g. find out why the value was empty instead.",
+      "mattpocock": "Every temporary log line gets a unique tag like [DEBUG-a4f2], so one search finds them all. E.g. when done, it searches for the tag and deletes every match.",
+      "superpowers": "Three failed fixes mean the design is wrong, not just the guess. E.g. data shared between parts causes a new problem each time."
      }
     }
    ],
@@ -923,49 +929,51 @@
    ],
    "best": {
     "overall": "mattpocock",
-    "why": "Tight repro loop beats guessing",
+    "why": "A fast repeatable check beats guessing",
     "cases": [
      {
       "case": "Hard flaky bug",
       "winner": "mattpocock",
-      "why": "Loop, shrink, ranked hypotheses"
+      "why": "Loop, shrink, ranked guesses"
      },
      {
       "case": "Quick crash",
       "winner": "pstack",
-      "why": "Fix root, grep for same pattern"
+      "why": "Fix the cause, search for repeats"
      },
      {
       "case": "Third fix attempt failed",
       "winner": "superpowers",
-      "why": "Three fails: question architecture"
+      "why": "Three fails: rethink the design"
      },
      {
       "case": "Performance regression",
       "winner": "mattpocock",
-      "why": "Baseline measure then bisect"
+      "why": "Measure speed first, then find the change"
      },
      {
       "case": "Bug across CI and services",
       "winner": "superpowers",
-      "why": "Instrument each component boundary first"
+      "why": "Logs each handoff between parts first"
      }
     ]
    },
    "glossary": {
-    "root cause": "The real source of the bug, not where it shows up. Example: a bad value created earlier, not the line that crashed.",
-    "symptom fix": "A patch that hides the problem without fixing its source. Example: adding a nil check so the crash stops.",
-    "feedback loop": "A command you can rerun in seconds that goes red when this bug happens and green once fixed. Example: a script that calls the endpoint and checks the exact wrong output.",
-    "red-capable": "Able to fail on this specific bug, not just run without errors. Example: asserts the user's exact symptom.",
-    "tight loop": "A feedback loop that is fast, deterministic and sharp. Example: a 2-second test instead of a 5-minute manual click-through.",
-    "minimise": "Shrink the repro until every remaining piece is needed to trigger the bug. Example: cut fields from the input until removing any one stops the failure.",
-    "hypothesis": "A testable guess about the cause that predicts what happens if you change something. Example: 'if the cache is stale, clearing it fixes it'.",
-    "regression test": "A test that locks in a fix so the bug cannot silently return. Example: a test that fails before and passes after.",
-    "seam": "The point where code can be tested through its public interface. Example: the function a real caller invokes.",
-    "iron law": "A rule stated as absolute with no exceptions. Example: no fixes without root cause investigation first.",
-    "flaky": "A bug that only sometimes happens. Example: fails 1 run in 50.",
-    "instrument": "Add targeted logging or a debugger probe to see what is happening. Example: log the value entering and leaving each component.",
-    "guard": "A check added to prevent an error, such as a nil check. Example: if (x) { ... } added just to stop a crash."
+    "debug": "Hunting down why code does the wrong thing, then fixing it. Like finding which fuse blew before you swap it.",
+    "symptom": "Where a bug shows up, not where it starts. Like the puddle on the floor, not the leak in the roof.",
+    "root": "The real source of a bug. Like the leak in the roof that makes the puddle.",
+    "reproduce": "Make the bug happen again on purpose. Like asking 'do that again' to see exactly what breaks.",
+    "loop": "A quick check you can rerun in seconds that fails while the bug is there and passes once fixed. Like flicking a light switch to test a bulb.",
+    "tight loop": "A pass-fail check that runs in seconds and gives the same answer every time. Like a light switch that never lies.",
+    "flaky": "A bug or test that only fails sometimes. Like a light that flickers now and then.",
+    "band-aids": "Quick patches that hide a problem but do not fix it. Like taping over a warning light on your car.",
+    "debug logs": "Temporary print lines added to see what the code is doing. Like sticky notes tracking where a package went.",
+    "commit message": "The short note saved with each code change, saying what changed and why. Like a label on a moving box.",
+    "test-driven-development": "The superpowers skill for writing a failing test before the fix. Like setting the target before you shoot.",
+    "verification-before-completion": "The superpowers skill that makes the AI rerun its checks before it says done. Like checking the stove is off before you leave.",
+    "CI": "Robot checks that run your tests every time code is pushed. Red means something failed.",
+    "services": "Separate programs that make up one app and talk to each other. Like kitchen stations in one restaurant.",
+    "Performance regression": "Code that got slower after a change. Like a car that used to do 60 now struggling at 40."
    }
   },
   {
@@ -1001,105 +1009,105 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "N ==parallel== workers",
-      "mattpocock": "Spec plus ==tickets==",
-      "superpowers": "Plan, ==independent== tasks"
+      "pstack": "Many ==helpers== at once",
+      "mattpocock": "Plan already cut into ==tickets==",
+      "superpowers": "Plan with ==separate== tasks"
      },
      "details": {
-      "pstack": "Use it to fan out workers that cover slices or race on one brief. Example: five workers each check a different module.",
-      "mattpocock": "Use it when /to-spec and /to-tickets already produced a spec with tickets. Example: 8 tickets on GitHub with blocking links.",
-      "superpowers": "Use it when you have a plan with mostly independent tasks. Tightly coupled tasks go elsewhere."
+      "pstack": "Use it to send many helper agents out at the same time. They each take one part of the job, or all try the same job. E.g. five helpers each check a different folder of your app.",
+      "mattpocock": "Use it after /to-spec and /to-tickets have written the plan and cut it into tickets. E.g. 8 tickets on GitHub, where some tickets must wait for others.",
+      "superpowers": "Use it when you have a plan whose tasks barely depend on each other. Tasks that are tangled together need a different approach. E.g. 'add login', 'add logout' and 'add password reset' can each be built alone."
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "pstack": "==Evidence== or gap",
-      "mattpocock": "==Graph== order, then review",
-      "superpowers": "==Review== every task"
+      "pstack": "==Proof== or it is missing",
+      "mattpocock": "==Order== first, review last",
+      "superpowers": "==Review== after every task"
      },
      "details": {
-      "pstack": "Each worker reports PASS, ISSUES or BLOCKED with evidence; missing proof is a gap, not a pass. Example: a worker without the SHA is respawned once.",
-      "mattpocock": "Tickets run in dependency order; code-review comes after all merge. Example: ticket 3 waits on ticket 1.",
-      "superpowers": "Each task gets a spec-and-quality reviewer before the next starts. Example: reviewer rejects, implementer fixes, scoped re-review."
+      "pstack": "Each helper must report PASS, ISSUES or BLOCKED and show proof. No proof counts as a gap, never as a pass. E.g. a helper forgets to say which commit it checked, so it gets sent again, once.",
+      "mattpocock": "Tickets are built in the order their links allow, and one code-review runs after all the work is in. E.g. ticket 3 waits until ticket 1 is done.",
+      "superpowers": "After each task, a fresh reviewer checks it matches the plan and is well built, before the next task starts. E.g. the reviewer says no, the builder fixes it, and the reviewer checks just that fix."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Frame, fan out, ==aggregate==, report",
-      "mattpocock": "Branch, ==implement==, merge, review",
-      "superpowers": "Per task: ==build==, review, fix"
+      "pstack": "Plan, send, ==collect==, report",
+      "mattpocock": "Branch, build, ==merge==, review",
+      "superpowers": "Each task: ==build==, review, fix"
      },
      "details": {
-      "pstack": "State the done predicate, spawn all workers at once, collect results, return one table. Example: 5 workers, 1 summary.",
-      "mattpocock": "Create integration branch, implementers on ready tickets, merge, repeat as frontier changes, then code-review. Example: ticket 1 merges, which unblocks ticket 3.",
-      "superpowers": "Implementer, task reviewer, up to five fix rounds, then a final branch review. Example: round 4 uses a stronger model."
+      "pstack": "It says what 'done' looks like, starts all helpers at once, gathers what they found, and hands back one table. E.g. 5 helpers go out, 1 summary comes back.",
+      "mattpocock": "It makes one shared branch, builds each ready ticket, adds it to the shared branch, starts tickets that are now free, then reviews the whole thing. E.g. ticket 1 is done, so ticket 3 can now start.",
+      "superpowers": "A builder does the task, a reviewer checks it, and they get up to five fix rounds; at the end, one last review covers everything. E.g. from fix round 4 it switches to a stronger AI model."
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
-      "pstack": "==None== until final report",
-      "mattpocock": "==None== during run",
-      "superpowers": "==Four== stop reasons only"
+      "pstack": "==No==, just the report",
+      "mattpocock": "==No== check-ins at all",
+      "superpowers": "Only for ==four== reasons"
      },
      "details": {
-      "pstack": "Parent waits for workers and returns one report; the skill does not ask mid-run.",
-      "mattpocock": "No check-ins; a draft PR opens after the first merge if needed. Example: you see the PR at the end.",
-      "superpowers": "Only irreversible actions, security-sensitive acts, outside side effects, or a hopeless plan stop it. Example: a force-push asks first."
+      "pstack": "It does not stop to ask you anything while it runs. It waits for the helpers and hands back one report. E.g. you start it, walk away, and read the table later.",
+      "mattpocock": "It works without stopping to check with you. If your setup needs one, it opens a draft PR once the first ticket lands. E.g. you only look at the PR at the end.",
+      "superpowers": "It stops only for something that cannot be undone, something security-related, something that reaches outside its folder (like a push or a publish), or a plan too broken to guess. E.g. it asks before a force-push."
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "pstack": "One ==report== table",
-      "mattpocock": "==Integration branch==, draft PR",
-      "superpowers": "==Ledger== plus reviewed branch"
+      "pstack": "One ==results== table",
+      "mattpocock": "One ==shared branch==, PR",
+      "superpowers": "==Progress log== plus branch"
      },
      "details": {
-      "pstack": "A compact table of results, one-line evidenced issues, and gaps. Example: 4 PASS, 1 ISSUES.",
-      "mattpocock": "The whole spec lands on one branch with tickets resolved. Example: feature/spec-42 ready for review.",
-      "superpowers": "A progress ledger of tasks, rulings, and commits, plus a reviewed branch. Example: 'Task 3: complete'."
+      "pstack": "A short table of results, one line per problem with proof, and a list of gaps. E.g. '4 PASS, 1 ISSUES'.",
+      "mattpocock": "The whole spec ends up built on one branch, with every ticket closed. E.g. a branch called feature/spec-42, ready for review.",
+      "superpowers": "A progress file listing each task, each decision it made on its own, and each commit, plus a reviewed branch. E.g. a line that says 'Task 3: complete'."
      }
     },
     {
      "aspect": "Calls",
      "values": {
-      "pstack": "==general-purpose== workers",
-      "mattpocock": "==tdd== and code-review",
-      "superpowers": "==worktrees== and finishing-branch"
+      "pstack": "Plain ==helper== agents",
+      "mattpocock": "==tdd== then code-review",
+      "superpowers": "==Worktree== setup, branch finish"
      },
      "details": {
-      "pstack": "Workers are general-purpose agents run in the background, each with its own worktree or output folder.",
-      "mattpocock": "Each implementer calls tdd; the finished branch gets code-review. Example: one implementer fixes all review issues.",
-      "superpowers": "Uses using-git-worktrees at setup and finishing-a-development-branch at the end. Example: starts in an isolated worktree."
+      "pstack": "Each helper is a general AI agent running in the background. Each one gets its own copy of the code or its own output folder. E.g. helper 2 only writes to its own folder.",
+      "mattpocock": "Each builder uses the tdd skill to build its ticket, and the finished branch gets the code-review skill. E.g. one builder then fixes everything the review found.",
+      "superpowers": "It uses the using-git-worktrees skill to set up and the finishing-a-development-branch skill to wrap up. E.g. it starts in its own separate copy of the code."
      }
     },
     {
      "aspect": "Speed",
      "values": {
-      "pstack": "==Parallel==, cost x N",
-      "mattpocock": "==Max== concurrency, worktrees",
-      "superpowers": "==Costly==, fresh context each"
+      "pstack": "All at once, ==costly==",
+      "mattpocock": "==Many== tickets at once",
+      "superpowers": "==Costly==, fresh helper each"
      },
      "details": {
-      "pstack": "All N workers run at once; cost scales with N. Example: 5 workers is about 5x tokens.",
-      "mattpocock": "Ready tickets run in parallel, each in its own worktree. Example: tickets 1 and 2 build at the same time.",
-      "superpowers": "Fresh implementer and reviewer per task; executing-plans does it inline for less. Example: 10 tasks means ~20 agent runs."
+      "pstack": "All helpers run at the same time, so the cost grows with how many you send. E.g. 5 helpers use about 5 times the tokens.",
+      "mattpocock": "Every ticket that is ready runs at the same time, each in its own copy of the code. E.g. tickets 1 and 2 get built side by side.",
+      "superpowers": "Every task gets a brand-new builder and reviewer; its sister skill executing-plans does it all in one session for less. E.g. 10 tasks means about 20 helper runs."
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "pstack": "==Race== same brief",
-      "mattpocock": "Worktree per ==ticket==",
-      "superpowers": "==Breaker== after 5 fixes"
+      "pstack": "Helpers ==race== one job",
+      "mattpocock": "Own ==copy== per ticket",
+      "superpowers": "==Moves on== after 5 rounds"
      },
      "details": {
-      "pstack": "Several workers attempt the same job and you pick by first pass, rank all, or best-of. Example: three models try one fix.",
-      "mattpocock": "Each implementer works in its own worktree on its own branch, then a merger agent merges it. Example: no two tickets touch the same checkout.",
-      "superpowers": "After five fix rounds it adjudicates the open findings and moves on. Example: parks non-critical ones in the ledger."
+      "pstack": "Several helpers try the same job, and a rule you set first picks the winner: first to pass, rank them all, or best-of. E.g. three AI models each try the same bug fix.",
+      "mattpocock": "Each builder works in its own copy of the code on its own branch, and a separate helper adds the work back in. E.g. two builders never share the same copy.",
+      "superpowers": "After five fix rounds it makes a call on each open problem and keeps going. E.g. small leftover problems get written in the progress log for later."
      }
     }
    ],
@@ -1136,49 +1144,62 @@
    ],
    "best": {
     "overall": "mattpocock",
-    "why": "Ticket graph, parallel, integration branch",
+    "why": "Builds linked tickets at once, one branch",
     "cases": [
      {
       "case": "Tickets on a tracker",
       "winner": "mattpocock",
-      "why": "Worktree per ticket, merge, then review"
+      "why": "Own copy per ticket, then one review"
      },
      {
       "case": "Quality gate per task",
       "winner": "superpowers",
-      "why": "Spec and quality review each task"
+      "why": "Every task checked before the next"
      },
      {
       "case": "Compare competing attempts",
       "winner": "pstack",
-      "why": "Races same brief, picks by rule"
+      "why": "Same job, many tries, rule picks winner"
      },
      {
       "case": "Long unattended run",
       "winner": "superpowers",
-      "why": "Continuous execution with recorded rulings"
+      "why": "Never waits; writes down its own decisions"
      },
      {
       "case": "Many parallel checks",
       "winner": "pstack",
-      "why": "Fan out slices, one evidenced report"
+      "why": "Splits the job, one report with proof"
      }
     ]
    },
    "glossary": {
-    "sub-agent": "A helper AI that the main agent starts for one job and gets a short report from. Example: one implementer per task.",
-    "worktree": "A separate checkout of the same repo so work does not collide. Example: each ticket gets its own folder and branch.",
-    "integration branch": "One branch where all finished pieces are merged before review. Example: feature/spec-42 collects every ticket's work.",
-    "frontier": "The tickets whose blockers are all done, so they can start. Example: tickets 1 and 2 are ready, 3 waits.",
-    "task graph": "Tickets connected by 'blocked by' links, not a simple list. Example: ticket 3 depends on 1 and 2.",
-    "fan out": "Start many workers at once instead of one by one. Example: five agents each take a slice.",
-    "race": "Several workers try the same brief and you pick by a rule. Example: three models fix one bug; you choose the best.",
-    "ledger": "A progress file recording done tasks, decisions and commits so work can resume after losing context. Example: 'Task 4: complete'.",
-    "ruling": "A decision the agent makes on its own and writes down instead of asking you. Example: 'Ruling: use the spec's wording — plan was wrong.'",
-    "merger subagent": "A helper that merges one finished branch into the integration branch. Example: merges ticket 2 after its implementer reports done.",
-    "context pointer": "A link to a file, ticket or commit instead of copying its contents into a message. Example: 'read tickets/03.md'.",
-    "spec compliance review": "A check that the work matches what the spec asked. Example: reviewer verifies each requirement has a task.",
-    "inline execution": "Doing every task yourself in one session instead of sending sub-agents. Example: executing-plans."
+    "agent": "An AI that does work on its own, step by step. Like an assistant you hand a to-do list.",
+    "helper": "A second AI the main agent starts for one job, which reports back when done. Like sending a friend to the store with a list.",
+    "spec": "A written description of what the finished thing should do. Like a recipe card before you cook.",
+    "ticket": "One small job written down on a tracker. Like one sticky note on a to-do board.",
+    "tracker": "The place where tickets live, like GitHub Issues. Like a shared to-do board on the wall.",
+    "ticket graph": "Tickets linked by 'this one waits for that one', not a plain list. Like you must build the walls before the roof.",
+    "branch": "A separate line of work in your code, so changes do not touch the main version yet. Like writing on a copy of a document.",
+    "merge": "Joining finished work from one branch into another. Like pasting your edited copy back into the real document.",
+    "commit": "A saved snapshot of your code with a short note. Like a save point in a video game.",
+    "PR": "Pull request: a request to add your branch's changes to the main code, where others can review them. Like handing in homework for checking.",
+    "draft PR": "A PR marked 'not ready yet', so people can peek but not approve. Like a rough draft labeled 'work in progress'.",
+    "push": "Sending your saved commits up to the shared copy online, like GitHub. Like uploading your file to a shared drive.",
+    "force-push": "A push that overwrites the online history. It can wipe out other people's work, like pasting over a shared doc.",
+    "git": "The tool that tracks every change to your code. Like unlimited undo with a history list.",
+    "worktree": "A second folder holding its own copy of the same project, so work does not collide. Like two cooks, each with their own cutting board.",
+    "skill": "A saved set of instructions the AI follows for one kind of job. Like a recipe it can pull out when needed.",
+    "tdd": "Test-driven development: write a failing test first, then the code to pass it. Like setting the finish line before you run.",
+    "code-review": "A skill where an AI reads your changes and points out problems. Like a teacher marking your essay.",
+    "model": "One AI system, like Opus or Sonnet. Stronger ones are smarter but cost more.",
+    "tokens": "The small chunks of text an AI reads and writes, and what you pay for. Like minutes on a phone plan.",
+    "progress log": "A file that records each finished task and each decision, so work can pick up again after a break. Like a ship's logbook.",
+    "quality gate": "A check that work must pass before the next step starts. Like a teacher signing off before you move to the next chapter.",
+    "racing": "Several helpers try the same job and you keep the best one. Like three bakers making the same cake and you pick one.",
+    "parallel": "Running at the same time, not one after another. Like several checkout lanes open at once.",
+    "race": "Several helpers try the same job at once, and a rule picks the winner. Like a running race where first across the line wins.",
+    "GitHub": "A website where code is stored and shared, with tickets and reviews built in. Like Google Drive, but for code."
    }
   },
   {
@@ -1222,121 +1243,121 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "Contested or ==risky== change",
-      "mattpocock": "Branch since ==fixed point==",
+      "pstack": "==Risky== or argued-over change",
+      "mattpocock": "Everything since a ==starting point==",
       "superpowers": "After ==each task==",
-      "impeccable": "UI ==design== feedback"
+      "impeccable": "How a ==screen== looks"
      },
      "details": {
-      "pstack": "Run it when a design is disputed or the stakes are high; the description says \"find blind spots\" and \"tear this apart\". Example: before shipping a rewrite of your payment retry code.",
-      "mattpocock": "You name a commit, branch or tag and it reviews everything after it. Example: \"review everything since main\" before you open a PR.",
-      "superpowers": "It is mandatory after every task in a plan, after a major feature, and before merging to main. Example: you just finished task 2 of 5, so you review before starting task 3.",
-      "impeccable": "It judges how an interface looks and feels, not how the code works. Example: \"critique the settings modal\" or the homepage URL."
+      "pstack": "Use it when people disagree about a change, or when a mistake would be costly. Its own words are 'find blind spots' and 'tear this apart'. E.g. before you ship new code that retries failed payments.",
+      "mattpocock": "You name a starting point, like a commit, branch or tag, and it reviews everything after it. E.g. 'review everything since main' before you open a PR.",
+      "superpowers": "It is required after every task in a plan, after a big feature, and before the work goes into main. E.g. you finish task 2 of 5, so you review before task 3.",
+      "impeccable": "It judges how a screen looks and feels to use, not whether the code works. E.g. 'critique the settings popup', or a link to your homepage."
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "pstack": "Many ==models==, lead filters",
-      "mattpocock": "Two ==separate== axes",
-      "superpowers": "Severity ==graded== honestly",
-      "impeccable": "==Scored== 0-4 each"
+      "pstack": "Many models, ==one judge==",
+      "mattpocock": "Two ==separate== checks",
+      "superpowers": "Problems ==ranked== by badness",
+      "impeccable": "==Scored== 0 to 4 each"
      },
      "details": {
-      "pstack": "Several different AI models review the same diff, then the lead agent sorts their findings and throws out nitpicks. Example: one model flags a null check, the lead checks the caller and dismisses it.",
-      "mattpocock": "Standards and Spec are judged apart and never merged or reranked. Example: code can pass Standards but fail Spec if it follows every rule yet builds the wrong thing.",
-      "superpowers": "Issues are labelled Critical, Important or Minor, and you must fix Critical and Important before moving on. Example: a missing progress indicator is Important, a magic number is Minor.",
-      "impeccable": "Ten usability checks each get a score from 0 to 4, so the total is out of 40. Example: Error Prevention scores 1, so it lands in the priority list."
+      "pstack": "Several different AI models review the same change, then the lead agent sorts what they found and throws out nitpicks. E.g. one model flags a missing check, the lead agent looks closer and dismisses it.",
+      "mattpocock": "It judges Standards (follows the team's rules) and Spec (builds what was asked) apart, and never mixes the two results. E.g. code can follow every rule yet build the wrong thing: pass one, fail the other.",
+      "superpowers": "Each problem is labeled Critical, Important or Minor, and Critical and Important must be fixed before you move on. E.g. a missing loading bar is Important; a random unexplained number is Minor.",
+      "impeccable": "Ten ease-of-use checks each get a score from 0 to 4, so the total is out of 40 when all ten apply. E.g. 'stops users making mistakes' scores 1, so it goes on the fix-first list."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Scope, intent, ==spawn==, judge",
-      "mattpocock": "Pin, spec, ==fan out==, report",
-      "superpowers": "Get SHAs, ==dispatch==, fix",
-      "impeccable": "Two blind ==assessments==, synthesize, ask"
+      "pstack": "Scope, goal, ==launch==, judge",
+      "mattpocock": "Pin, spec, ==two checks==, report",
+      "superpowers": "Get IDs, ==send==, fix",
+      "impeccable": "Two ==blind== checks, combine, ask"
      },
      "details": {
-      "pstack": "Pick the diff, write one paragraph of intent, launch reviewers together, merge findings, then sort them into four buckets. Example: the diff is main...HEAD and the intent is \"add retry with backoff\".",
-      "mattpocock": "Check the fixed point works, find the spec and the repo's standards, launch two sub-agents together, then show both reports. Example: the spec is issue #45 named in a commit message.",
-      "superpowers": "Grab two commit IDs, fill in a template, send one reviewer, then act on what comes back. Example: base a7981ec, head 3df7661.",
-      "impeccable": "One agent reviews the design and another runs a detector, and neither sees the other until the end. Then the main agent writes the report and asks you questions."
+      "pstack": "It picks the change, writes one paragraph on what it is for, launches all reviewers together, combines their findings, then sorts them into four piles. E.g. the change is everything on your branch, and the goal is 'retry a payment when it fails'.",
+      "mattpocock": "It checks the starting point is real, finds the spec and the team's rules, runs two helpers at once, then shows both reports. E.g. it finds the spec in issue #45, named in a commit message.",
+      "superpowers": "It grabs the commit IDs for the start and the end, fills in a form, sends one reviewer, then acts on what comes back. E.g. start a7981ec, end 3df7661.",
+      "impeccable": "One helper reviews the design and another runs a problem scanner, and neither sees the other's work. Then the lead agent writes one report and asks you questions. E.g. the scanner flags gray text that is hard to read."
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
-      "pstack": "Only if ==intent unclear==",
-      "mattpocock": "Asks for ==fixed point==, spec",
-      "superpowers": "==No== check-ins",
+      "pstack": "Only if ==goal unclear==",
+      "mattpocock": "Asks for ==start point==, spec",
+      "superpowers": "==No== questions for you",
       "impeccable": "==2-4 questions== after report"
      },
      "details": {
-      "pstack": "It asks when it cannot tell what the change is supposed to do. It never applies edits on its own. Example: a branch with no commit message or PR text.",
-      "mattpocock": "If you gave no fixed point, or it finds no spec, it asks you. Example: you say \"review my branch\" and it asks which commit to compare against.",
-      "superpowers": "The skill has no step that asks you anything; the main agent decides what to fix and may push back on the reviewer. Example: reviewer says rename a function, agent shows tests and declines.",
-      "impeccable": "After the report it asks which problem area to fix first and how much to take on. It may skip only when there are fewer than 3 priority issues."
+      "pstack": "It asks only when it cannot tell what the change is meant to do. It never edits your code itself. E.g. a branch with no commit message and no PR text.",
+      "mattpocock": "If you gave no starting point, or it cannot find a spec, it asks you. E.g. you say 'review my branch' and it asks which commit to compare against.",
+      "superpowers": "The skill never stops to ask you; the lead agent decides what to fix and may argue back. E.g. the reviewer says rename a function, and the agent shows tests that prove it is fine and says no.",
+      "impeccable": "After the report it asks what to fix first and how much to take on. It may skip this only when it found fewer than 3 top problems. E.g. 'Fix the top 3 only, or everything?'"
      }
     },
     {
      "aspect": "Reviewers",
      "values": {
-      "pstack": "==Four== different models",
-      "mattpocock": "==Two== sub-agents, one per axis",
+      "pstack": "==Four== different AI models",
+      "mattpocock": "==Two== helpers, one each",
       "superpowers": "==One== fresh reviewer",
-      "impeccable": "==Two== isolated agents + detector"
+      "impeccable": "==Two== separate helpers"
      },
      "details": {
-      "pstack": "Default panel is Opus, Fable, Sonnet and Haiku, all given the same prompt, so the signal comes from model variety. You can change the list in a settings sheet.",
-      "mattpocock": "One sub-agent checks Standards and one checks Spec, running side by side so neither biases the other.",
-      "superpowers": "One general-purpose sub-agent gets only the commit range and a short description, never your chat history. The template even forbids it from spawning more reviewers.",
-      "impeccable": "A design reviewer and a detector run apart, and a browser inspects the live page when available. Skipping this isolation must be flagged with a DEGRADED banner."
+      "pstack": "By default Opus, Fable, Sonnet and Haiku all get the same instructions, so the value comes from how differently they think. E.g. you can change the list in a settings file.",
+      "mattpocock": "One helper checks Standards and one checks Spec, side by side, so neither sways the other. E.g. the Standards helper never sees the Spec helper's notes.",
+      "superpowers": "One helper gets only the commit range, a short summary and the plan, never your chat history. It is even told not to start more reviewers. E.g. it reviews a7981ec to 3df7661 and knows nothing else.",
+      "impeccable": "One helper reviews the design; the other runs a problem scanner and checks the live page in a browser when it can. E.g. if it cannot split the work, the report must start with a DEGRADED warning."
      }
     },
     {
      "aspect": "Cost",
      "values": {
       "pstack": "==Highest==: four models",
-      "mattpocock": "==Medium==: two agents",
+      "mattpocock": "==Medium==: two helpers",
       "superpowers": "==Lowest==: one reviewer",
-      "impeccable": "==Heavy==: browser plus detector"
+      "impeccable": "==Heavy==: browser plus scanner"
      },
      "details": {
-      "pstack": "Four model runs plus a lead judgment pass, so it costs and takes the most. (My inference from the step count.) Worth it when a missed bug would hurt.",
-      "mattpocock": "Two sub-agents under 400 words each plus an aggregate step. (My inference.) Fine for every branch.",
-      "superpowers": "One sub-agent and a few git commands. (My inference.) Cheap enough to run after every task.",
-      "impeccable": "Two agents, a code scan, a browser pass, a saved report and a trend check. (My inference.) Only use it for a screen that matters."
+      "pstack": "Four reviewer runs plus a judging pass, so it costs the most and takes longest (our guess from the steps). E.g. worth it when a missed bug would really hurt.",
+      "mattpocock": "Two helpers with reports under 400 words each, plus one summary step (our guess). E.g. fine to run on every branch.",
+      "superpowers": "One helper and a few git commands (our guess). E.g. cheap enough to run after every task.",
+      "impeccable": "Two helpers, a code scan, a browser check, a saved report and a score history (our guess). E.g. save it for a screen that really matters."
      }
     },
     {
      "aspect": "Output",
      "values": {
       "pstack": "Verdict, ==no edits==",
-      "mattpocock": "Two ==reports==, one line",
-      "superpowers": "Strengths, ==issues==, verdict",
-      "impeccable": "Report + ==snapshot file=="
+      "mattpocock": "Two ==reports==, one summary",
+      "superpowers": "Praise, ==problems==, verdict",
+      "impeccable": "Report + ==saved copy=="
      },
      "details": {
-      "pstack": "A report with Intent, Act On, Consider, Noted, Dismissed and an Agreement Map. It does not change your code. Example: \"Act On: unhandled timeout, raised by 3 of 4 models\".",
-      "mattpocock": "A Standards section and a Spec section, each kept as written, then one summary line per axis. Example: \"Standards: 3 findings. Spec: 1 finding, missing validation\".",
-      "superpowers": "Praise first, then issues by severity, then a ready-or-not assessment. Example: \"Important: missing progress indicators. Ready to proceed.\"",
-      "impeccable": "A score table, priority issues and persona red flags in chat, plus a saved copy under .impeccable/critique/. Example: a trend line like 24, 28, 32 out of 40."
+      "pstack": "A report sorted into Act On, Consider, Noted and Dismissed, plus a map of where the models agreed. It never changes your code. E.g. 'Act On: no time limit on a call, raised by 3 of 4 models'.",
+      "mattpocock": "A Standards section and a Spec section, kept as written, then one summary line for each. E.g. 'Standards: 3 findings. Spec: 1 finding, missing input check'.",
+      "superpowers": "Good points first, then problems from worst to mildest, then ready or not. E.g. 'Important: no loading bar. Ready to go on.'",
+      "impeccable": "In chat: a score table, the top problems, and red flags for pretend users; plus a saved copy in .impeccable/critique/. E.g. a score history like 24, 28, 32 out of 40."
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "pstack": "Models ==agree== means signal",
-      "mattpocock": "Built-in ==smell== list",
-      "superpowers": "==Declined-to-judge== list",
-      "impeccable": "Not code, ==design== only"
+      "pstack": "Agreeing models ==matter most==",
+      "mattpocock": "Built-in ==code smell== list",
+      "superpowers": "Lists what it ==skipped==",
+      "impeccable": "Design only, ==not code=="
      },
      "details": {
-      "pstack": "A finding raised by two or more models on their own is the highest signal. Example: three models flag the same race condition, so it goes under Act On.",
-      "mattpocock": "Twelve Fowler code smells are always checked, even if the repo has no rules, and the repo's own rules win. Example: it flags Feature Envy as \"possible\", never as a hard error.",
-      "superpowers": "The reviewer lists what it set aside as out of scope, so nothing disappears silently. Example: \"Skipped: DB migration timing, not in the plan\".",
-      "impeccable": "It judges look, flow and usability, and a detector flags visual anti-patterns. It will not tell you if your logic is correct."
+      "pstack": "A problem that two or more models find on their own is the strongest signal. E.g. three models flag the same timing bug, so it goes under Act On.",
+      "mattpocock": "It always checks 12 classic warning signs of messy code, even if the team wrote no rules, and the team's own rules win. E.g. it says 'possible Feature Envy', never a hard error.",
+      "superpowers": "The reviewer writes down what it left out as off-topic, so nothing vanishes silently. E.g. 'Skipped: database change timing, not in the plan'.",
+      "impeccable": "It judges look, flow and ease of use, and a scanner flags known design mistakes. It will not tell you if your logic is right. E.g. it catches hard-to-read gray text, not a wrong total."
      }
     }
    ],
@@ -1384,12 +1405,12 @@
      {
       "case": "PR against a ticket",
       "winner": "mattpocock",
-      "why": "Spec axis catches wrong or missing features"
+      "why": "Spec check catches wrong or missing features"
      },
      {
       "case": "After every small task",
       "winner": "superpowers",
-      "why": "Cheapest fresh reviewer, SHAs only"
+      "why": "Cheapest: one fresh reviewer, two commit IDs"
      },
      {
       "case": "Solo quick sanity check",
@@ -1399,30 +1420,37 @@
      {
       "case": "Polishing a UI screen",
       "winner": "impeccable",
-      "why": "Scores usability and checks live page"
+      "why": "Scores ease of use, checks live page"
      }
     ]
    },
    "glossary": {
-    "diff": "The list of lines that changed between two versions of your code. Example: 12 lines added and 3 removed in retry.ts.",
-    "fixed point": "A starting commit, branch or tag you compare against. Example: main, so the review covers everything you did since main.",
-    "spec": "The written description of what the change should do, like an issue or a design doc. Example: \"Retry 3 times with backoff\".",
-    "standards": "The repo's written coding rules, such as a CODING_STANDARDS file. Example: \"no default exports\".",
-    "axis": "One separate dimension of judging. Example: Standards is one axis and Spec is another.",
-    "sub-agent": "A helper AI the main AI starts for one job, with its own fresh memory. Example: a reviewer that sees only the diff.",
-    "SHA": "The unique ID of a git commit. Example: a7981ec.",
-    "lead": "The main agent that collects reviewer findings and decides which ones matter.",
-    "intent": "One paragraph saying what the change is trying to achieve. Example: \"Add retry with backoff to the payment call\".",
-    "code smell": "A hint that code may be badly shaped, not a proven bug. Example: Duplicated Code means the same logic appears twice.",
-    "severity": "How bad a problem is. Example: Critical breaks things now, Minor is a small cleanup.",
-    "heuristic": "A rule of thumb for judging usability. Example: \"show the user what is happening\".",
-    "detector": "A script that scans files for known design problems. Example: low-contrast text.",
-    "snapshot": "A saved copy of one review run so you can compare later runs. Example: today's 28 out of 40.",
-    "verdict": "The final overall judgment. Example: \"Ready to merge after two fixes\".",
-    "smell": "Short for code smell: a hint that code may be badly shaped.",
-    "assessment": "One independent review pass. Example: the design review.",
-    "declined to judge": "A list of things the reviewer chose not to rule on, with reasons.",
-    "models": "Different AI systems, like Opus or Sonnet. Using several catches different mistakes."
+    "spec": "The written description of what the change should do, like an issue or a plan. Like the order slip a waiter brings to the kitchen.",
+    "standards": "The team's written coding rules. Like a style guide that says 'always use full sentences'.",
+    "commit": "A saved snapshot of your code with a short note and an ID like a7981ec. Like a save point in a video game.",
+    "branch": "A separate line of work in your code. Like writing on a copy of a document before changing the real one.",
+    "tag": "A name stuck on one commit so you can find it again, like v1.0. Like a bookmark in a book.",
+    "main": "The main branch: the official version of your code. Like the final copy everyone shares.",
+    "PR": "Pull request: asking to add your branch's changes to main, where others can review them. Like handing in homework for checking.",
+    "ticket": "One small job written down on a tracker, like a GitHub issue. Like a sticky note on a to-do board.",
+    "UI": "User interface: the screens, buttons and text people see and click. Like the dashboard of a car.",
+    "interface": "The part of an app people see and use. Like the buttons and screen on a microwave.",
+    "agent": "An AI that does work on its own, step by step. Like an assistant you hand a task to.",
+    "helper": "A second AI the main agent starts for one job, with a fresh memory. Like asking a stranger to proofread, so they are not biased.",
+    "skill": "A saved set of instructions the AI follows for one kind of job. Like a recipe card.",
+    "models": "Different AI systems, like Opus, Fable, Sonnet or Haiku. Each one tends to catch different mistakes.",
+    "git": "The tool that tracks every change to your code. Like unlimited undo with a history list.",
+    "verdict": "The final overall judgment. Like a judge saying 'ready to merge after two fixes'.",
+    "code smell": "A hint that code may be badly shaped, not a proven bug. Like a funny smell in the fridge: maybe nothing, worth a look.",
+    "Feature Envy": "A function that uses another object's data more than its own. Like always cooking in your neighbor's kitchen.",
+    "scanner": "A script that looks through files for known design mistakes. Like spell-check, but for things like low-contrast text.",
+    "critique": "A design review that names what works and what does not. Like an art teacher's notes on your drawing.",
+    "nitpicks": "Tiny complaints that do not really matter. Like pointing out a comma in a great essay.",
+    "blind spots": "Problems you cannot see because you are too close to the work. Like a spot your car mirror misses.",
+    "teardown": "A tough review that pulls a change apart to find every weak point. Like a mechanic taking an engine apart.",
+    "sanity check": "A quick look to catch obvious mistakes. Like glancing at the oven before you leave the house.",
+    "DEGRADED": "A warning that the review took a shortcut and is less reliable. Like a 'low battery' light.",
+    "issue": "A note on GitHub that describes a bug or a job to do, with a number like #45. Like a numbered ticket at the deli counter."
    }
   },
   {
@@ -1450,89 +1478,89 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "==Open PR== needs green",
-      "superpowers": "Feedback ==arrived=="
+      "pstack": "Open PR needs ==all green==",
+      "superpowers": "Review comments ==just arrived=="
      },
      "details": {
-      "pstack": "A PR is up and you want it pushed to mergeable without re-prompting. Example: CI is red and two reviewers left comments.",
-      "superpowers": "Review comments came in and you must decide what to do before changing code. Example: a reviewer says \"remove the legacy path\"."
+      "pstack": "A PR is open and you want it pushed all the way to ready-to-merge without asking again. E.g. the CI checks are failing and two reviewers left comments.",
+      "superpowers": "Comments came in and you must decide what to do before you change any code. E.g. a reviewer says 'remove the old code path'."
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "pstack": "Acts only if ==agrees==",
-      "superpowers": "==Verify== before implementing"
+      "pstack": "Fixes only ==agreed== points",
+      "superpowers": "==Check== before changing"
      },
      "details": {
-      "pstack": "It fixes comments it agrees with and replies on judgment calls instead of guessing. It never skips hooks or edits test numbers just to pass.",
-      "superpowers": "Check each suggestion against the real codebase first, and push back with reasons if wrong. No \"You're absolutely right!\"."
+      "pstack": "It fixes comments it agrees with and replies on judgment calls instead of guessing. It never skips hooks, and never changes a test's expected answer just to pass. E.g. it will not change 'expect 5' to 'expect 6' unless the behavior really changed.",
+      "superpowers": "It checks each suggestion against the real code first, and pushes back with reasons if it is wrong. No 'You're absolutely right!'. E.g. it reads the code and finds the 'unused' function is actually still needed."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Fetch, triage, ==loop==, stop, report",
-      "superpowers": "Understand, verify, evaluate, ==respond==, implement"
+      "pstack": "Look, sort, ==repeat==, report",
+      "superpowers": "Understand, check, ==answer==, fix"
      },
      "details": {
-      "pstack": "Read PR state, fix conflicts then CI then comments, re-check on a timer, stop when green, then report. Example: poll gh pr checks until done.",
-      "superpowers": "Restate the ask, test it against reality, decide, answer, then fix one item at a time. Example: grep shows an endpoint is unused, so propose removing it."
+      "pstack": "It reads the PR, fixes conflicts first, then failing checks, then comments, re-checks on a timer, and stops when all is green. Then it reports. E.g. it waits on 'gh pr checks' until the checks finish.",
+      "superpowers": "It restates the ask, tests it against the real code, decides, replies, then fixes one item at a time. E.g. a search shows nothing calls an endpoint, so it suggests deleting it."
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
-      "pstack": "Only on ==design forks==",
-      "superpowers": "==Yes== if unclear"
+      "pstack": "Only on ==design choices==",
+      "superpowers": "==Yes==, if anything unclear"
      },
      "details": {
-      "pstack": "It asks when a fix forces a design choice, before rewriting shared history, and on security or data bot findings. Otherwise it keeps going.",
-      "superpowers": "If any item is unclear it stops and asks before implementing anything. Example: \"I understand 1,2,3 and 6; need clarity on 4 and 5\"."
+      "pstack": "It asks when a fix forces a design choice, before a force-push on a branch others use, and on security or data warnings from a review bot. Otherwise it keeps going. E.g. 'Should the retry live in the app or on the server?'",
+      "superpowers": "If any item is unclear, it stops and asks before fixing anything at all. E.g. 'I understand items 1, 2, 3 and 6; I need clarity on 4 and 5.'"
      }
     },
     {
      "aspect": "Calls",
      "values": {
-      "pstack": "==Three== sibling skills plus loop",
+      "pstack": "==Three== helper skills, timer",
       "superpowers": "==No== other skills"
      },
      "details": {
-      "pstack": "It uses fix-ci, fix-merge-conflicts and get-pr-comments, the loop timer and the gh command line.",
-      "superpowers": "It stands alone and uses grep, tests and your judgment. Example: it greps for who calls an endpoint."
+      "pstack": "It uses the fix-ci, fix-merge-conflicts and get-pr-comments skills, plus the loop timer and the gh command line tool. E.g. a failing check gets handed to fix-ci.",
+      "superpowers": "It works alone, with search, tests and judgment. E.g. it searches the code for anything that calls an endpoint."
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "pstack": "==Mergeable== PR, report",
+      "pstack": "==Ready-to-merge== PR, report",
       "superpowers": "Checked ==replies==, tested fixes"
      },
      "details": {
-      "pstack": "A green, conflict-free PR plus a report of fixes, deferred comments with reasons, and commit IDs. Example: \"Deferred: rename suggestion, unclear target\".",
-      "superpowers": "Short factual replies and fixes tested one by one. Example: \"Fixed. Build target is 13+, so legacy stays.\""
+      "pstack": "A PR with green checks and no conflicts, plus a report of fixes, skipped comments with reasons, and commit IDs. E.g. 'Skipped: rename idea, unclear what name they want'.",
+      "superpowers": "Short, factual replies, and fixes tested one at a time. E.g. 'Checked: the app still supports older systems, so the old code must stay.'"
      }
     },
     {
      "aspect": "Cost",
      "values": {
-      "pstack": "==Long-running==, polls",
+      "pstack": "==Long-running==, keeps checking",
       "superpowers": "==One== sitting, quick"
      },
      "details": {
-      "pstack": "It can run a loop with 20 to 30 minute checks and stops after three failed fix rounds (the stop is in the text; the cost is inferred).",
-      "superpowers": "It is a response discipline inside a normal session, not a watcher (inferred)."
+      "pstack": "It can loop, checking every 20 to 30 minutes while it waits on reviewers, and stops after three failed fix rounds. The three-round stop is in the skill; the cost is our guess. E.g. it watches your PR overnight.",
+      "superpowers": "It is a way of answering feedback inside a normal session, not a watcher (our guess). E.g. you paste in the comments, it handles them, done."
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "pstack": "Replies, ==no guessing==",
-      "superpowers": "==YAGNI== check"
+      "pstack": "Replies, ==never guesses==",
+      "superpowers": "==YAGNI== check first"
      },
      "details": {
-      "pstack": "On a judgment call it leaves the code and replies with what it would have done. It can also triage review-bot comments as fix, dismiss or ask.",
-      "superpowers": "Before building a \"proper\" feature a reviewer wants, it greps for real usage and offers to delete unused code. Example: nothing calls the metrics endpoint."
+      "pstack": "On a judgment call it leaves the code alone and replies with what it would have done. It also sorts comments from a review bot into fix, dismiss or ask. E.g. the bot flags a security risk, so it asks you.",
+      "superpowers": "Before building a 'proper' feature a reviewer wants, it searches for real use and offers to delete unused code. E.g. nothing calls the stats endpoint, so it asks 'remove it?'"
      }
     }
    ],
@@ -1557,12 +1585,12 @@
      {
       "case": "Red CI plus conflicts",
       "winner": "pstack",
-      "why": "Fixes CI, conflicts, comments in order"
+      "why": "Fixes conflicts, checks, then comments, in order"
      },
      {
       "case": "Reviewer suggestion looks wrong",
       "winner": "superpowers",
-      "why": "Verify and push back with evidence"
+      "why": "Checks the code, pushes back with proof"
      },
      {
       "case": "Waiting overnight for reviewers",
@@ -1572,7 +1600,7 @@
      {
       "case": "Reviewer asks for extra feature",
       "winner": "superpowers",
-      "why": "YAGNI grep before building it"
+      "why": "Checks it is used before building it"
      },
      {
       "case": "Solo project, vague comment list",
@@ -1582,18 +1610,23 @@
     ]
    },
    "glossary": {
-    "CI": "Automatic checks that run on every push. Example: tests and lint on GitHub.",
-    "green": "All checks pass.",
-    "mergeable": "Ready to merge: checks pass and there are no conflicts or open comments.",
-    "merge conflict": "Two branches changed the same lines and git cannot combine them alone.",
-    "babysit": "Keep watching a PR and fixing CI, conflicts and comments until it is ready, so you do not have to.",
-    "YAGNI": "\"You aren't gonna need it\". Do not build things nobody uses.",
-    "triage": "Sort issues into fix now, skip or ask.",
-    "judgment call": "A decision where reasonable people could disagree, so it needs a human.",
-    "force-push": "Overwriting the remote branch history. It can erase others' work.",
-    "hooks": "Scripts that run before a commit or push. Example: lint.",
-    "review bot": "An automatic reviewer that comments on PRs, like Bugbot.",
-    "performative agreement": "Saying \"great point!\" without checking whether it is true."
+    "PR": "Pull request: asking to add your branch's changes to the main code, where others review them. Like handing in homework for checking.",
+    "CI": "Automatic checks that run every time you push code, like tests and style checks. Like a spell-check that runs on every save.",
+    "green": "All checks pass. Like a row of green lights on a dashboard.",
+    "red": "A check is failing. Like a red warning light on your car.",
+    "conflicts": "Two branches changed the same lines, so git cannot join them by itself. Like two people editing the same sentence in a shared doc.",
+    "merge": "Joining finished work from one branch into the main code. Like pasting your edited copy back into the real document.",
+    "branch": "A separate line of work in your code. Like writing on a copy of a document before changing the real one.",
+    "commit": "A saved snapshot of your code with a short note and an ID. Like a save point in a video game.",
+    "git": "The tool that tracks every change to your code. Like unlimited undo with a history list.",
+    "gh": "GitHub's command line tool for reading and updating PRs from the terminal. Like a remote control for GitHub.",
+    "skill": "A saved set of instructions the AI follows for one kind of job. Like a recipe card.",
+    "hooks": "Small scripts that run automatically before a commit or push, like a style check. Like a door that checks your badge before letting you in.",
+    "force-push": "A push that overwrites the online history of a branch. It can wipe out other people's work.",
+    "review bot": "An automatic reviewer that comments on PRs, like Bugbot. Like a robot proofreader.",
+    "judgment call": "A choice where sensible people could disagree, so a human should decide. Like picking a paint color.",
+    "endpoint": "One web address your app answers, like /api/stats. Like one phone extension in an office.",
+    "YAGNI": "'You aren't gonna need it': do not build things nobody uses. Like not buying a boat before you live near water."
    }
   },
   {
@@ -1621,78 +1654,78 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "After ==task==, before done",
-      "superpowers": "Before ==any== success claim"
+      "pstack": "==Before== you say done",
+      "superpowers": "Before ==any== 'it works'"
      },
      "details": {
-      "pstack": "Run it once the work is built and before you say it is finished. Example: you changed a login form and want to confirm it works before reporting back.",
-      "superpowers": "It also triggers before commits, PRs, moving to the next task and handing work to an agent. Example: before writing \"tests pass\" in a PR description."
+      "pstack": "Use it once the work is built, before you say it is finished. E.g. you changed a login form and want to be sure it works before you report back.",
+      "superpowers": "Use it before any claim that work is done, and also before a commit, a PR, the next task, or handing work to another agent. E.g. before you write 'tests pass' in a PR."
      }
     },
     {
      "aspect": "Strict",
      "values": {
       "pstack": "Check the ==real thing==",
-      "superpowers": "==Iron law==: evidence first"
+      "superpowers": "==No proof==, no claim"
      },
      "details": {
-      "pstack": "Look at the real output, not a stand-in like a cache, a file date or \"it compiles\". Example: open the running app instead of trusting a build log.",
-      "superpowers": "You may not claim anything works unless you ran the command in this same message. Example: \"should pass now\" is banned until you run the tests."
+      "pstack": "Look at the real result, not a stand-in like a saved copy, a file's date, or 'it compiles'. E.g. open the running app instead of trusting the build log.",
+      "superpowers": "You may not say something works unless you ran the check in this same message. E.g. 'should pass now' is banned until you actually run the tests."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Observe real ==artifact==, script it",
-      "superpowers": "Identify, run, read, ==verify==, claim"
+      "pstack": "Look, then ==script it==",
+      "superpowers": "Pick, run, read, ==check==, say"
      },
      "details": {
-      "pstack": "Read the real value, then write a script that repeats the same comparison. Example: a script that hits the live URL and checks the response.",
-      "superpowers": "A five-step gate: pick the proving command, run it fully, read all output, check it matches the claim, then speak. Example: run npm test, see 34 of 34 pass, then say it passes."
+      "pstack": "Read the real value yourself, then write a small script that repeats the same check. E.g. a script that opens the live page and checks the answer it gives.",
+      "superpowers": "Five steps in order: pick the command that proves it, run it fully, read all the output, check it matches, then speak. E.g. run npm test, see 34 of 34 pass, then say 'tests pass'."
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "pstack": "Re-runnable ==script==",
-      "superpowers": "Claim with ==pasted output=="
+      "pstack": "A ==re-runnable== script",
+      "superpowers": "Claim plus ==proof shown=="
      },
      "details": {
-      "pstack": "A deterministic script whose output a reviewer can run again instead of trusting your word. Example: verify.sh that prints PASS or the exact mismatch.",
-      "superpowers": "Every success statement comes with the command result that backs it. Example: \"Build passes, exit code 0\" with the build line shown."
+      "pstack": "A script that gives the same result every run, so a reviewer can rerun it instead of trusting your word. E.g. verify.sh prints PASS or the exact difference.",
+      "superpowers": "Every 'it works' comes with the command result that backs it up. E.g. 'Build passes, exit code 0', with that line shown."
      }
     },
     {
      "aspect": "Failing checks",
      "values": {
-      "pstack": "Red needs ==predicted== failure",
-      "superpowers": "==Revert==, see fail, restore"
+      "pstack": "==Right kind== of fail",
+      "superpowers": "==Undo== fix, see fail"
      },
      "details": {
-      "pstack": "A red check only counts if the failure is the mismatch you expected, not a crash. Example: quote the real diff \"Extra items in the right set\", not just the assert line.",
-      "superpowers": "For a regression test, undo the fix, confirm the test fails, then restore the fix. Example: remove your null check and watch the new test go red."
+      "pstack": "A failing check only counts if it fails for the reason you predicted, not because something crashed. E.g. quote the real difference, 'Extra items in the right set', not just the line that failed.",
+      "superpowers": "For a regression test, undo the fix, watch the test fail, then put the fix back. E.g. remove your empty-value check and watch the new test turn red."
      }
     },
     {
      "aspect": "Cost",
      "values": {
-      "pstack": "==Higher==: builds a script",
+      "pstack": "==Higher==: write a script",
       "superpowers": "==Low==: run one command"
      },
      "details": {
-      "pstack": "Writing a reusable script takes more effort now but pays back on every rerun (inferred from the text). Keep it local unless the work is large.",
-      "superpowers": "Mostly running the test or build you already have and reading the result (inferred). Fits every small task."
+      "pstack": "Writing a reusable script takes more effort now but pays off on every rerun (our guess). Keep it on your machine unless the work is big. E.g. for a big migration, you commit the script to the repo.",
+      "superpowers": "Mostly you run the test or build you already have and read the result (our guess). E.g. it fits every small task."
      }
     },
     {
      "aspect": "Edge",
      "values": {
       "pstack": "Checks the ==process== too",
-      "superpowers": "Banned ==wording==: should, probably"
+      "superpowers": "Bans =='should', 'probably'=="
      },
      "details": {
-      "pstack": "A right answer can come from a broken path, so name the record each fact came from. Example: confirm you read the saved file, not text pasted in chat.",
-      "superpowers": "Words like \"should\", \"probably\" and \"Great, done!\" count as red flags, and the rule covers paraphrases. Example: \"looks correct\" without a run is a violation."
+      "pstack": "A right answer can come from a broken path, so name where each fact came from. E.g. confirm you read the saved file, not text someone pasted in chat.",
+      "superpowers": "Words like 'should', 'probably' and 'Great, done!' are red flags, and the rule covers rewordings too. E.g. 'looks correct' without running anything breaks the rule."
      }
     }
    ],
@@ -1716,17 +1749,17 @@
    ],
    "best": {
     "overall": "superpowers",
-    "why": "Clear gate catches false done",
+    "why": "Clear steps stop fake 'done' claims",
     "cases": [
      {
       "case": "Shipping to production",
       "winner": "pstack",
-      "why": "Re-runnable proof on the real artifact"
+      "why": "Rerunnable proof on the real thing"
      },
      {
       "case": "Agent says it finished",
       "winner": "superpowers",
-      "why": "Check diff, not the agent's report"
+      "why": "Check the real changes, not the report"
      },
      {
       "case": "Quick fix before commit",
@@ -1736,27 +1769,32 @@
      {
       "case": "Big migration reviewed later",
       "winner": "pstack",
-      "why": "Script and trail a reviewer reruns"
+      "why": "A script the reviewer can rerun"
      },
      {
       "case": "Writing a regression test",
       "winner": "superpowers",
-      "why": "Revert fix, watch fail, restore"
+      "why": "Undo fix, watch it fail, restore"
      }
     ]
    },
    "glossary": {
-    "artifact": "The real thing you built or changed. Example: the running web page, not the code file.",
-    "proxy": "A stand-in that only hints the real thing works. Example: \"the build finished\" instead of opening the app.",
-    "verification": "Proving with evidence that something works. Example: run the tests and read the result.",
-    "claim": "Any statement that work is done, fixed or passing. Example: \"All tests pass\".",
-    "iron law": "A rule with no exceptions, even when you are tired or sure.",
-    "exit code": "A number a command returns, where 0 means success. Example: build exits 0.",
-    "regression test": "A test that stops an old bug from coming back. Example: a test for the crash you just fixed.",
-    "red": "A check that fails. Example: a test turns red when the bug is present.",
-    "deterministic": "Gives the same result every time you run it.",
-    "pasted output": "The actual command result copied into your message as proof.",
-    "script": "A small program that repeats a check for you. Example: verify.sh."
+    "claim": "Any statement that work is done, fixed or passing. Like saying 'I cleaned my room'.",
+    "claims": "Statements that work is done, fixed or passing. Like 'all tests pass'.",
+    "script": "A small program that repeats a check for you, like verify.sh. Like a checklist that ticks itself.",
+    "commit": "A saved snapshot of your code with a short note. Like a save point in a video game.",
+    "PR": "Pull request: asking to add your changes to the main code, where others review them. Like handing in homework for checking.",
+    "agent": "An AI that does work on its own, step by step. Like an assistant you hand a task to.",
+    "compiles": "The code was turned into a runnable program without errors. It proves the code is written right, not that it does the right thing.",
+    "build": "Turning your code into the finished app. Like baking the dough into bread.",
+    "npm test": "The usual command that runs all the tests in a JavaScript project. Like pressing 'check everything'.",
+    "exit code": "A number a command gives back when it ends, where 0 means success. Like a thumbs up or thumbs down.",
+    "regression test": "A test that makes sure a bug you fixed never comes back. Like a smoke alarm for one old fire.",
+    "red": "A failing check. Like a red light that means stop, something is wrong.",
+    "red flags": "Warning signs that something is off. Like a smoke smell in the kitchen.",
+    "migration": "A big move of code or data from an old setup to a new one. Like moving house.",
+    "repo": "The project folder that git tracks, with all its history. Like a shared binder for the whole team.",
+    "production": "The live app real users use. Like the restaurant floor, not the test kitchen."
    }
   },
   {
@@ -1792,105 +1830,105 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "PR is ==noisy==",
-      "mattpocock": "Writing ==PR body==",
-      "superpowers": "Work ==done==, tests green"
+      "pstack": "PR is ==messy==",
+      "mattpocock": "Writing the ==PR text==",
+      "superpowers": "Work ==done==, tests pass"
      },
      "details": {
-      "pstack": "The branch has messy commits, a stale description or mixed-up changes. Example: 14 commits named \"wip\" and \"fix\".",
-      "mattpocock": "Use it whenever the agent writes a pull request description. Example: you finished a feature and need the PR text.",
-      "superpowers": "Use it when the build is finished and you must choose how to land it. Example: feature complete and you wonder whether to merge or open a PR."
+      "pstack": "Use it when a PR is hard to read: messy commits, an old description, or mixed-up changes. E.g. 14 commits all named 'wip' and 'fix'.",
+      "mattpocock": "Use it any time the agent writes the text that explains a PR. E.g. you finished a login feature and need the PR description.",
+      "superpowers": "Use it when the code is finished, tests pass, and you must pick how to add it to the main code. E.g. the feature works and you wonder: merge now, or open a PR?"
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "pstack": "==Plan== before rewriting",
-      "mattpocock": "Fixed ==template==, brief prose",
-      "superpowers": "==Tests== gate the menu"
+      "pstack": "Shows a ==plan== first",
+      "mattpocock": "Fixed ==form==, few words",
+      "superpowers": "==Tests== must pass first"
      },
      "details": {
-      "pstack": "It must show you a plan before rewriting history or force-pushing. Example: \"squash 14 commits into 5 in dependency order\".",
-      "mattpocock": "Skip preambles and fill three sections only. Example: Summary, Evidence, Merge Danger.",
-      "superpowers": "If tests fail it stops and shows failures; no options appear until the suite is green. Example: 2 failing tests, so no merge offer."
+      "pstack": "It must show you a plan before it rewrites commits or force-pushes. E.g. 'combine 14 commits into 5, in the order they were built'.",
+      "mattpocock": "No intro, short sentences, and only three set sections. E.g. Summary, Evidence, Merge Danger.",
+      "superpowers": "If tests fail, it stops and shows them, and no choices appear until all tests pass. E.g. 2 tests fail, so it does not offer to merge."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Inspect, plan, ==apply==, verify tree",
-      "mattpocock": "Fill three ==sections==",
-      "superpowers": "Test, detect, ==menu==, execute, clean"
+      "pstack": "Look, plan, ==fix==, double-check",
+      "mattpocock": "Fill ==three== sections",
+      "superpowers": "Test, check, ==menu==, do, tidy"
      },
      "details": {
-      "pstack": "Read the PR, find problems, propose a fix plan, apply it, then confirm the code content did not change. Example: compare git tree hashes before and after.",
-      "mattpocock": "Write a Summary visual, add Before and After evidence, then label the merge risk. Example: a small call tree, a failing then passing test, \"one-way door\".",
-      "superpowers": "Run tests, check whether you are in a worktree, offer three options, do the pick, then tidy up. Example: pick option 2 to push and open a PR."
+      "pstack": "It reads the PR, finds problems, plans a fix, applies it, then checks the code itself did not change. E.g. it compares a fingerprint of all the files before and after.",
+      "mattpocock": "It draws a small picture of the change, shows proof before and after, then rates the risk. E.g. a short map of which function calls which, a test failing then passing, and 'one-way door'.",
+      "superpowers": "It runs all tests, checks what kind of folder it is in, offers three choices, does the one you pick, then cleans up. E.g. you pick option 2: push the code and open a PR."
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
-      "pstack": "==Yes== before rewriting history",
+      "pstack": "==Yes==, before rewriting commits",
       "mattpocock": "==No==, just writes",
       "superpowers": "==Always==: pick one of three"
      },
      "details": {
-      "pstack": "Only rewrite when you ask or agree to the plan. Example: it shows the commit grouping and waits for your yes.",
-      "mattpocock": "The template has no questions, so it drafts the body straight away. Example: you get the full PR text in one reply.",
-      "superpowers": "You choose merge, push and PR, or keep as-is, and you must type \"discard\" to delete. Example: it also asks which base branch if unsure."
+      "pstack": "It only rewrites commits if you ask, or say yes to its plan. E.g. it shows how it will group the commits and waits for your yes.",
+      "mattpocock": "The form has no questions, so it writes the PR text right away. E.g. you get the full PR text in one reply.",
+      "superpowers": "You pick: merge, push and open a PR, or leave it. To throw the work away you must ask, then type 'discard'. E.g. it also asks which branch to merge into if it is not sure."
      }
     },
     {
      "aspect": "Touches",
      "values": {
-      "pstack": "Rewrites ==commits==, not behavior",
-      "mattpocock": "==Nothing==: text only",
-      "superpowers": "==Merges== or pushes branch"
+      "pstack": "Changes ==commits==, not code",
+      "mattpocock": "==Nothing==, text only",
+      "superpowers": "Really ==merges== or pushes"
      },
      "details": {
-      "pstack": "Commit order and PR text change but the final code must stay identical. Example: same tree hash before and after the rebase.",
-      "mattpocock": "It only produces PR body text and changes no commits or code.",
-      "superpowers": "It really merges, pushes, deletes the branch and removes the worktree on option 1. Example: git merge then git branch -d."
+      "pstack": "The commit list and PR text change, but the final code must stay exactly the same. E.g. the file fingerprint matches before and after.",
+      "mattpocock": "It only writes the PR text. E.g. no commits or code files change.",
+      "superpowers": "It runs real git commands: option 1 merges, then deletes the branch and its extra work folder; option 2 pushes. E.g. 'git merge', then 'git branch -d'."
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "pstack": "Cleaner ==history==, reviewer notes",
-      "mattpocock": "A ==PR body==",
-      "superpowers": "Merge, PR, ==or keep=="
+      "pstack": "Cleaner ==commits==, reviewer notes",
+      "mattpocock": "One ==PR text==",
+      "superpowers": "Merged, PR, ==or left== alone"
      },
      "details": {
-      "pstack": "Tidier commits plus a TL;DR and a guide to the key files. Example: \"core logic in src/retry.ts, rest is generated\".",
-      "mattpocock": "A Summary with a diagram, Evidence with screenshots or tests, and a Merge Danger rating. Example: \"Blast Radius: checkout page\".",
-      "superpowers": "One of three finished states for the branch. Example: PR created and the worktree kept for review fixes."
+      "pstack": "Tidier commits, a short summary, and a guide to the files that matter. E.g. 'the main logic is in src/retry.ts, the rest is auto-made'.",
+      "mattpocock": "A Summary with a picture, Evidence like screenshots or test runs, and a Merge Danger rating. E.g. 'Blast Radius: checkout page'.",
+      "superpowers": "The branch ends in one of three states. E.g. a PR is open and the work folder stays, so you can fix review comments there."
      }
     },
     {
      "aspect": "Best size",
      "values": {
-      "pstack": "==Medium== to big messy",
+      "pstack": "==Medium== to big, messy",
       "mattpocock": "==Any== size",
       "superpowers": "==Any== finished branch"
      },
      "details": {
-      "pstack": "Good for large or noisy PRs, and if still too big it says to split rather than polish. Example: a 900-line PR mixing refactor and feature.",
-      "mattpocock": "Works on tiny and large PRs since it only picks the smallest useful visual. Example: a one-file fix gets a three-line diff sketch.",
-      "superpowers": "The size does not matter; it decides how to land the branch. Example: a one-day feature branch."
+      "pstack": "Good for big or messy PRs. If one is still too big, it says split it instead of polishing it. E.g. a 900-line PR that mixes a cleanup and a new feature.",
+      "mattpocock": "Works for tiny and big PRs, because it picks the smallest picture that makes the point. E.g. a one-file fix gets a three-line sketch of what changed.",
+      "superpowers": "Size does not matter; it only decides how the branch lands. E.g. a feature branch you worked on for one day."
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "pstack": "==Behavior== stays unchanged",
-      "mattpocock": "==Diagrams== and door call",
-      "superpowers": "==Worktree== cleanup"
+      "pstack": "Never ==hides== real changes",
+      "mattpocock": "Pictures plus ==undo== rating",
+      "superpowers": "Cleans only ==its own== folders"
      },
      "details": {
-      "pstack": "It will not hide real behavior changes inside \"cleanup\". Example: a logic fix must be called out, not squashed silently.",
-      "mattpocock": "Uses diagrams and a one-way or two-way door call. Example: a data deletion is a one-way door.",
-      "superpowers": "It only deletes worktrees it created, and never uses force on its own. Example: leaves a host-owned workspace in place."
+      "pstack": "It will not hide a real change in how the app works inside a 'cleanup'. E.g. a logic fix must be called out, not quietly squeezed into a tidy commit.",
+      "mattpocock": "It uses small diagrams, and says if the change is a one-way door (hard to undo) or a two-way door (easy to undo). E.g. deleting customer data is a one-way door.",
+      "superpowers": "It only deletes extra work folders it made itself, and never forces a delete on its own. E.g. it leaves alone a folder another tool made."
      }
     }
    ],
@@ -1915,12 +1953,12 @@
    ],
    "best": {
     "overall": "mattpocock",
-    "why": "Evidence and merge danger up front",
+    "why": "Proof and merge risk up front",
     "cases": [
      {
       "case": "Write the PR text",
       "winner": "mattpocock",
-      "why": "Summary, evidence and merge danger template"
+      "why": "Summary, proof and risk in one form"
      },
      {
       "case": "Messy 14-commit PR",
@@ -1930,34 +1968,33 @@
      {
       "case": "Feature done, unsure how to land",
       "winner": "superpowers",
-      "why": "Menu: merge, PR or keep"
+      "why": "Menu: merge, PR, or keep"
      },
      {
       "case": "Risky team PR with reviewers",
       "winner": "mattpocock",
-      "why": "Flags one-way doors and blast radius"
+      "why": "Flags hard-to-undo changes and what could break"
      },
      {
       "case": "Solo project, merge locally",
       "winner": "superpowers",
-      "why": "Merges, cleans worktree, deletes branch"
+      "why": "Merges, cleans up, deletes the branch"
      }
     ]
    },
    "glossary": {
-    "PR": "Pull request. A proposal to merge your branch into another branch so others can review it.",
-    "history": "The list of commits on a branch. Example: 14 small commits.",
-    "diff": "The lines that changed. Example: 120 lines added.",
-    "force-push": "Overwriting the remote branch with your rewritten version. It can erase others' work, so it needs care.",
-    "tree hash": "A fingerprint of the exact files in a commit. If it matches before and after, the code is the same.",
-    "worktree": "An extra folder with its own checked-out branch, so you can work on two branches at once.",
-    "blast radius": "How much could break if the change goes wrong. Example: only the settings page, or every customer.",
-    "one-way door": "A change you cannot easily undo. Example: deleting production data.",
-    "two-way door": "A change you can roll back cheaply. Example: a UI colour tweak.",
-    "template": "A fixed form with blank sections to fill in.",
-    "base branch": "The branch you plan to merge into. Example: main.",
-    "merge": "Combine one branch's commits into another.",
-    "detached HEAD": "A git state not on any named branch, often in tool-managed workspaces."
+    "PR": "Pull request: asking to add your branch to the main code, so others can check it first. Like handing in homework for a teacher to mark.",
+    "branch": "A separate copy of the code where you make changes safely. Like a draft of an essay, kept apart from the final one.",
+    "commit": "One saved snapshot of your changes, with a short note. Like a save point in a video game.",
+    "merge": "Joining one branch's changes into another. Like pasting your finished draft into the final essay.",
+    "push": "Sending your commits from your computer up to the shared online copy. Like uploading a file to Google Drive.",
+    "force-push": "Pushing in a way that overwrites the online copy. It can wipe out other people's work, so it needs care.",
+    "git": "The tool that tracks every change to the code. Like a full undo history for a whole project.",
+    "land": "Getting your finished work into the main code. Like a plane landing: the trip is done.",
+    "Merge Danger": "A section that says how risky a merge is. It says how easy it is to undo and what could break.",
+    "blast radius": "How much could break if the change goes wrong. E.g. only the settings page, or every customer.",
+    "one-way door": "A change you cannot easily undo. Like deleting customer data.",
+    "two-way door": "A change you can easily undo. Like changing a button color."
    }
   },
   {
@@ -1993,79 +2030,79 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "Say ==poteto==",
-      "mattpocock": "==Ask== which skill",
-      "superpowers": "==Every== conversation start"
+      "pstack": "You say ==poteto==",
+      "mattpocock": "You ==ask== which skill",
+      "superpowers": "Start of ==every== chat"
      },
      "details": {
-      "pstack": "Triggered by the word poteto or /poteto-mode, then it picks a playbook for the task. Example: \"poteto, fix this bug\".",
-      "mattpocock": "You type /ask-matt when you forget which skill to use. Example: \"I have a vague idea, where do I start?\"",
-      "superpowers": "It loads at the start of any chat and forces a skill check before any reply. Example: even a clarifying question comes after the check."
+      "pstack": "It turns on when you say 'poteto' or type /poteto-mode, then picks a playbook for the job. E.g. 'poteto, fix this bug'.",
+      "mattpocock": "You type /ask-matt when you forget which skill to use. E.g. 'I have a vague idea. Where do I start?'",
+      "superpowers": "It loads at the start of every chat and makes the agent look for a skill before it replies. E.g. even a quick question to you comes after that check."
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "pstack": "Names ==principles==, copies steps",
+      "pstack": "Names its ==rules==, copies steps",
       "mattpocock": "==Advice== only",
-      "superpowers": "==1%== chance, must invoke"
+      "superpowers": "==1%== chance? Must use"
      },
      "details": {
-      "pstack": "The reply must name the principles used, and playbook steps are copied into a todo list verbatim.",
-      "mattpocock": "It reads the skill first, then recommends. It never forces a step.",
-      "superpowers": "If a skill might apply even 1%, you must use it. A red-flag table lists excuses to ignore."
+      "pstack": "Its reply must name the rules it followed, and it copies the playbook steps into a to-do list word for word. E.g. 'Laziness Protocol: I kept the change to one file'.",
+      "mattpocock": "It reads a skill before it recommends it, and it never forces a step. E.g. it says 'try /tdd next' and you decide.",
+      "superpowers": "If there is even a 1% chance a skill fits, the agent must use it. A list of red flags names the excuses to ignore. E.g. 'this is too simple' is one of them."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Match ==playbook==, open todos, delegate",
-      "mattpocock": "Read skills, ==recommend== flow",
+      "pstack": "Pick ==playbook==, list, hand off",
+      "mattpocock": "Read, then ==suggest== path",
       "superpowers": "Check, ==announce==, follow"
      },
      "details": {
-      "pstack": "Pick a playbook like Bug fix, copy its steps into todos, hand code to sub-agents. Example: Feature playbook starts with the how skill.",
-      "mattpocock": "Open the named skills, then point you to the flow. Example: idea, grill-with-docs, to-spec, implement.",
-      "superpowers": "Look for a matching skill, say \"Using X to do Y\", then follow it exactly."
+      "pstack": "It picks a playbook, copies its steps into a to-do list, and hands the coding to sub-agents. E.g. 'fix this bug' opens the Bug fix playbook.",
+      "mattpocock": "It opens the skills it names, then points you to a path through them. E.g. idea, then grill-with-docs, then to-spec, then implement.",
+      "superpowers": "It looks for a skill that fits, says 'Using X to do Y', then follows it exactly. E.g. 'Using brainstorming to plan the login page'."
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
-      "pstack": "==Rarely==; reversible work proceeds",
+      "pstack": "==Rarely==, just does it",
       "mattpocock": "==You== pick each step",
-      "superpowers": "==Skill== first, then questions"
+      "superpowers": "==Skill== first, questions after"
      },
      "details": {
-      "pstack": "It acts on reversible work and pauses only for force-push, deploys, deletions or customer messages.",
-      "mattpocock": "It maps the options and you choose, because the skills it names are typed by hand.",
-      "superpowers": "It does the skill check before clarifying questions, but your direct instructions override it."
+      "pstack": "It goes ahead on anything that can be undone, and stops only before risky moves. E.g. it pauses before a force-push, a deploy, deleting data or messaging customers.",
+      "mattpocock": "It lays out the options and you choose, because you type most of the skills it names yourself. E.g. you type /to-spec when you are ready.",
+      "superpowers": "It checks for a skill before asking you anything, but your own instructions always win. E.g. if you say 'skip skills here', it does."
      }
     },
     {
      "aspect": "Calls",
      "values": {
-      "pstack": "==Many== sibling skills",
-      "mattpocock": "==None==; names skills",
-      "superpowers": "==Any== matching skill"
+      "pstack": "==Many== other skills",
+      "mattpocock": "==None==, only names",
+      "superpowers": "==Any== skill that fits"
      },
      "details": {
-      "pstack": "It routes to over 20 playbooks plus skills like how, architect and interrogate.",
-      "mattpocock": "It only hints at skills like /tdd and /code-review and cannot start them (model invocation is off).",
-      "superpowers": "It invokes whichever skill fits, such as brainstorming for building or systematic-debugging for bugs."
+      "pstack": "It can send work to over 20 playbooks plus helper skills. E.g. the how, architect and interrogate skills.",
+      "mattpocock": "It names skills for you to type, like /tdd or /code-review, but does not run them itself. E.g. it tells you '/diagnosing-bugs' and you type it.",
+      "superpowers": "It starts whatever skill fits the job. E.g. brainstorming when you build something, systematic-debugging when you fix a bug."
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "pstack": "Whole ==workflow== runs",
-      "mattpocock": "A ==flow== map",
-      "superpowers": "Skills ==forced== on"
+      "pstack": "Whole ==job== gets done",
+      "mattpocock": "A ==map== of skills",
+      "superpowers": "Skills ==always== used"
      },
      "details": {
-      "pstack": "The agent runs a full playbook end to end, ending in a PR and a short reply.",
-      "mattpocock": "A written route through the skills and when to branch. Example: bugs go to /diagnosing-bugs.",
-      "superpowers": "The agent uses skills as a hard rule, so every task follows a skill."
+      "pstack": "The agent runs a whole playbook from start to end, then writes a short reply. E.g. the reply ends with a link to the PR it opened.",
+      "mattpocock": "A written path through the skills, and where to turn off it. E.g. bugs go to /diagnosing-bugs.",
+      "superpowers": "Using skills becomes a hard rule, so every task follows one. E.g. a bug fix always starts with the debugging skill."
      }
     },
     {
@@ -2076,22 +2113,22 @@
       "superpowers": "==Small==, loads every chat"
      },
      "details": {
-      "pstack": "The main file is about 27KB and it points to more files, so it uses a lot of the agent's memory (my reading of the file size).",
-      "mattpocock": "With model invocation off, nothing loads until you call it.",
-      "superpowers": "The file is about 3KB, but it is read at the start of every conversation."
+      "pstack": "The main file is about 27KB and points to many more files, so it fills a lot of the agent's memory (my guess from the file size). E.g. that is about 10 pages of rules before work starts.",
+      "mattpocock": "The agent cannot start it by itself, so nothing loads until you type it. E.g. a normal chat pays nothing for it.",
+      "superpowers": "The file is small, about 3KB, but it is read at the start of every chat. E.g. about one page, every single time."
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "pstack": "Playbooks ==fan out== sub-agents",
-      "mattpocock": "==Manual== trigger only",
-      "superpowers": "==Rationalization== red flags"
+      "pstack": "Playbooks ==send out== helpers",
+      "mattpocock": "Only ==you== start it",
+      "superpowers": "Built-in ==excuse== list"
      },
      "details": {
-      "pstack": "Each playbook spawns worker sub-agents and reviewers, with fresh agents per round.",
-      "mattpocock": "Only a human can run it, and it also explains when to compact or clear context.",
-      "superpowers": "A table of excuses like \"this is just a simple question\" tells the agent to check skills anyway."
+      "pstack": "Each playbook starts helper sub-agents and reviewers, with a fresh helper for each new round. E.g. a fix after review goes to a new helper, not the old one.",
+      "mattpocock": "Only a person can run it, and it also explains when to clear or shrink the chat memory. E.g. clear it between tickets so each one starts fresh.",
+      "superpowers": "A table of excuses tells the agent to check for skills anyway. E.g. 'this is just a simple question' is on it."
      }
     }
    ],
@@ -2116,22 +2153,22 @@
    ],
    "best": {
     "overall": "mattpocock",
-    "why": "Pure router, free, you stay in control",
+    "why": "Just a guide, free, you stay in charge",
     "cases": [
      {
       "case": "Learning what skills exist",
       "winner": "mattpocock",
-      "why": "Maps flows, you choose each step"
+      "why": "Shows paths, you choose each step"
      },
      {
       "case": "Hands-off long autonomous build",
       "winner": "pstack",
-      "why": "Playbooks run whole workflow, agents delegate"
+      "why": "Playbooks run the whole job with helpers"
      },
      {
       "case": "Agents keep skipping skills",
       "winner": "superpowers",
-      "why": "Mandatory check every task"
+      "why": "Forces a skill check every task"
      },
      {
       "case": "Tiny edit, minimal overhead",
@@ -2141,22 +2178,19 @@
      {
       "case": "Solo bug hunt with PR",
       "winner": "pstack",
-      "why": "Bug fix playbook ends in PR"
+      "why": "Bug fix playbook ends in a PR"
      }
     ]
    },
    "glossary": {
-    "router": "A skill that tells you which other skill to use. Example: ask-matt says bugs go to diagnosing-bugs.",
-    "playbook": "A written step-by-step recipe for one kind of task. Example: the Bug fix playbook.",
-    "flow": "A path through several skills in order. Example: idea, spec, tickets, build.",
-    "principle": "A short rule about how to work. Example: \"prove it works\".",
-    "sub-agent": "A helper AI started for one job with its own memory.",
-    "verbatim": "Word for word, with no changes.",
-    "force-push": "Overwriting remote git history. It can erase others' work.",
-    "model invocation": "The agent starting a skill on its own. Off means only you can start it.",
-    "context window": "The agent's working memory. Long instructions use it up.",
-    "frontier": "The set of tasks ready to start now.",
-    "rationalization": "An excuse to skip a rule. Example: \"it is too simple to need a skill\"."
+    "skill": "A saved set of instructions the agent loads for one kind of job. Like a recipe card it pulls out when needed.",
+    "playbook": "A step-by-step recipe for one kind of task. E.g. the Bug fix playbook.",
+    "workflow": "A set of steps done in order to finish a job. Like a recipe from shopping to serving.",
+    "sub-agent": "A helper AI started for one job, with its own fresh memory. Like handing one chore to a helper.",
+    "PR": "Pull request: asking to add your changes to the main code, so others can check them first. Like handing in homework to be marked.",
+    "force-push": "Overwriting the shared online copy of the code. It can wipe out other people's work.",
+    "deploy": "Putting new code live, so real users get it. Like opening the doors after a shop renovation.",
+    "autonomous": "Working alone, without stopping to ask you. Like a robot vacuum cleaning while you are out."
    }
   },
   {
@@ -2184,45 +2218,45 @@
     {
      "aspect": "When",
      "values": {
-      "mattpocock": "Any ==agent doc==",
-      "superpowers": "New or ==edited skill=="
+      "mattpocock": "Any ==agent== instructions file",
+      "superpowers": "New or ==changed== skill"
      },
      "details": {
-      "mattpocock": "Skills, AGENTS.md, CLAUDE.md or any doc an agent reads. Example: shortening your AGENTS.md.",
-      "superpowers": "Whenever you create or change a skill, before you deploy it. Example: adding a new lesson-capture skill."
+      "mattpocock": "Use it for any file an agent reads for instructions: skills, AGENTS.md, CLAUDE.md. E.g. making your AGENTS.md shorter.",
+      "superpowers": "Use it whenever you make or change a skill, before you share it. E.g. adding a new skill that saves lessons."
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "mattpocock": "==Pointer== wording sharpened",
+      "mattpocock": "Sharpen the ==pointer== words",
       "superpowers": "No skill without ==failing test=="
      },
      "details": {
-      "mattpocock": "The words in a trigger decide when the agent reads the file, so sharpen them first. Example: lead with the key word.",
-      "superpowers": "You must watch an agent fail without the skill first, even for small edits. Untested text is deleted."
+      "mattpocock": "The words in a pointer decide when the agent opens the file, so fix those words first. E.g. put the key word first: 'Use when writing a PR'.",
+      "superpowers": "You must first watch an agent fail without the skill, even for small edits. Skill text written before that test gets deleted. E.g. adding one line? Test first, or delete it."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "mattpocock": "==Reference== guide, no loop",
-      "superpowers": "Baseline, write, ==pressure-test==, close loopholes"
+      "mattpocock": "==Rule book==, no steps",
+      "superpowers": "Test, write, ==stress-test==, patch"
      },
      "details": {
-      "mattpocock": "No fixed procedure; it gives rules on pointers, layers, goals, key words and pruning.",
-      "superpowers": "Run an agent without the skill, write the skill, test under pressure, then plug excuses. This copies red-green-refactor."
+      "mattpocock": "There is no fixed order of steps. It is a list of rules on pointers, layout, clear 'done' checks, key words and cutting. E.g. you read the rule on cutting, then trim your file.",
+      "superpowers": "Run an agent without the skill, write the skill, test it under pressure, then block the excuses it found. It copies the test-first loop. E.g. the agent says 'no time to test', so you add a line that answers that excuse."
      }
     },
     {
      "aspect": "Calls",
      "values": {
-      "mattpocock": "One ==side file==",
-      "superpowers": "==Sub-agents==, TDD skill"
+      "mattpocock": "One ==extra file==",
+      "superpowers": "==Helpers== and test skill"
      },
      "details": {
-      "mattpocock": "Skill-specific advice sits in SKILL-MECHANICS.md. Nothing else is called.",
-      "superpowers": "It requires the test-driven-development skill and runs test sub-agents with pressure scenarios."
+      "mattpocock": "Advice just for skills sits in a second file, SKILL-MECHANICS.md. Nothing else is called. E.g. it covers who can start a skill: you, the agent, or both.",
+      "superpowers": "It requires the test-driven-development skill, and runs helper sub-agents through pressure tests. E.g. a helper is told 'you only have 5 minutes' to see if it skips the rule."
      }
     },
     {
@@ -2232,8 +2266,8 @@
       "superpowers": "==High==: runs test agents"
      },
      "details": {
-      "mattpocock": "You read two files and edit with no test runs (inferred).",
-      "superpowers": "Each skill needs baseline and pressure runs with sub-agents (inferred)."
+      "mattpocock": "You read two files and edit, with no test runs (my guess). E.g. a few minutes to trim one file.",
+      "superpowers": "Every skill needs runs without it, then pressure runs with helper agents (my guess). E.g. several helper agents, each run more than once."
      }
     },
     {
@@ -2243,30 +2277,30 @@
       "superpowers": "Skills under ==500 words=="
      },
      "details": {
-      "mattpocock": "Every word in an always-on pointer costs on every turn, so prune hard.",
-      "superpowers": "Target is under 150 words for start-up skills and under 500 for others."
+      "mattpocock": "Every word in a line the agent always sees costs a little on every reply, so cut hard. E.g. one short line that points to a long doc.",
+      "superpowers": "Aim for under 150 words for getting-started skills, under 200 for skills loaded often, and under 500 for the rest. E.g. a skill that fits on one screen."
      }
     },
     {
      "aspect": "Output",
      "values": {
-      "mattpocock": "Sharper ==pointers==, lean doc",
+      "mattpocock": "Sharper ==pointers==, shorter doc",
       "superpowers": "==Tested== skill, excuse table"
      },
      "details": {
-      "mattpocock": "Rewritten trigger lines and a pruned document. Example: two synonym triggers become one.",
-      "superpowers": "A skill proven against failing runs, with rebuttals to common excuses."
+      "mattpocock": "Rewritten trigger lines and a trimmed file. E.g. two lines that mean the same thing become one.",
+      "superpowers": "A skill proven against real failed runs, with answers to the usual excuses. E.g. 'Excuse: no time to test. Answer: fixing it later costs more.'"
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "mattpocock": "One trigger per ==branch==",
-      "superpowers": "==Description== states when only"
+      "mattpocock": "One trigger per ==case==",
+      "superpowers": "Description says ==when== only"
      },
      "details": {
-      "mattpocock": "Synonyms for one case are collapsed, and it prefers positive wording over bans.",
-      "superpowers": "The description must say when to use it, never summarize the steps, because agents will follow the summary instead."
+      "mattpocock": "Words that name the same case are merged into one, and it says what to do, not what to avoid. E.g. 'write one-line comments' instead of 'no long comments'.",
+      "superpowers": "The description must say when to use the skill, never sum up its steps, because agents follow the summary and skip the rest. E.g. a description saying 'review between tasks' made an agent do one review instead of two."
      }
     }
    ],
@@ -2286,22 +2320,22 @@
    ],
    "best": {
     "overall": "mattpocock",
-    "why": "Lean pointers, cheap context",
+    "why": "Short pointers, light on memory",
     "cases": [
      {
       "case": "Sharpen a bloated AGENTS.md",
       "winner": "mattpocock",
-      "why": "Prunes no-ops and sharpens pointers"
+      "why": "Cuts dead lines, sharpens pointers"
      },
      {
       "case": "Ship a skill for the team",
       "winner": "superpowers",
-      "why": "Tested against failing baseline first"
+      "why": "Tested against a failing run first"
      },
      {
       "case": "Skill agents keep dodging",
       "winner": "superpowers",
-      "why": "Pressure scenarios and excuse table"
+      "why": "Pressure tests and an excuse table"
      },
      {
       "case": "Quick tweak to one description",
@@ -2311,25 +2345,23 @@
      {
       "case": "Cleaning stale CLAUDE.md",
       "winner": "mattpocock",
-      "why": "Pruning and single source of truth"
+      "why": "Cuts old lines, one home per rule"
      }
     ]
    },
    "glossary": {
-    "agent doc": "Any file an AI agent reads for instructions. Example: AGENTS.md or SKILL.md.",
-    "pointer": "Short for context pointer: a line that says when to read a bigger file.",
-    "pressure-test": "Test a skill under tempting conditions to see if the agent breaks the rule.",
-    "context pointer": "A short line that tells the agent when to read a bigger file.",
-    "skill": "A packaged set of instructions an agent can load for one kind of job.",
-    "trigger": "The words or situations that make the agent open a file.",
-    "branch": "A distinct case a document handles. Example: bug fix versus new feature.",
-    "baseline": "What the agent does without your skill, as a starting comparison.",
-    "pressure scenario": "A tough test where the agent is tempted to break a rule. Example: deadline plus a tired user.",
-    "red-green-refactor": "Write a failing test, make it pass, then clean up.",
-    "sub-agent": "A helper AI with its own fresh memory.",
-    "leading word": "A short word the model already knows well. Example: \"tight\" for a fast loop.",
-    "no-op": "A line that changes nothing because the agent already behaves that way.",
-    "rationalization": "An excuse for skipping a rule."
+    "skill": "A saved set of instructions an agent loads for one kind of job. Like a recipe card it pulls out when needed.",
+    "AGENTS.md": "A file of standing instructions every agent reads in a project. Like house rules taped to the fridge.",
+    "CLAUDE.md": "The same kind of house-rules file, read by Claude. It loads at the start of every chat.",
+    "pointer": "A short line that says when to open a bigger file. Like a sign saying 'tools are in the garage'.",
+    "trigger": "The words or situation that make the agent open a file. E.g. the word 'bug' makes it open the bug-fixing skill.",
+    "description": "The one-line summary at the top of a skill that the agent always sees. It decides when the skill gets used.",
+    "sub-agent": "A helper AI started for one job, with its own fresh memory. Like handing one chore to a helper.",
+    "pressure test": "A test where the agent is tempted to break a rule. E.g. 'you are tired and the deadline is now, skip the test?'",
+    "excuse table": "A list of excuses an agent gives for skipping a rule, each with an answer. Like a parent's replies to 'just five more minutes'.",
+    "test-first": "Write the test before the thing it checks. Like deciding what a clean room looks like before you start cleaning.",
+    "test-driven-development": "The skill that teaches test-first coding. Write a failing test, make it pass, then tidy up.",
+    "stress-test": "Testing something under tough conditions to see if it breaks. Like shaking a shelf to check it holds."
    }
   },
   {
@@ -2357,56 +2389,56 @@
     {
      "aspect": "When",
      "values": {
-      "pstack": "Say ==reflect==",
-      "mattpocock": "Session ==went sideways=="
+      "pstack": "You say ==reflect==",
+      "mattpocock": "Session ==went badly=="
      },
      "details": {
-      "pstack": "Run it when you say \"reflect\" after real work. It skips trivial chats because one-offs are not learnings.",
-      "mattpocock": "You type it yourself after a build that went badly. Example: the agent spent an hour finding the right file."
+      "pstack": "Run it by saying 'reflect' after real work. It skips small chats, because a one-time problem is not a lesson. E.g. after a long build where the agent got stuck twice.",
+      "mattpocock": "You type /retro yourself after a build, especially one that went badly. E.g. the agent spent an hour finding the right file."
      }
     },
     {
      "aspect": "Strict",
      "values": {
-      "pstack": "Findings ==verified==, filtered",
-      "mattpocock": "Mechanical means ==check=="
+      "pstack": "Lessons ==checked==, then sorted",
+      "mattpocock": "Repeat mistakes get ==checks=="
      },
      "details": {
-      "pstack": "A synthesizer checks citations, then sorts into Accepted, Rejected or Backlog. It moves anything a lint could enforce to Backlog.",
-      "mattpocock": "A repeatable mistake gets a lint, hook or CI job, not another rule. Only judgment calls become written standards."
+      "pstack": "A final helper checks the proof behind each lesson and sorts it: Accepted, Rejected or Backlog. Anything a lint could enforce moves to Backlog. E.g. 'run the tests before saying done' becomes a backlog item for an automatic check.",
+      "mattpocock": "A mistake with a fixed pattern gets an automatic check, not another written rule. Only judgment calls become written rules. E.g. a banned import gets a lint rule, not a note in AGENTS.md."
      }
     },
     {
      "aspect": "Steps",
      "values": {
-      "pstack": "Find, review, ==synthesize==, approve, apply",
-      "mattpocock": "Read session, scan ==categories==, present"
+      "pstack": "Find, review, ==combine==, approve, apply",
+      "mattpocock": "Read, scan, ==rank== ideas"
      },
      "details": {
-      "pstack": "Find the transcript, run three reviewers, merge their findings, wait for your OK, then edit skills. Example: a one-line fix to a skill's trigger words.",
-      "mattpocock": "Read the session log, look through seven areas, then show candidates by severity. Example: nothing runs until you choose."
+      "pstack": "It finds the chat log, runs three reviewers, combines what they found, waits for your OK, then edits skills. E.g. a one-line fix to a skill's trigger words.",
+      "mattpocock": "It reads the chat log, looks through seven areas, then lists ideas from most to least serious. E.g. areas like 'finding files' and 'automatic checks'."
      }
     },
     {
      "aspect": "Asks you?",
      "values": {
       "pstack": "==Yes==, approve before edits",
-      "mattpocock": "==Presents==, you decide"
+      "mattpocock": "==Lists== ideas, you decide"
      },
      "details": {
-      "pstack": "It shows the full Accepted, Rejected and Backlog list and waits, because skill changes affect every future agent. Backlog items file automatically.",
-      "mattpocock": "It only lists suggestions in order of severity and makes no changes itself."
+      "pstack": "It shows the full Accepted, Rejected and Backlog list and waits, because skill changes affect every future agent. Backlog items are filed on their own. E.g. you say 'apply items 1 and 3 only'.",
+      "mattpocock": "It only lists ideas, most serious first, and changes nothing itself. E.g. you pick 'add a lint rule' and do it next."
      }
     },
     {
      "aspect": "Calls",
      "values": {
-      "pstack": "==Four== sub-agents, skill-development",
-      "mattpocock": "==writing-for-agents== skill"
+      "pstack": "==Four== helpers, skill builder",
+      "mattpocock": "One ==writing guide== skill"
      },
      "details": {
-      "pstack": "Three reviewers and one synthesizer, plus the plugin-dev skill-development skill for bigger edits.",
-      "mattpocock": "It loads one writing guide first, then works alone without sub-agents."
+      "pstack": "Three reviewers and one helper that combines their notes, plus a skill-building skill for bigger edits. E.g. a whole new section goes to that skill-building skill.",
+      "mattpocock": "It loads the writing-for-agents guide first, then works alone with no helpers. E.g. it uses the guide's rules to word a new AGENTS.md line."
      }
     },
     {
@@ -2416,30 +2448,30 @@
       "mattpocock": "Ranked ==setup== fixes"
      },
      "details": {
-      "pstack": "Concrete edits to existing skills, tuned trigger descriptions or a new skill. Example: tune the description so the skill fires next time.",
-      "mattpocock": "Environment changes like a navigation pointer, a lint, a trimmed AGENTS.md or a new reviewer rule."
+      "pstack": "Real edits to existing skills, better trigger descriptions, or sometimes a new skill. E.g. it rewords a description so the skill turns on next time.",
+      "mattpocock": "Changes to the agent's setup, not to the code. E.g. a pointer to the right folder, a lint rule, a shorter AGENTS.md, or a new reviewer rule."
      }
     },
     {
      "aspect": "Cost",
      "values": {
-      "pstack": "==High==: four opus agents",
+      "pstack": "==High==: four Opus agents",
       "mattpocock": "==Low==: one agent, one pass"
      },
      "details": {
-      "pstack": "Default models are all Opus, and four agents run (cost is my inference).",
-      "mattpocock": "No fan-out in the text, so it should cost little (inferred)."
+      "pstack": "By default all four helpers run on Opus, the biggest model (the cost is my guess). E.g. four big-model runs over one long chat log.",
+      "mattpocock": "The text sends out no helpers, so it should cost little (my guess). E.g. one read of the chat log, one list back."
      }
     },
     {
      "aspect": "Edge",
      "values": {
-      "pstack": "==Skips== one-offs",
+      "pstack": "==Skips== one-time problems",
       "mattpocock": "Reviewer ==enforces== rules"
      },
      "details": {
-      "pstack": "It only keeps lessons likely to repeat. Example: a typo fix is ignored; a missed skill trigger is kept.",
-      "mattpocock": "Coding rules go to the review agent, which has the least load, not the implementer. Example: ban a pattern in review."
+      "pstack": "It only keeps lessons likely to happen again. E.g. a typo fix is ignored; a skill that failed to turn on is kept.",
+      "mattpocock": "Coding rules go to the review agent, which has the most free memory, not to the agent writing code. E.g. a banned pattern gets caught in review."
      }
     }
    ],
@@ -2463,48 +2495,50 @@
    ],
    "best": {
     "overall": "pstack",
-    "why": "Turns learnings into skill edits",
+    "why": "Turns lessons into skill edits",
     "cases": [
      {
       "case": "Skill failed to trigger",
       "winner": "pstack",
-      "why": "Tunes the skill description directly"
+      "why": "Rewords the skill description directly"
      },
      {
       "case": "Missing lint caught nothing",
       "winner": "mattpocock",
-      "why": "Builds deterministic checks instead of rules"
+      "why": "Builds automatic checks, not more rules"
      },
      {
       "case": "Bloated AGENTS.md",
       "winner": "mattpocock",
-      "why": "Prunes steering files, no-op hunting"
+      "why": "Trims instruction files, cuts useless lines"
      },
      {
       "case": "Team tracks improvements in tickets",
       "winner": "pstack",
-      "why": "Files Backlog items automatically"
+      "why": "Files Backlog items on its own"
      },
      {
       "case": "Solo cheap look-back",
       "winner": "mattpocock",
-      "why": "One agent, no approval ceremony"
+      "why": "One agent, no approval step"
      }
     ]
    },
    "glossary": {
-    "transcript": "The saved record of a chat session, every message and tool call.",
-    "retro": "Short for retrospective. Look back at what went wrong and how to fix it.",
-    "sub-agent": "A helper AI started for one job with its own fresh memory.",
-    "synthesizer": "The agent that merges several reviewers' notes into one list.",
-    "backlog": "A to-do list for later, not for now.",
-    "navigation pointer": "A short line telling the agent where to find something. Example: \"API docs are in docs/api\".",
-    "guardrail": "An automatic check that stops a mistake. Example: a lint rule.",
-    "lint": "A tool that scans code for rule breaks.",
-    "AGENTS.md": "A file of standing instructions every agent reads in a repo.",
-    "reviewer agent": "The agent that checks a diff against the coding standards.",
-    "coding standards": "The written rules for how code should look in this repo.",
-    "one-off": "A problem that happened once and is unlikely to repeat."
+    "session": "One chat with the agent, from start to finish. Like one shift at work.",
+    "retro": "Short for retrospective: looking back at what went wrong and how to stop it next time. Like a team chat after a lost game.",
+    "skill": "A saved set of instructions an agent loads for one kind of job. Like a recipe card it pulls out when needed.",
+    "trigger": "The words or situation that make the agent use a skill. E.g. the word 'bug' turns on the bug-fixing skill.",
+    "description": "The one-line summary at the top of a skill that the agent always sees. It decides when the skill turns on.",
+    "backlog": "A to-do list for later, not for now. Like a 'someday' pile on your desk.",
+    "ticket": "One to-do item in a task tracker. Like a sticky note on a team board.",
+    "lint": "A tool that scans code for broken rules automatically. Like spell-check, but for code.",
+    "AGENTS.md": "A file of standing instructions every agent reads in a project. Like house rules taped to the fridge.",
+    "pointer": "A short line that tells the agent where to find something. E.g. 'API docs are in docs/api'.",
+    "reviewer": "An agent that checks finished work against the rules. Like a teacher marking homework.",
+    "judgment call": "A choice no tool can check, so a person or agent must decide. E.g. 'does this match the style of the code around it?'",
+    "Opus": "Anthropic's biggest, smartest Claude model. It is also the most expensive to run.",
+    "import": "A line at the top of a file that pulls in code from somewhere else. Like borrowing a tool from a neighbor."
    }
   }
  ]

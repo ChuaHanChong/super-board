@@ -984,7 +984,7 @@
    "when": [
     "When you **write or edit a skill** → [[writing-for-agents]]",
     "When you change **AGENTS.md or CLAUDE.md** → [[writing-for-agents]]",
-    "When a doc is read by an agent through a ==pointer== → [[writing-for-agents]]"
+    "When an agent reads a doc because ==another file points to it== → [[writing-for-agents]]"
    ],
    "whatItIs": "A **style guide** for writing things an agent will read.",
    "howItWorks": [
@@ -1298,9 +1298,9 @@
    "when": [
     "When you have a **spec or plan** and need small jobs → [[to-tickets]]",
     "When work must be split so each piece **ships alone** → [[to-tickets]]",
-    "When you want ==blocking links== between jobs → [[to-tickets]]"
+    "When each job must ==say what must finish first== → [[to-tickets]]"
    ],
-   "whatItIs": "It slices a plan into **thin tracer-bullet tickets**, each saying what must finish first.",
+   "whatItIs": "It slices a plan into **small jobs that each work end to end**, and each says what must finish first.",
    "howItWorks": [
     "Each ticket cuts through **every layer** and fits one fresh context",
     "Each names the tickets that **block** it",
@@ -1689,10 +1689,10 @@
    ],
    "when": [
     "When you design a **module's interface** → [[codebase-design]]",
-    "When you decide **where a seam goes** → [[codebase-design]]",
+    "When you decide **where pieces of code plug together** → [[codebase-design]]",
     "When code must be easier to **test and navigate** → [[codebase-design]]"
    ],
-   "whatItIs": "A **shared vocabulary** for deep modules: lots of behavior behind a small door.",
+   "whatItIs": "**Shared words for designing code**: put lots of behavior behind a small, simple door.",
    "howItWorks": [
     "It names: module, interface, depth, seam, adapter, leverage, locality",
     "/tdd and /improve-codebase-architecture use the same words",
@@ -1815,9 +1815,9 @@
    "when": [
     "When you want the **whole spec built in one run** → [[implement-spec]]",
     "When many tickets can go **in parallel** → [[implement-spec]]",
-    "When you would rather ==orchestrate== than drive each ticket → [[implement-spec]]"
+    "When you would rather ==be the manager== than drive each ticket → [[implement-spec]]"
    ],
-   "whatItIs": "It builds a whole spec by running **helper agents** across the ticket graph on one branch.",
+   "whatItIs": "It builds a whole plan by running **helper agents** on its tickets, in the right order, on one branch.",
    "howItWorks": [
     "It reads tickets as a **graph**; the ready ones are the frontier",
     "Each helper works in its own worktree and calls **/tdd**",
@@ -1882,9 +1882,9 @@
    "when": [
     "When you build a **feature or fix** test-first → [[tdd]]",
     "When you say ==red-green-refactor== → [[tdd]]",
-    "When you want tests at **agreed seams** only → [[tdd]]"
+    "When you want tests only at **spots you agreed on** → [[tdd]]"
    ],
-   "whatItIs": "The **test-first rules**: write a failing test, then just enough code, one slice at a time.",
+   "whatItIs": "The **test-first rules**: write a failing test, then just enough code to pass, one small piece at a time.",
    "howItWorks": [
     "Agree the **seams** with you before any test",
     "Red before green; never write all tests up front",
@@ -2077,7 +2077,7 @@
    "when": [
     "When the agent **writes a pull request** → [[pr]]",
     "When reviewers need to **see the change fast** → [[pr]]",
-    "When you want a ==merge-danger call== → [[pr]]"
+    "When you want to know ==how risky the merge is== → [[pr]]"
    ],
    "whatItIs": "The **shape of a good PR body**: a small picture, before/after proof, and how risky the merge is.",
    "howItWorks": [

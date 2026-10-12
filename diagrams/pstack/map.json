@@ -1410,11 +1410,11 @@
     "codex"
    ],
    "when": [
-    "When **new code crosses a function boundary** → [[architect]]",
-    "When you are about to ==lock in types, signatures or module layout== → [[architect]]",
+    "When **new code will be used by other code** → [[architect]]",
+    "When you are about to ==lock in the shape of your code== (data types, function inputs, files) → [[architect]]",
     "When you care most about **how callers will use it** → [[architect]]"
    ],
-   "whatItIs": "It **sketches the shape first** (types, signatures, modules), then fills in the code.",
+   "whatItIs": "It **sketches the shape first** (data types, function inputs and outputs, files), then fills in the code.",
    "howItWorks": [
     "**Ground:** it runs how, and why if ownership changes",
     "**Sketch:** it runs an arena of ==at least two different designs==",
@@ -1633,8 +1633,8 @@
     "codex"
    ],
    "when": [
-    "When a **diff is ready** and you want it attacked before it ships → [[interrogate]]",
-    "When a **design is contested** and you want independent opinions → [[interrogate]]",
+    "When your **change is ready** and you want it attacked before it ships → [[interrogate]]",
+    "When people **disagree on a design** and you want outside opinions → [[interrogate]]",
     "When you suspect ==blind spots== in your own review → [[interrogate]]"
    ],
    "whatItIs": "Several **different AI models try to break your change**. You get one judged verdict.",
@@ -1708,9 +1708,9 @@
     "codex"
    ],
    "when": [
-    "When a bug has a ==cheap, obvious test== → [[tdd]]",
+    "When a bug is ==easy to catch with a test== → [[tdd]]",
     "When you want the **failing test first**, then the fix → [[tdd]]",
-    "When you ask for a **regression test** → [[tdd]]"
+    "When you want a **test that stops a fixed bug coming back** → [[tdd]]"
    ],
    "whatItIs": "It **writes a failing test first**, then fixes the bug. It skips the test if it would be a bad one.",
    "howItWorks": [
@@ -2465,11 +2465,11 @@
     "codex"
    ],
    "when": [
-    "When you **open a PR** and want it shepherded to green → [[babysit]]",
-    "When CI, conflicts and ==review comments pile up== → [[babysit]]",
+    "When you **open a PR** and want it looked after until every check passes → [[babysit]]",
+    "When failing checks, clashing edits and ==review comments pile up== → [[babysit]]",
     "When you do not want to **re-prompt** every hour → [[babysit]]"
    ],
-   "whatItIs": "It **watches an open PR** and fixes conflicts, red CI and easy comments until it can merge.",
+   "whatItIs": "It **watches an open PR** and fixes clashing edits, failing checks and easy comments until it can merge.",
    "howItWorks": [
     "It reads the PR with **gh pr view**",
     "It handles ==conflicts, then CI, then review comments, then bot comments==",
