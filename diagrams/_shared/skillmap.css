@@ -95,3 +95,26 @@ details.sec .sb{padding:2px 12px 12px;animation:smo .16s ease-out}
 .sm .cdet{margin-top:4px;padding:4px 6px;border-left:2px solid var(--c);background:color-mix(in srgb,var(--c) 8%,transparent);font-size:12px;color:var(--fg);white-space:normal}
 .smtip{position:fixed;z-index:50;padding:8px 10px;border:1px solid var(--c);border-radius:8px;background:var(--card);color:var(--fg);box-shadow:0 8px 24px rgba(0,0,0,.3);font:13px/1.4 var(--sans,inherit);pointer-events:none}.smtip[hidden]{display:none}
 .sm .cmpmore{margin:4px 0 6px;min-height:32px;padding:0 12px;border:1px dashed var(--c);border-radius:999px;background:transparent;color:var(--c);font:600 12.5px var(--sans,inherit);cursor:pointer}
+
+/* compare layout fixes: labels never overlap, tabs one scrolling row clear of the close button, room for the info icon */
+.sm table.cmp th.cmpc{width:auto;min-width:86px;max-width:110px;white-space:normal;word-break:normal;overflow-wrap:break-word;hyphens:auto;line-height:1.2;font-size:11px;letter-spacing:.03em;padding:4px 6px}
+.sm table.cmp td{padding-right:20px}.sm table.cmp td.hasd::after{right:5px;top:3px}
+.sm .cmptabs{flex-direction:column;align-items:stretch;gap:4px;margin-right:0}
+.sm .cmpcases{flex-wrap:nowrap;overflow-x:auto;max-width:100%}
+.sm .casechip{flex:none}
+.sm .cmptabs{padding-right:52px}.sm .cmpcases{scroll-snap-type:x proximity}
+
+/* iter2 */
+.sm .cmphint{font-size:12px;color:var(--muted);margin:2px 0 6px!important}
+.sm td.hasd::after{font-size:12px;color:var(--c);opacity:.8}
+.sm .bestb{font-size:12px;padding:1px 6px;border-radius:999px;background:var(--c);color:var(--card);display:inline-block}
+.sm .cmpw{border-bottom:1px solid var(--grid)}
+@media (max-width:700px){
+ .sm table.cmp th,.sm table.cmp td{min-width:118px}.sm table.cmp th.cmpc{min-width:64px;width:64px;font-size:10px}
+ .sm table.cmp td{padding-right:18px}
+ .sm .cmpcases{mask-image:linear-gradient(90deg,#000 88%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)}
+}
+
+/* iter3 */
+.sm .casechip{max-width:176px;overflow:hidden;text-overflow:ellipsis}
+.sm .cmptabs{padding-right:0}
