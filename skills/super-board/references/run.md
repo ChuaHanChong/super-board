@@ -48,6 +48,14 @@ Progress: ✅ onboard  →  ✅ lint  →  🤖 run (you are here)
 ─────────────────────────────────────────────────────────
 ```
 
+## Optional post-run learning
+
+The installed-skill adapter is described in [`calibration.md`](calibration.md).
+It runs after verified selected work finishes, never within a product lane.
+An unsupervised legacy runner cannot invoke a skill merely because it exits 0:
+it reports calibration skipped/unavailable. A supervising host may prepare the
+bounded receipt and delegate the external skill after normal final reconciliation.
+
 ## Preconditions (verified before any worker dispatches)
 
 | Check | Action on fail |

@@ -31,6 +31,20 @@
   // only; the dispatcher refuses to run (exit 78) unless set here.
   "worker_backend": "workflow",
 
+  // Optional post-completion adapter; never bundles or installs the external skill.
+  // Runs only after selected work is verified merged and no work/approvals remain.
+  // The supervising host checks the resulting diff; the helper itself is read-only.
+  "calibration": {
+    "enabled": false,
+    "mode": "apply-existing",
+    // null discovers only installed calibrate skills in known project/user skill roots.
+    // Otherwise use the installed SKILL.md path (repo-relative, absolute, or ~/...).
+    "skill_path": null,
+    // Explicit EXISTING canonical SKILL.md paths; no wrappers or symlink aliases.
+    // Empty/missing targets skip learning. AGENTS.md/CLAUDE.md/new skills still need approval.
+    "allowed_skill_paths": []
+  },
+
   // Default model ladder for lane workers, indexed by card complexity from
   // the classify router. Overridden per run by `super-board run --low|--high`.
   //   "low"    — haiku (low) / sonnet (medium) / opus (high)

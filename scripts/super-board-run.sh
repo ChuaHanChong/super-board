@@ -766,3 +766,6 @@ while true; do
 done
 
 log "super-board run finished. manifest: $RUN_MANIFEST"
+if jq -e '.calibration.enabled == true' "$CONFIG_PATH" >/dev/null 2>&1; then
+  log "calibration skipped: legacy runner has no supervising skill host; final receipt and installed-skill delegation are required. Exit 0 alone does not prove selected work landed."
+fi

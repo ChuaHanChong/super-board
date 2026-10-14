@@ -212,7 +212,7 @@ Repeat until a done condition or halt gate fires:
    absent = no cap). `max_workers` is the GitHub-limit valve: step 5 lowers it
    after a wave that hit the hourly limit. If `cards` is empty and
    Building/QA/Review counts are 0 → done. If empty but cards sit in Blocked
-   only → report and stop.
+   only → report and stop. This is unfinished work, not a completed-run calibration trigger.
 3. **Claim** — for each card, `gh issue edit <n> --add-assignee <bot_identity>`,
    then VERIFY: re-read assignees (`gh issue view <n> --json assignees`) and
    proceed only if the list is exactly `[<bot_identity>]`. Adding an assignee
@@ -269,6 +269,18 @@ Repeat until a done condition or halt gate fires:
    /super-board run <slug> [--codex[=<model>]] [--low|--high]` (retain the run's choice) and who must act first.
 8. Loop to 1. For unattended cadence, the user may wrap this loop in /loop;
    the orchestrator must still stop at halt gates.
+
+After normal completion, confirm all selected waves and lane tasks have ended,
+finish final reconciliation, and release only the `workflow-wave.lock` created
+by this host for this run (match its saved slug/start identity). Never remove
+a marker owned by another or uncertain run; preserve it and skip calibration.
+The read-only adapter never removes markers. Then run the optional adapter in [`calibration.md`](calibration.md).
+This is a separate post-run task, after all lane workers and pending selected work
+are accounted for. Do not calibrate per wave, on a halt/partial delivery, or from
+Done counts or process exit alone. When enabled and eligible, delegate the installed
+skill automatically using the helper's scoped brief; check its actual diff before
+accepting automatic edits. An unavailable skill/host or an ineligible receipt is
+reported as skipped and does not change the completed product work.
 
 ## Stop / resume
 

@@ -41,6 +41,11 @@ Or as a Claude Code plugin:
 > [!NOTE]
 > The plugin ships the skills only. Run `/super-board:super-board onboard` and its 🔍 Checks step adds the guard hooks, scripts and workflows. Needs Claude Code, `gh`, `jq`, bash 3.2+ and Python 3.9+; the installer checks.
 
+Optional post-run learning can delegate an already installed `calibrate` skill after
+verified selected work completes. It applies only to explicitly permitted existing
+canonical skill files; the package bundles no private skill. See
+[post-run calibration](skills/super-board/references/calibration.md).
+
 ## Quick start
 
 ### 1. Install
