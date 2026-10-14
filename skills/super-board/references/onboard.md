@@ -474,3 +474,9 @@ remove a pending recovery record; use its saved state to reconcile a conflict be
 When step 5 wrote files: `super-board-agents-md.py check --file AGENTS.md` passes and `detect`
 reports CLAUDE.md as a pointer (unless "Only add the super-board section"). Any check fails →
 no 🎉: name the failed check and say "re-run `/super-board onboard` — it resumes there".
+
+## Project-owned verification checks
+
+Use [project-checks.md](project-checks.md) to connect existing lint, layout, import
+and test commands through `verify_commands`. Examples are app-owned; onboarding
+does not impose an architecture or install a universal linter.

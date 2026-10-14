@@ -37,13 +37,17 @@ cat > "$WORK/config.json" <<'JSON'
 JSON
 
 # gh stub. Env switches:
-#   STUB_HITS    — JSON array the dedupe `issue list` sees ([{number,state,body}])
+#   STUB_HITS    — JSON array the paginated history read sees ([{number,state,body}])
 #   STATUS_OPTS  — Status option names on the board (underscore = space)
 cat > "$WORK/gh" <<'STUB'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >> "$GH_LOG"
 case "$1 ${2:-}" in
-  "repo view")     echo "example" ;;
+  "repo view")
+    case "$*" in *nameWithOwner*) echo "example/shop";; *) echo "example";; esac ;;
+  "api graphql")
+    hits="${STUB_HITS:-[]}"
+    printf '%s' "$hits" | jq '[{data:{repository:{issues:{totalCount:length,pageInfo:{hasNextPage:false,endCursor:null},nodes:.}}}}]' ;;
   "issue list")
     jq_expr=""; prev=""
     for a in "$@"; do [ "$prev" = "--jq" ] && jq_expr="$a"; prev="$a"; done
@@ -102,7 +106,8 @@ lacks "no issue create" "$(cat "$GH_LOG")" "issue create"
 lacks "no labels or board moves on a duplicate" "$(awk '/^(label create|project item-(add|edit)) /' "$GH_LOG")" "project"
 BOTH='[{"number":88,"state":"CLOSED","body":"err|sentry|4411"},{"number":301,"state":"OPEN","body":"err|sentry|4411"}]'
 has "open beats closed when both exist" "$(STUB_HITS="$BOTH" run "${BUG[@]}")" "duplicate|#301"
-has "dedupe is repo-wide: any state, 500 issues" "$(cat "$GH_LOG")" "issue list -R example/shop --state all --limit 500"
+has "dedupe paginates repo-wide all-state history" "$(cat "$GH_LOG")" "states:[OPEN,CLOSED]"
+has "history read requests complete pages" "$(cat "$GH_LOG")" "--paginate --slurp"
 
 echo "── dedupe: closed-only hit → recurrence, filed again naming the closed issue"
 CLOSED='[{"number":88,"state":"CLOSED","body":"<!-- super-collect-fingerprint: prs|dates|date-only-local-getters -->"}]'
