@@ -636,6 +636,17 @@ See `.claude/skills/super-board/references/run.md` → Tester (first pass — re
 6. **Pass** → tick the PR's `ac` block with proof lines, write `visual` for UI, append a `history` row, rewrite `status` (`super-board-pr-body.sh`) → `[qa] [report] ✅` PR comment with results + evidence path → **issue comment with screenshot evidence** (see "Issue-comment evidence format" below) → move QA → Review. Clean up worktree.
 7. **Fail** → leave failing ACs unchecked with the reason, append a `history` row, rewrite `status` → `[qa] [report] ❌` PR comment with per-AC expected/actual + repro file:line + evidence path + "what fixed should look like" → issue comment with the failure screenshots → increment rebuild counter → move QA → Ready (label `loop:rebuild-N`). Clean up worktree.
 
+### Optional runtime performance and memory checks
+
+For runtime evidence requested by the issue, or a configured
+`runtime_verification.config`, read [runtime-verification.md](references/runtime-verification.md).
+Use the shared runner with a project-owned scenario and existing Playwright. Compare
+pinned original/changed apps with matching data/environment, warmups and at least
+five alternating samples each. Attach timing ranges, heap evidence, correctness
+failures and verdict to the normal QA handoff under `Runtime checks:`. A noisy or
+inconclusive result cannot prove a performance AC; do not replace correctness
+checks or add profiling to unrelated issues.
+
 ### Pass-handoff PR comment MUST include the test command
 Every Pass-handoff PR comment includes a `Local tests:` line with the EXACT command Reviewer will re-run as the self-verification gate:
 ```

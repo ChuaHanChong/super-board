@@ -314,6 +314,11 @@ See `.claude/skills/super-board/references/run.md` → Reviewer. Summary of the 
    - Pull `issue-<N>-<slug>` into review worktree.
    - Re-run the EXACT command from Tester's PR `Local tests:` line.
    - Green → continue. Red → open new `[qa]`-prefixed thread quoting failure, move card Review → QA with `loop:rebuild-N`, exit.
+   - If QA includes `Runtime checks:`, follow
+     [optional runtime verification](../super-qa/references/runtime-verification.md):
+     rerun the same scenario/config and pinned versions into new review evidence,
+     check hashes/revisions and performance AC budgets. Never infer a speed win
+     from exit 0 or an inconclusive result. Runtime checks supplement local tests.
 6. **Adversarial mode** (per `config.truth_gate` — `off` / `non-trivial` / `always`, default `non-trivial`): see section below.
 7. Decide per finding. First apply the Over-engineering rule to every finding collected —
    yours, `ponytail:ponytail-review`'s and the truth-check sub-agents': Over-engineering is

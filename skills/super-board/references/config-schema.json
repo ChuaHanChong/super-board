@@ -211,6 +211,11 @@
   // keep resetting `no_progress_cycles`. Default `0`.
   "max_dispatches": 0,
 
+  // Optional project-owned runtime comparison for Super QA/Review. No profile
+  // runs unless this is set or the issue asks for it. Paths are repo-relative;
+  // scenarios/dependencies stay with the app. See super-qa runtime-verification.md.
+  "runtime_verification": { "config": "docs/runtime/compare.json" },
+
   // Controls Reviewer's adversarial mode (folded-in super-truth pattern).
   //   "off"          — never adversarial.
   //   "non-trivial"  — (default) activates on cards with diff ≥10 lines OR
