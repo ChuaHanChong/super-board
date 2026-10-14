@@ -81,7 +81,10 @@ The interactive session that runs this backend is the orchestrator. It:
 ## Preconditions (before the first wave)
 
 Run the same preconditions as `run.md` §Preconditions, minus PID checks:
-1. Config exists and validates against `config-schema.json`.
+1. Config exists and validates against `config-schema.json`. Run
+   `python3 .claude/bin/super-board-verification-ready.py --config <config>`; exit 9
+   stops before dispatch until the owning project's verification commands are configured.
+   Preserve work; repair setup and restart explicitly, never bounce to Build.
 2. Production-merge guard: refuse `base_branch: main` + `human_approves_merge:
    false` when deploy markers exist (same rule as super-board-run.sh).
 3. Worktree check: if legacy `.worktrees/issue-*` exists, halt for inspection/move
@@ -169,6 +172,9 @@ Repeat until a done condition or halt gate fires:
    cut off mid-lane. The legacy `claude-p` dispatcher does not run this guard.
 2. **Plan the wave** —
    `bash .claude/bin/super-board-wave-plan.sh --config <config-path>` →
+   Exit 9 is a verification-readiness halt: preserve work and claims, repair the
+   owning project's `verify_commands`, then restart explicitly. No GitHub recovery probe,
+   rebase, Build bounce, or automatic retry.
    The planner returns `cards`, `sweep`, `resume`, `refreshApproval`, `flag` and `stranded`. **Act on
    `sweep`, `resume`, `refreshApproval`, `flag` and `stranded` BEFORE launching** (run.md → "The wave-start
    sweep"): move every swept card to `Ready` with a comment naming what cleared
@@ -229,7 +235,9 @@ Repeat until a done condition or halt gate fires:
    config sets the default; an explicit flag wins over config.
 5. **Reconcile** (when the run completes) — read the returned `cards`
    summary. If `halted: true`, any card is `halted`, or the GitHub helper's `--check`
-   fails, preserve claims and follow "Required GitHub evidence" above. Otherwise,
+   fails, preserve claims and stop. For verification-readiness (exit 9), repair
+   `verify_commands` and restart explicitly; do not invoke GitHub evidence recovery.
+   For a GitHub read halt, follow "Required GitHub evidence" above. Otherwise,
    for EVERY card in the wave, release the assignee
    (`gh issue edit <n> --remove-assignee <bot_identity>`, idempotent).
    Append one line per card to the run manifest

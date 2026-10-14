@@ -52,6 +52,7 @@ Progress: ✅ onboard  →  ✅ lint  →  🤖 run (you are here)
 
 | Check | Action on fail |
 |---|---|
+| Usable verification commands | Run `python3 .claude/bin/super-board-verification-ready.py --config <config>`. Exit 9 halts setup before dispatch: configure the owning project's checks, then restart explicitly. |
 | Active config exists | Halt: "Run `super-board onboard` first." |
 | Project + required columns exist | Halt: "Project / columns missing. Run `super-board onboard` to repair." |
 | `gh auth` valid with required scopes | Halt: "Re-auth: `gh auth refresh -s project,read:project,repo`." |
@@ -457,6 +458,7 @@ on the base branch**.
    base into a scratch worktree at $HEAD, runs `config.verify_commands`, and only then
    squash-merges with `--match-head-commit $HEAD`. After a merge it runs `cleanup-wt --post-merge`
    when the `.claude/hooks/cleanup-wt.py` hook is installed (local only; a cleanup failure never changes the exit). Route by exit code:
+     9 → verification-readiness: halt the run and preserve card, approval, claims, and worktree. Repair `config.verify_commands` with the project's real checks, then restart explicitly. Never bounce to Build, retry a rebase, or bypass the gate.
      0 → merged; continue to step 4
      2 → the branch no longer builds against the base → **rebase pass** (see below)
      3 → GitHub refused after a green verify (branch protection, required check)

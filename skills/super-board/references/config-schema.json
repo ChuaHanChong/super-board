@@ -258,6 +258,10 @@
   //             wave. The launcher refuses a fallback lane without this value.
   "usage_fallback": "none",
 
+  // Required for Board dispatch and Board-controlled merges: at least one non-blank
+  // project-owned command. Empty/missing lists halt with verification-readiness (exit 9).
+  // NUL bytes in commands are rejected because shell extraction cannot preserve them.
+  // Include the owning project's checks; the board does not choose a universal runner.
   "verify_commands": [
     "cd server && npm ci --silent && npm run typecheck && npm test"
   ],

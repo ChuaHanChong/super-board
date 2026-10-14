@@ -71,7 +71,7 @@ OLD_LABELS = {
 }
 SKILLS = ["super-board", "super-build", "super-qa", "super-review", "super-collect", "visual", "git-sync", "ui-refine-loop"]
 OLD_SKILL_DIRS = ["super-refine", "cleanup-wt", "arch-loop"]
-BIN = ["super-board-github-read.py", "super-board-run.sh", "super-board-gh-guard.sh", "super-board-card.sh", "super-board-status.py", "super-board-wave-plan.sh",
+BIN = ["super-board-verification-ready.py", "super-board-github-read.py", "super-board-run.sh", "super-board-gh-guard.sh", "super-board-card.sh", "super-board-status.py", "super-board-wave-plan.sh",
        "super-board-deps.sh", "super-board-preflight.sh", "super-board-merge-gate.sh",
        "super-board-merge-policy.py", "super-board-approval.py", "super-board-env-check.sh", "super-board-agents-md.py",
        "super-board-settings.py", "super-board-setup.py", "super-board-usage.sh", "super-board-pr-body.sh",
@@ -289,8 +289,14 @@ def check(root, pack):
         missing.append(f"settings.json: {len(unwired)} guard entr{'y' if len(unwired) == 1 else 'ies'}")
     old_dirs = [d for d in OLD_SKILL_DIRS if os.path.isdir(os.path.join(claude, "skills", d))]
     configs = {}
+    verification = {}
     for p in sorted(glob.glob(os.path.join(claude, "super-board", "configs", "*.json"))):
         cfg = load_json(p)
+        ready = subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__),
+                                "super-board-verification-ready.py"), "--config", p],
+                               capture_output=True, text=True)
+        if ready.returncode:
+            verification[os.path.relpath(p, root)] = ready.stderr.strip()
         if isinstance(cfg, dict):
             _, ch = migrate_config(cfg)
             if ch:
@@ -320,12 +326,12 @@ def check(root, pack):
         ok.append("git repo found")
     if helpers:
         ok.append("Matt Pocock's coding skills (tests, code review, debugging) present")
-    red = bool(missing or old_dirs or configs or not git or needs or (not helpers and have("npx")))
+    red = bool(missing or old_dirs or configs or verification or not git or needs or (not helpers and have("npx")))
     return {
         "root": root, "pack": pack, "pack_version": pack_version, "installed_version": have_v,
         "upgrade": older, "from": from_v or ("older" if older else None),
         "added_skills": upgrade_rec.get("added_skills", []),
-        "missing": missing, "old_dirs": old_dirs, "configs": configs, "git": git,
+        "missing": missing, "old_dirs": old_dirs, "configs": configs, "verification": verification, "git": git,
         "helper_skills": helpers, "needs": needs, "os": fam, "ok": ok, "green": not red,
     }
 
@@ -435,6 +441,8 @@ def text_report(res):
         lines += [f"  ✗ {r}" for r in red]
         if red:
             lines.append("  → fix: super-board-setup.py fix")
+    for path, error in res.get("verification", {}).items():
+        lines.append(f"  ✗ {path}: {error}")
     for n in res.get("needs", []):
         lines.append(f"  Needs your machine: {n['name']} isn't installed. It's needed for {n['why']}.")
         lines.append(f"    {n['command']}")

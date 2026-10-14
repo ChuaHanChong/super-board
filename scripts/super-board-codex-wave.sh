@@ -58,7 +58,17 @@ try:
     pinned = codex[0].startswith('--codex=') or (isinstance(configured, str) and configured.strip())
 except (OSError, ValueError, subprocess.CalledProcessError) as error:
     parser.error(str(error))
+readiness = launcher.with_name('super-board-verification-ready.py')
+if subprocess.run([sys.executable, str(readiness), '--config', str(config_path)]).returncode:
+    result = json.dumps({'cards': [dict(number=c['number'], finalStatus='halted', lastLane='none',
+                                       column=c['status'], detail='verification-readiness: repair verify_commands and restart explicitly',
+                                       lanesRun='none:halted') for c in cards], 'halted': True})
+    if output_path:
+        output_path.write_text(result + '\n')
+    print(result)
+    sys.exit(9)
 os.chdir(root)
+readiness_halted = threading.Event()
 halted = threading.Event()
 mutex = threading.RLock()
 active = set()
@@ -178,8 +188,12 @@ def run_card(card):
                 history.append(dict(lane=lane, status='failed', column=current['status'],
                                     detail=f'could not start {lane} lane: {error}'))
                 break
+        preserve_lock = False
         try:
             stdout, _ = process.communicate()
+            if process.returncode == 9:
+                preserve_lock = True
+                readiness_halted.set()
             try:
                 result = json.loads(stdout)
                 if (not isinstance(result, dict) or result.get('status') not in
@@ -189,7 +203,7 @@ def run_card(card):
                 if process.returncode and result['status'] != 'halted':
                     raise ValueError(f'lane exited {process.returncode}')
             except (ValueError, TypeError):
-                result = dict(status='halted' if process.returncode == 79 or halted.is_set() else 'failed',
+                result = dict(status='halted' if process.returncode in (9, 79) or halted.is_set() else 'failed',
                               column=current['status'], detail=f'{lane} lane returned no valid result (exit {process.returncode})')
             with mutex:
                 if result['status'] == 'halted':
@@ -205,7 +219,7 @@ def run_card(card):
             current['status'] = result['column']
         finally:
             try:
-                if lock.read_text().startswith(f'PID={process.pid}\n'):
+                if not preserve_lock and lock.read_text().startswith(f'PID={process.pid}\n'):
                     lock.unlink()
             except FileNotFoundError:
                 pass
@@ -228,5 +242,5 @@ try:
 finally:
     if marker.exists() and marker.read_text().strip() == owner:
         marker.unlink()
-sys.exit(79 if halted.is_set() else 0)
+sys.exit(9 if readiness_halted.is_set() else 79 if halted.is_set() else 0)
 PY

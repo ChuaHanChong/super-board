@@ -125,6 +125,9 @@ Write it atomically (temp file + rename) after every answer. A halt never loses 
    ├─ collect signals: Sentry (@sentry/* / sentry-sdk in manifests, Sentry.init(, .sentryclirc),
    │    PostHog (posthog-js / posthog-node / posthog, posthog.init(, NEXT_PUBLIC_POSTHOG_* names);
    │    key names: bash $SB/super-board-env-check.sh SENTRY_AUTH_TOKEN POSTHOG_PERSONAL_API_KEY
+   ├─ verification commands: preserve valid `verify_commands`; otherwise inspect the owning
+   │    project's documented checks and stage those commands. Unresolved checks are a setup
+   │    halt. Never save placeholders or invent a universal runner.
    └─ machine time zone for config `timezone`: $TZ, else readlink /etc/localtime | sed
       's#.*zoneinfo/##', else timedatectl show -p Timezone --value, else "UTC". Shown at step 8.
 
@@ -337,7 +340,7 @@ Write it atomically (temp file + rename) after every answer. A halt never loses 
    │    ├─ .claude/super-board/configs/<slug>.json (committed): description, project, target
    │    │    {type: repo | repo+url}, repo, base_branch, timezone, columns (the seven), labels,
    │    │    paths, merge_policy, migrations, collect (incl. custom), notifications {channel:
-   │    │    "session", bot_identity}, worker_backend "workflow". No `variant`.
+   │    │    "session", bot_identity}, worker_backend "workflow", verify_commands (non-blank project checks). No `variant`.
    │    ├─ .claude/super-board/active ← <slug>
    │    ├─ .gitignore += .claude/super-board/active, onboard-answers.json, onboard-staged/,
    │    │    backup/, inflight/, migrations/, upgrade.json (all under .claude/super-board/)
@@ -349,7 +352,9 @@ Write it atomically (temp file + rename) after every answer. A halt never loses 
    │       manifests + README + tree, no question; listed in the table as "PROJECT.md drafted")
    └─ Delete onboard-staged/; keep the answers file (re-runs use it).
 
-DONE — self-check, then the ONE place that names the next command:
+DONE — run `python3 $SB/super-board-verification-ready.py --config <saved config>`;
+      exit 9 reports setup incomplete (repair checks before run; do not reinstall/rebase).
+      Then self-check, then the ONE place that names the next command:
       ⏺ Bash(self-check)  ⎿  all good
       ⏺ 🎉 Onboard complete.
         📋 Board: github.com/users/<owner>/projects/<n> (<title>)

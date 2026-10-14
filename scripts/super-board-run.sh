@@ -97,6 +97,8 @@ if [ "$WORKER_BACKEND" != "claude-p" ]; then
   exit 78
 fi
 
+python3 "$(dirname "$SB_GITHUB_READ")/super-board-verification-ready.py" --config "$CONFIG_PATH"
+
 RUN_DATE=$(date +%Y-%m-%d)
 RUN_MANIFEST="docs/super-board/runs/${RUN_DATE}-${CONFIG_SLUG}.md"
 # Per-worker logs (issue #13). Workers used to be spawned with >/dev/null, so the run
@@ -566,10 +568,11 @@ if [ "${SB_LIB_ONLY:-0}" = "1" ]; then
   return 0 2>/dev/null || exit 0
 fi
 
-# A read failure stops only workers launched by this dispatcher. Keep their
+# A readiness/read failure stops only workers launched by this dispatcher. Keep their
 # locks, worktrees, claims, and approval evidence for explicit recovery.
 halt_cleanup() {
-  if ! python3 "$SB_GITHUB_READ" --check >/dev/null 2>&1; then
+  local rc=$?
+  if [ "$rc" -eq 9 ] || ! python3 "$SB_GITHUB_READ" --check >/dev/null 2>&1; then
     for pid in "${BUILD_PID:-}" "${QA_PID:-}" "${REVIEW_PID:-}"; do
       [ -z "$pid" ] || kill -TERM "$pid" 2>/dev/null || true
     done
@@ -631,6 +634,7 @@ QA_PID=""; QA_ISSUE=""
 REVIEW_PID=""; REVIEW_ISSUE=""
 
 while true; do
+  python3 "$(dirname "$SB_GITHUB_READ")/super-board-verification-ready.py" --config "$CONFIG_PATH"
   gh_checkpoint
   # Workflow-backend mutual exclusion, re-checked every tick: the startup
   # check alone leaves a TOCTOU window where a workflow run starting at the

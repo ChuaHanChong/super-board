@@ -52,7 +52,7 @@ const READ_SHAPES = [
   `- issue state: --kind state -- issue view <N> --json state --jq .state`,
   `A read whose output misses its shape exits 64 for that call only and prints the valid form: fix the read, do not halt.`,
 ].join('\n')
-const READ_FAILURE = READ_SHAPES + '\n' + `Required GitHub reads use .claude/bin/super-board-github-read.py: three total attempts, exit 79 means run halted. Check --check before any GitHub write, migration, or merge. On exit 79 preserve worktree/card/approval/claims, make no more GitHub calls, and report status=halted (preflight verdict=halted). Never retry a mutation. Config: ${input.configPath}.`
+const READ_FAILURE = READ_SHAPES + '\n' + `Verification-readiness exit 9 means missing/unusable config.verify_commands: preserve card/worktree/approval/claims, report status=halted (preflight verdict=halted), stop dispatch, repair project configuration before explicit restart; no Build bounce or automatic retries. ` + `Required GitHub reads use .claude/bin/super-board-github-read.py: three total attempts, exit 79 means run halted. Check --check before any GitHub write, migration, or merge. On exit 79 preserve worktree/card/approval/claims, make no more GitHub calls, and report status=halted (preflight verdict=halted). Never retry a mutation. Config: ${input.configPath}.`
 
 const CLASSIFY_SCHEMA = {
   type: 'object',
@@ -151,7 +151,7 @@ const lanePrompt = (lane, card) => [
   `- status=advanced  → card moved forward (Building→QA, QA→Review, Review→Done/merged)`,
   `- status=bounced   → card moved backward (QA fail → Ready, Reviewer bounce → Ready/QA)`,
   `- status=blocked or human-gate → you wrote the Block template and moved the card to Blocked`,
-  `- status=halted    → required service evidence is unavailable; leave card state unchanged and stop the run`,
+  `- status=halted    → required service evidence or verification configuration is unavailable; leave card state unchanged and stop the run`,
   `- status=failed    → you could not complete the lifecycle (say why in detail)`,
   `column = the column the card is in when you exit. detail = one line. Include prUrl/branch when they exist.`,
 ].join('\n')
@@ -175,7 +175,7 @@ const classifyModel = (input.tier || 'medium') === 'high' ? 'sonnet' : 'haiku'
 
 const runLane = async (lane, card, model, history) => {
   if (halted) {
-    const result = { status: 'halted', column: card.status, detail: 'run halted by a required GitHub read failure' }
+    const result = { status: 'halted', column: card.status, detail: 'run halted; preserve work and repair the reported readiness or evidence problem' }
     history.push({ lane, ...result })
     return result
   }
