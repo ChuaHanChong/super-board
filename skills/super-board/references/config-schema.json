@@ -93,7 +93,8 @@
   // When `true`, Reviewer marks the PR ready but does NOT squash-merge; a
   // human must click merge. Card auto-moves to Done when the PR is merged
   // externally. Default `false`. Legacy switch: new configs leave it `false`
-  // and use `merge_policy` (default "human" = the same thing).
+  // and use `merge_policy`, whose default is "auto". Set its default to
+  // "human" explicitly when every merge should require human approval.
   //
   // On the workflow backend, `false` ALSO requires
   // "Bash(bash .claude/bin/super-board-merge-gate.sh:*)" and "Bash(gh pr merge:*)"
@@ -107,7 +108,8 @@
   // Absent → the defaults below apply.
   "merge_policy": {
     // "auto" (default): normal changes merge on a clean review.
-    // "human": every PR waits for a human click (the old human_approves_merge).
+    // "human": every PR requires human approval (gate exits 7 → Blocked).
+    // A human can merge it or approve the pinned request for the next wave.
     // Onboard recommends "human" when base_branch is production-detected.
     "default": "auto",
     // Small PRs by design. A PR with more changed lines (additions +

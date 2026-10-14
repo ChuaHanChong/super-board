@@ -324,18 +324,24 @@ the policy. Pair auto-merge with a non-production `base_branch`.
 
 > **Read this before starting an overnight wave (issue #9).** The two settings
 > interact, and the failure is silent. A board configured
-> `"human_approves_merge": false` but run **without** `"Bash(gh pr merge:*)"`
-> allowed will build, test and review cards all night and land **nothing** —
+> `"human_approves_merge": false` and `merge_policy.default: "auto"`, processing
+> otherwise ungated PRs **without** `"Bash(gh pr merge:*)"` allowed, will build,
+> test and review cards all night and land **nothing** —
 > each Reviewer stalls on an approval prompt nobody is there to click, and the
 > card returns to Review to be re-reviewed on the next wave.
 >
 > Pick one deliberately:
 >
-> | Intent | `human_approves_merge` | Allowlist `gh pr merge` | Reviewer's terminal state |
+> | Intent | Configuration | Allowlist `gh pr merge` | Reviewer's terminal state |
 > | --- | --- | --- | --- |
-> | Attended — you click each merge | `false` | no | pauses on a prompt |
-> | Unattended auto-merge | `false` | **yes** | card → Done, merge confirmed (money/auth/schema, live migrations → 🙋 Blocked for you) |
-> | Human merges later, agent never does | `true` (or `merge_policy.default: "human"`) | no | card stays in Review |
+> | Attended — approve each merge command | `human_approves_merge: false`, `merge_policy.default: "auto"` | no | pauses on a tool permission prompt |
+> | Unattended auto-merge | `human_approves_merge: false`, `merge_policy.default: "auto"` | **yes** | card → Done after confirmed merge; configured human gates → 🙋 Blocked |
+> | Every PR requires human approval through the gate | `human_approves_merge: false`, `merge_policy.default: "human"` | needed only if the agent will merge after approval | gate exits 7 → 🙋 Blocked until a human merges or approves the pinned request |
+> | Legacy human-only switch | `human_approves_merge: true` | no | Reviewer stops before the gate; card stays in Review |
+>
+> Gate-based rows also need the merge-gate command allowed. A tool permission prompt
+> is separate from the gate's human-approval request; allowing a command does not
+> bypass `merge_policy`.
 >
 > Row 2 is the only combination that lands code with nobody watching, and it
 > requires a non-production `base_branch` — the run script's production-merge
