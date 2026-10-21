@@ -209,6 +209,7 @@ under Risk.
 | `## Problem` | 1–3 sentences: what is wrong or missing, from the user's side | yes |
 | `## Context` | `- **Where:**` + lettered steps (one per line), `- **Who:**`, screenshot embedded | yes · screenshot for UI |
 | `## Evidence` | the folded 12-row table below | bugs |
+| `## Papers` | arxiv IDs or URLs, one per bullet, or one `- search: <query>` line. Marks a research card: the Builder runs [research-preamble.md](../../super-build/references/research-preamble.md). Experiment goals go in Acceptance Criteria (command + metric + threshold) | research cards |
 | `## Fix` | the intended change in 1–3 lines. No implementation plan | yes |
 | `## Acceptance Criteria` | 2–5 `- [ ]` items, each checkable by a test | yes |
 | `## Risk` | 🟢/🟡/🔴 level + one line | yes |

@@ -241,6 +241,7 @@ Follow spec `.claude/skills/super-board/references/run.md` → Builder (first pa
 1. Worktree off `config.base_branch`.
 2. Branch `issue-<N>-<slug>` from `config.base_branch`.
 3. Docs check (section below) — if the ticket touches a third-party surface, an upgrade, or auth/billing, read the current official docs first.
+3c. Research card (ticket has `## Papers`) → follow [research-preamble.md](references/research-preamble.md): papers, reference repo, GitNexus on both repos.
 4. Implement smallest safe change covering ACs — under the PR size cap (section below).
 5. Commit + push (always).
 6. Open **draft PR** with the PR description template from `run.md` — title in commit-subject format, every marker block filled, `Docs:` bullets in Solution.
@@ -262,6 +263,7 @@ split proposed in PR #<P>", `block-template.md`). Never pad past the cap to "fin
 
 ### Lifecycle (Builder, rebuild)
 Triggered when card returns to Ready/Building with `loop:rebuild-N` label.
+Research card → also follow [research-preamble.md](references/research-preamble.md) → "Rebuild".
 1. Read PR review threads on this branch's PR; filter `[builder]` prefix.
 2. For each unresolved `[builder]` thread: read file:line + suggested fix → apply → resolve thread via:
    ```bash

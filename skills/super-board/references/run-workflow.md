@@ -347,6 +347,12 @@ don't stall on prompts:
     "Bash(bash .claude/bin/super-board-host.sh:*)",
     "Bash(bash .claude/bin/super-board-pr-body.sh:*)", "Bash(gh pr edit:*)",
     "Bash(bash .claude/bin/super-board-stop.sh:*)",
+    research cards (`## Papers`) also need "Bash(gitnexus:*)", "Bash(git clone:*)", "Bash(git -C:*)",
+    "Bash(mktemp -d /tmp/super-board-refs.*)", "Bash(rm -rf /tmp/super-board-refs.*)",
+    "Bash(curl -fsSL https://raw.githubusercontent.com/*)", "mcp__alphaxiv__discover_papers",
+    "mcp__alphaxiv__get_paper_content", "mcp__alphaxiv__answer_pdf_queries",
+    "mcp__alphaxiv__read_files_from_github_repository", "mcp__gitnexus__query",
+    "mcp__gitnexus__context", "mcp__gitnexus__impact",
     plus your project's test runners (e.g. "Bash(npm test:*)", "Bash(npx playwright:*)").
 
 `tests/test_run_allowlist.py` fails when pre-flight or a lane calls a `.claude/bin`
