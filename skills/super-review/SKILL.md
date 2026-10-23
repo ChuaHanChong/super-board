@@ -300,6 +300,7 @@ When invoked by super-board (env `SUPER_BOARD_RUN=1` or invocation contains "sup
 ### Two card types
 - **Built card (`feature`, `bug`, no label):** review the diff (code + tests).
 - **`qa` card:** review the QA report quality and any test diff; there is no product-code diff.
+- **Research card (ticket has `## Papers`):** a built card, plus one hypothesis: the change matches the paper's stated method. The `solution` block's `GitNexus:` bullet lacks a `dev` `query` or `context` with a found symbol (an `impact` alone does not count), lacks a `ref` `query` or `context` with a found symbol when `Reused:` names a repo, an adapted unit has no `Adapted from` comment, or code is copied from a repo whose license is not on the preamble's permissive list → `[builder]` Gap finding ([research-preamble.md](../super-build/references/research-preamble.md)). The Builder deletes its indexes, so check `dev` symbols against the diff and `ref` symbols by reading the files at the recorded sha (`curl -fsSL https://raw.githubusercontent.com/<owner>/<repo>/<sha>/<path>`); a fetch that fails means the claim cannot be verified, which is a `[builder]` Gap finding. Adapted code with no `THIRD_PARTY_NOTICES.md` entry for its repo is a Gap finding too.
 
 ### Lifecycle (Reviewer)
 See `.claude/skills/super-board/references/run.md` → Reviewer. Summary of the sub-steps:

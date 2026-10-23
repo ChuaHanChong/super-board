@@ -306,6 +306,9 @@ column), never built unchecked. `qa` cards are not pre-flighted: nothing is buil
 3. Read issue body + ALL comments + PROJECT.md.
 3b. Touches a third-party API/SDK, an upgrade, or auth/billing? Read the current official docs
     for the installed version first (super-build → "Docs before outside-tool code").
+3c. Ticket has `## Papers` (a research card)? Follow `../../super-build/references/research-preamble.md`
+    before step 4: find and read the papers, clone the reference repo, index it and this repo
+    with GitNexus, locate the code in both, and record the evidence in the PR.
 4. Implement smallest safe change covering ACs, under the PR size cap
    (`merge_policy.auto_max_lines`, default 400 changed lines). Growing past it mid-build → stop,
    push what you have, propose the split (vertical slices via `/to-tickets`) in a PR comment and
@@ -318,6 +321,8 @@ column), never built unchecked. `qa` cards are not pre-flighted: nothing is buil
 10. Move card Building → QA.
 
 ### Builder (rebuild)
+
+Research card (`## Papers`): also follow `../../super-build/references/research-preamble.md` → "Rebuild"; keep its evidence bullets in `solution`.
 
 1. Worktree as above.
 2. Read PR review threads on this branch's PR; filter `[builder]` prefix.
@@ -388,6 +393,7 @@ If a screenshot file is >5MB, downscale to ≤1920px wide before committing; Git
    - Both open → bounce to whichever is older; the other gets picked up later.
    - Clean up worktree, exit.
 3. Read the issue ACs and the raw diff (code + test files) FIRST and write 2–4 hypotheses of your own — what must hold, where it would break. Only then read the PR description, the `[builder] [report]` comment and Tester's handoff, and check each claim like a hypothesis. Spot-check Tester's evidence (one screenshot at least), read CLAUDE.md / AGENTS.md.
+   Research card (`## Papers`): also run the research checks in super-review → "Two card types".
 3b. **Prior-report check (review remembers — added 2.5.0).** Load the last Reviewer report on this PR as `prior_report`. One call:
    ```
    gh pr view <PR> --json comments \

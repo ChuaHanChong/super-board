@@ -35,6 +35,7 @@ it into the target's `docs/agents/issue-tracker.md` under `## Ticket format` (th
 | Title | `<emoji> [<kind>] <scope>: <what>` · ≤ 70 chars · no ticket number · e.g. `🐛 [bug] receipts: spinner never stops over 10 MB` |
 | Context | lettered steps under Where, ONE per line · NEVER arrows · screenshot embedded for UI, NEVER linked |
 | Bugs | add `## Evidence`: the folded 12-row table (writing-standard.md § 3) · a missing row says `n/a — why` |
+| Research | add `## Papers` just before Fix: `- <arxiv ID or URL>` bullets, or one `- search: <query>` line · the Builder runs [research-preamble.md](../../super-build/references/research-preamble.md) · experiment goals are ACs naming the command, the metric and the threshold, so the Tester can run it, e.g. `- [ ] python eval.py --split val reports success rate ≥ 0.80` |
 | Acceptance Criteria | 2–5 `- [ ]` lines · each checkable · NEVER "works well", "is fast" |
 | Risk | 🟢 Low · 🟡 Medium · 🔴 High + one line |
 | Blocked by | `- #N — why` bullets, or a bare `- None.` · NEVER "None — but #N first" |
