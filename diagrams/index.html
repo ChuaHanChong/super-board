@@ -110,6 +110,7 @@ h2{font:650 28px/1.2 var(--sans);letter-spacing:-.01em;margin:0 0 6px}
 .board.anim .card.merged{border-color:var(--pri);box-shadow:inset 0 0 0 1px var(--pri)}
 .steps{display:flex;flex-wrap:wrap;gap:8px 20px;margin:16px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px}
 .steps b{color:var(--fg)}
+.btn.bctl{margin-top:14px;padding:5px 12px;font-size:13px}
 
 /* pages */
 .pgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
@@ -390,7 +391,7 @@ h2{font:650 28px/1.2 var(--sans);letter-spacing:-.01em;margin:0 0 6px}
     [30500,'*reset']
   ];
   var LOOP_GAP=1000;
-  var cols, cards, timer=0, idx=0, running=false, visible=false, lastUser=0, io=null, on=false;
+  var cols, cards, timer=0, idx=0, running=false, visible=false, lastUser=0, io=null, on=false, paused=false, due=0, left=0, btn=null;
 
   function tok(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
   function setEv(c,text,st,fade){
@@ -464,12 +465,14 @@ h2{font:650 28px/1.2 var(--sans);letter-spacing:-.01em;margin:0 0 6px}
   function tick(){
     timer=0; if(!running) return;
     var s=S[idx]; run(s); idx=(idx+1)%S.length;
-    timer=setTimeout(tick, idx?S[idx][0]-s[0]:LOOP_GAP);
+    var d=idx?S[idx][0]-s[0]:LOOP_GAP; due=Date.now()+d; timer=setTimeout(tick,d);
   }
   function update(){
-    var go=on&&visible&&!document.hidden;
-    if(go&&!running){running=true; timer=setTimeout(tick,idx===0?700:350);}
-    else if(!go&&running){running=false; clearTimeout(timer); timer=0;}
+    var go=on&&visible&&!document.hidden&&!paused, d;
+    if(go&&!running){running=true; d=left||(idx===0?700:350); left=0; due=Date.now()+d; timer=setTimeout(tick,d);
+      board.getAnimations({subtree:true}).forEach(function(a){if(a.playState==='paused')a.play();});}
+    else if(!go&&running){running=false; clearTimeout(timer); timer=0; left=Math.max(0,due-Date.now());
+      board.getAnimations({subtree:true}).forEach(function(a){if(a.playState==='running')a.pause();});}
   }
   function setup(){
     if(on) return; on=true; idx=0;
@@ -482,9 +485,13 @@ h2{font:650 28px/1.2 var(--sans);letter-spacing:-.01em;margin:0 0 6px}
     lead.innerHTML='Five cards go from Ready to merged on their own. QA or Review can send one back to Building, and a stuck card waits in Blocked for you. The board is the only state: stop any time, and <code>run</code> picks up from each card\'s column.';
     io=new IntersectionObserver(function(es){visible=es[es.length-1].isIntersecting; update();},{threshold:.2});
     io.observe(board);
+    paused=false; left=0;
+    btn=document.createElement('button'); btn.type='button'; btn.className='btn bctl'; btn.setAttribute('aria-pressed','false'); btn.textContent='Pause';
+    btn.addEventListener('click',function(){paused=!paused; btn.textContent=paused?'Play':'Pause'; btn.setAttribute('aria-pressed',paused?'true':'false'); update();});
+    document.querySelector('#how .steps').after(btn);
   }
   function teardown(){
-    if(!on) return; on=false; update(); if(io) io.disconnect();
+    if(!on) return; on=false; update(); if(io) io.disconnect(); if(btn){btn.remove(); btn=null;}
     board.classList.remove('anim'); board.style.removeProperty('--colmin');
     board.innerHTML=orig.board; board.setAttribute('aria-label',orig.label); lead.innerHTML=orig.lead;
   }
