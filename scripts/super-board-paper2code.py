@@ -14,6 +14,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import threading
 from typing import Any
 import uuid
 
@@ -63,22 +64,25 @@ def contained(root: Path, target: Path) -> Path:
 
 def probe(command: list[str], timeout: float | None = None) -> subprocess.CompletedProcess[str]:
     """Supervise a local preflight command and stop its group on interruption or timeout."""
-    process = subprocess.Popen(command, env=environment(), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                               text=True, start_new_session=True)
     def terminate(signum: int, frame: Any) -> None:
         """Unwind the probe through process-group cleanup."""
         raise CapabilityError('Paper2Code preflight interrupted by signal ' + str(signum))
-    previous = {kind: signal.getsignal(kind) for kind in (signal.SIGTERM, signal.SIGINT)}
-    for kind in previous:
-        signal.signal(kind, terminate)
+    # Python delivers signals to the main thread; threaded wave callers retain their parent's handlers.
+    previous = {kind: signal.getsignal(kind) for kind in (signal.SIGTERM, signal.SIGINT)} if threading.current_thread() is threading.main_thread() else {}
+    process = None
     try:
+        for kind in previous:
+            signal.signal(kind, terminate)
+        process = subprocess.Popen(command, env=environment(), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                   text=True, start_new_session=True)
         stdout, stderr = process.communicate(timeout=timeout)
     except BaseException:
-        try:
-            os.killpg(process.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            pass
-        process.communicate()
+        if process is not None:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.communicate()
         raise
     finally:
         for kind, handler in previous.items():

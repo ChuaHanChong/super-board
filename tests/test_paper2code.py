@@ -2,6 +2,7 @@
 """Exercise the installed capability boundary with isolated external commands."""
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import importlib.util
 import json
@@ -14,6 +15,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 
 KIT = Path(__file__).resolve().parents[1]
 CLI = KIT / 'scripts/super-board-paper2code.py'
@@ -156,6 +158,47 @@ class Paper2Code(unittest.TestCase):
         with self.assertRaisesRegex(module.CapabilityError, 'codex or claude'):
             module.installed_runtime(self.root, 'opencode')
 
+    def test_selected_readiness_works_in_a_wave_worker_thread(self) -> None:
+        """Resolve the installed capability through the wave's threaded public boundary."""
+        self.install()
+        subprocess.run([sys.executable, str(KIT / 'tests/fixtures/install_worker_skills.py'), str(self.project)], check=True)
+        skill = self.project / '.agents/skills/super-paper2code/SKILL.md'
+        skill.parent.mkdir(parents=True)
+        skill.write_text('Fixture-only optional capability.\n')
+        spec = importlib.util.spec_from_file_location('skills_ready', KIT / 'scripts/super-board-skills-ready.py')
+        resolver = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(resolver)
+        card = dict(number=7, status='Ready', labels=['feature'], body='Skills: super-paper2code')
+        with patch.dict(os.environ, self.env), ThreadPoolExecutor(max_workers=1) as pool:
+            self.assertTrue(resolver.report(self.project, 'codex', [card], lane='build', home=self.base / 'home')['ready'])
+            result = pool.submit(resolver.report, self.project, 'codex', [card], lane='build', home=self.base / 'home').result()
+        self.assertTrue(result['ready'], [entry for entry in result['entries'] if entry['status'] == 'missing'])
+        runtime = next(entry for entry in result['entries'] if entry['name'] == 'super-paper2code-runtime')
+        self.assertEqual(runtime['runtime']['paper2code_revision'], 'a' * 40)
+
+    def test_codex_wave_runs_selected_capability_through_all_lanes(self) -> None:
+        """Keep real wave thread readiness from halting an installed optional capability."""
+        self.install()
+        subprocess.run(['git', 'init', '-q', str(self.project)], check=True)
+        subprocess.run([sys.executable, str(KIT / 'tests/fixtures/install_worker_skills.py'), str(self.project)], check=True)
+        skill = self.project / '.agents/skills/super-paper2code/SKILL.md'
+        skill.parent.mkdir(parents=True)
+        skill.write_text('Fixture-only optional capability.\n')
+        shutil.copy2(KIT / 'tests/fixtures/fake_codex.py', self.fakebin / 'codex')
+        self.env.update(SUPER_BOARD_SKILLS_HOME=str(self.base / 'home'), SB_CODEX_TEST_LOG=str(self.base / 'calls.jsonl'))
+        config = self.base / 'config.json'
+        config.write_text('{"max_workers":1,"verify_commands":["git diff --check"]}')
+        card = dict(number=7, status='Ready', labels=['feature'], body='Skills: super-paper2code')
+        result = subprocess.run(['bash', str(KIT / 'scripts/super-board-codex-wave.sh'), '--config', str(config),
+                                 '--cards', json.dumps([card]), '--codex=fixture'], cwd=self.project,
+                                env=self.env, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        output = json.loads(result.stdout)
+        self.assertFalse(output['halted'])
+        self.assertEqual(output['cards'][0]['column'], 'Done')
+        calls = [json.loads(line) for line in (self.base / 'calls.jsonl').read_text().splitlines()]
+        self.assertEqual([call['lane'] for call in calls], ['build', 'qa', 'review'])
+
     def test_generation_delegates_without_executing_or_integrating_candidates(self) -> None:
         """Keep generated files and authoritative provenance in a dedicated run tree."""
         self.install()
@@ -273,7 +316,7 @@ class Paper2Code(unittest.TestCase):
                         'pathlib.Path(os.environ["AUTH_PIDS"]).write_text(str(os.getpid())+" "+str(child.pid))\n'
                         'signal.pause()\n')
         auth.chmod(0o755)
-        for mode in ('interrupt', 'timeout', 'runtime'):
+        for mode in ('interrupt', 'timeout', 'threaded-timeout', 'runtime'):
             with self.subTest(mode=mode):
                 pids = self.base / ('auth-' + mode + '.pids')
                 self.env['AUTH_PIDS'] = str(pids)
@@ -281,6 +324,15 @@ class Paper2Code(unittest.TestCase):
                     shutil.copy2(auth, self.runtime / '.venv/bin/python')
                 command = [sys.executable, str(self.helper), '--root', str(self.root), '--host', 'codex']
                 command += ['--check'] if mode == 'runtime' else ['--paper', str(self.paper), '--timeout', '1', '--output-dir', '.paper2code/' + mode]
+                if mode == 'threaded-timeout':
+                    command = [sys.executable, '-c',
+                               'import importlib.util,json,subprocess,sys\nfrom concurrent.futures import ThreadPoolExecutor\n'
+                               'spec=importlib.util.spec_from_file_location("capability",sys.argv[1])\n'
+                               'module=importlib.util.module_from_spec(spec)\nspec.loader.exec_module(module)\n'
+                               'try:\n with ThreadPoolExecutor(max_workers=1) as pool:\n'
+                               '  pool.submit(module.authenticate,"codex",1).result()\n'
+                               'except subprocess.TimeoutExpired:\n print(json.dumps({"status":"halted"}))\n raise SystemExit(10)\n',
+                               str(self.helper)]
                 process = subprocess.Popen(command,
                                            env=self.env, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 owned = []
@@ -290,7 +342,7 @@ class Paper2Code(unittest.TestCase):
                         time.sleep(0.01)  # Polling affects observation latency only; the explicit deadline bounds the test.
                     self.assertTrue(pids.exists())
                     owned = [int(value) for value in pids.read_text().split()]
-                    if mode != 'timeout':
+                    if mode not in ('timeout', 'threaded-timeout'):
                         process.send_signal(signal.SIGTERM)
                     stdout, stderr = process.communicate(timeout=10)
                     self.assertEqual(process.returncode, 10, stderr)
