@@ -122,9 +122,10 @@ implement against the spec before you reach for design vocabulary.
 - `mattpocock-skills:domain-modeling` — when the change names a concept the
   domain glossary does not have.
 
-**Precedence.** An explicit `Skills:` line in the issue body wins outright — it
-replaces the row, it does not extend it. Label routing applies only when no
-`Skills:` line is present. The always-list applies in both cases.
+**Precedence.** An explicit `Skills:` line replaces the label row; the always-list still applies.
+`super-paper2code` is a capability token, not a replacement helper chain: by itself it keeps the label/default row and adds the capability.
+Other explicit helper names retain the existing override behavior alongside the capability.
+Only opt-in research cards with `## Papers` invoke [Paper2Code](../../super-paper2code/SKILL.md); ordinary cards keep the existing research workflow.
 
 **Multiple type labels** — take the first row that matches, reading the table
 top to bottom. A card labelled both `bug` and `refactor` is a bug first; the

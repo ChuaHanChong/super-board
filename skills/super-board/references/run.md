@@ -311,6 +311,8 @@ column), never built unchecked. `qa` cards are not pre-flighted: nothing is buil
 3c. Ticket has `## Papers` (a research card)? Follow `../../super-build/references/research-preamble.md`
     before step 4: find and read the papers, clone the reference repo, index it and this repo
     with GitNexus, locate the code in both, and record the evidence in the PR.
+    With the explicit `super-paper2code` capability token, then follow `../../super-paper2code/SKILL.md` in this same issue worktree before integrating selected candidate files.
+    Failed, malformed, or interrupted generation preserves its artifacts and prevents advancement to QA; ordinary research cards do not invoke the capability.
 4. Implement smallest safe change covering ACs, under the PR size cap
    (`merge_policy.auto_max_lines`, default 400 changed lines). Growing past it mid-build → stop,
    push what you have, propose the split (vertical slices via `/to-tickets`) in a PR comment and
@@ -325,6 +327,7 @@ column), never built unchecked. `qa` cards are not pre-flighted: nothing is buil
 ### Builder (rebuild)
 
 Research card (`## Papers`): also follow `../../super-build/references/research-preamble.md` → "Rebuild"; keep its evidence bullets in `solution`.
+For Paper2Code cards, preserve the earlier manifest/candidate evidence and use a fresh directory for any full regeneration; keep the normal branch, tests, PR size cap, and QA handoff.
 
 1. Worktree as above.
 2. Read PR review threads on this branch's PR; filter `[builder]` prefix.

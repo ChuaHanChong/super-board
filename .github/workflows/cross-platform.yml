@@ -12,6 +12,29 @@ on:
   workflow_call:
 
 jobs:
+  paper2code:
+    name: Paper2Code source (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify the pinned converted source
+        run: |
+          test -f vendor/Paper2Code/codes/pipeline.py
+          test -f vendor/Paper2Code/CONTRACTS.md
+          python -m pip install -r vendor/Paper2Code/requirements.txt 'PyYAML==6.0.3'
+          python -m unittest discover -s vendor/Paper2Code/tests -v
+
   smoke:
     name: smoke (${{ matrix.os }} / py${{ matrix.python }})
     runs-on: ${{ matrix.os }}

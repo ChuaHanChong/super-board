@@ -40,6 +40,10 @@ other Builder rule still applies: smallest safe change, PR size cap, commits, PR
 6. **Locate in this repo.** GitNexus `query` / `context` with `repo=<worktree path>` for the
    integration point, then `impact` (upstream) on every symbol you will change. HIGH or CRITICAL
    risk → name it in the `risk` block.
+6a. **Paper2Code opt-in.** If the card explicitly lists `super-paper2code` in `Skills:`, invoke [the capability](../../super-paper2code/SKILL.md) after the research steps above and before step 7.
+   It generates into a dedicated candidate/artifact directory inside the existing issue worktree using the actual lane host, or an explicitly requested and separately checked backend override.
+   Missing prerequisites halt before generation; failed, malformed, or interrupted results preserve evidence and never advance to QA.
+   Without that token, continue the existing workflow without checking or downloading Paper2Code.
 7. **Implement** (Builder step 4). Adapt only the needed functions. Each adapted unit gets one
    comment: `Adapted from <repo url>@<sha>:<path>`. The license requires keeping its notice:
    append the reference repo's copyright + license text to `THIRD_PARTY_NOTICES.md` at the repo
@@ -51,11 +55,13 @@ other Builder rule still applies: smallest safe change, PR size cap, commits, PR
      `none: no usable repo` when step 3 found none;
    - `GitNexus:` each query, labelled `ref` or `dev`, with the symbol it found, and each
      `impact` target with its risk.
+   - For opted-in cards, `Paper2Code:` provenance, stage manifest, selected candidate files, and independent verification evidence as required by the capability.
 9. **Clean up** on every exit from the lane, Blocked and split exits included:
    `gitnexus clean --force` in the worktree and in each clone, then `rm -rf <refs>`. The PR
    evidence is the record.
 
-**Rebuild.** Keep the `Papers:` / `Reused:` / `GitNexus:` bullets when rewriting `solution`.
+**Rebuild.** Keep the `Papers:` / `Reused:` / `GitNexus:` bullets and any `Paper2Code:` evidence when rewriting `solution`.
+For new full generation, use a fresh run directory and preserve the previous candidate and failure records; do not overwrite user work or imply automatic resume.
 Index the new worktree (step 4, this-repo part). A thread that needs reference code → step 3
 at the recorded sha, then steps 4 (reference part) and 5. Run step 6 again for any symbol the
 rebuild changes that is not listed yet, add it, then step 9.

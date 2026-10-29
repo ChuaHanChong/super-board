@@ -242,6 +242,7 @@ Follow spec `.claude/skills/super-board/references/run.md` → Builder (first pa
 2. Branch `issue-<N>-<slug>` from `config.base_branch`.
 3. Docs check (section below) — if the ticket touches a third-party surface, an upgrade, or auth/billing, read the current official docs first.
 3c. Research card (ticket has `## Papers`) → follow [research-preamble.md](references/research-preamble.md): papers, reference repo, GitNexus on both repos.
+    An explicit `Skills: super-paper2code` capability token invokes [Paper2Code](../super-paper2code/SKILL.md) after that research work; review its candidate and integrate only AC-required files before the existing test and handoff gates.
 4. Implement smallest safe change covering ACs — under the PR size cap (section below).
 5. Commit + push (always).
 6. Open **draft PR** with the PR description template from `run.md` — title in commit-subject format, every marker block filled, `Docs:` bullets in Solution, Door + Blast radius in Risk.

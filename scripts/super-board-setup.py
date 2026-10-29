@@ -73,7 +73,7 @@ OLD_LABELS = {
 }
 SKILLS = ["super-board", "super-build", "super-qa", "super-review", "super-collect", "visual", "git-sync", "ui-refine-loop"]
 OLD_SKILL_DIRS = ["super-refine", "cleanup-wt", "arch-loop"]
-BIN = ["super-board-project-verifier.py", "super-board-skills-ready.py", "super-board-host.sh", "super-board-codex-wave.sh", "super-board-codex-lane.sh", "super-board-calibration.py", "super-board-verification-ready.py", "super-board-github-read.py", "super-board-collect-state.py", "super-board-run.sh", "super-board-gh-guard.sh", "super-board-card.sh", "super-board-status.py", "super-board-wave-plan.sh",
+BIN = ["super-board-project-verifier.py", "super-board-paper2code.py", "super-board-skills-ready.py", "super-board-host.sh", "super-board-codex-wave.sh", "super-board-codex-lane.sh", "super-board-calibration.py", "super-board-verification-ready.py", "super-board-github-read.py", "super-board-collect-state.py", "super-board-run.sh", "super-board-gh-guard.sh", "super-board-card.sh", "super-board-status.py", "super-board-wave-plan.sh",
        "super-board-deps.sh", "super-board-preflight.sh", "super-board-merge-gate.sh",
        "super-board-merge-policy.py", "super-board-approval.py", "super-board-env-check.sh", "super-board-agents-md.py",
        "super-board-settings.py", "super-board-setup.py", "super-board-usage.sh", "super-board-pr-body.sh",
@@ -331,6 +331,13 @@ def check(root, pack, host="claude", home=None, catalog=None):
                 cmd += " && " + HELPERS_CMD
             needs.append({"kind": "tool", "name": t, "why": why, "command": cmd})
     readiness = helper_readiness(root, host, home, catalog)
+    capability_entries = [entry for entry in readiness.get("entries", [])
+                          if entry["name"] in ("super-paper2code", "super-paper2code-runtime")]
+    paper2code = {"installed": bool(capability_entries),
+                  "ready": not any(entry["status"] == "missing" for entry in capability_entries),
+                  "entries": capability_entries}
+    if paper2code["installed"] and not paper2code["ready"]:
+        missing.append("capability super-paper2code (--with-paper2code)")
     helpers = readiness["ready"]
     git = is_git_repo(root)
     ok = []
@@ -349,7 +356,8 @@ def check(root, pack, host="claude", home=None, catalog=None):
         "added_skills": upgrade_rec.get("added_skills", []),
         "missing": missing, "old_dirs": old_dirs, "configs": configs, "verification": verification,
         "host_errors": host_errors, "git": git,
-        "helper_skills": helpers, "helper_readiness": readiness, "needs": needs, "os": fam, "ok": ok, "green": not red,
+        "helper_skills": helpers, "helper_readiness": readiness, "paper2code": paper2code,
+        "needs": needs, "os": fam, "ok": ok, "green": not red,
     }
 
 
@@ -380,7 +388,8 @@ def fix(root, pack, helpers=True, dry=False, host="claude", home=None, catalog=N
         if not pack:
             return {**before, "fixed": [], "error": "pack-not-found"}
         if not dry:
-            r = run(["bash", os.path.join(pack, "install.sh"), root],
+            options = ["--with-paper2code"] if before["paper2code"]["installed"] else []
+            r = run(["bash", os.path.join(pack, "install.sh"), *options, root],
                     input="", cwd=root)
             if r.returncode != 0:
                 return {**before, "fixed": fixed, "error": "install.sh failed: " + (r.stderr or r.stdout)[-300:]}
@@ -422,7 +431,9 @@ def fix(root, pack, helpers=True, dry=False, host="claude", home=None, catalog=N
             run(["git", "init", "-q"], cwd=root)
         fixed.append("git repo created (git init)")
 
-    if helpers and not before["helper_skills"] and have("npx"):
+    worker_missing = any(entry["status"] == "missing" and entry["name"] not in ("super-paper2code", "super-paper2code-runtime")
+                         for entry in before["helper_readiness"].get("entries", []))
+    if helpers and not before["helper_skills"] and (worker_missing or before["helper_readiness"].get("error")) and have("npx"):
         if not dry:
             r = run(["bash", "-c", HELPERS_CMD], cwd=root, input="")
             confirmed = helper_readiness(root, host, home, catalog)

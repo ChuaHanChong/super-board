@@ -102,6 +102,54 @@ class Readiness(unittest.TestCase):
         self.assertIn('mattpocock-skills:diagnosing-bugs', names)
         self.assertNotIn('mattpocock-skills:implement', names)
 
+    def test_paper2code_opt_in_keeps_the_label_chain(self) -> None:
+        """Add the optional capability without replacing ordinary Builder helpers."""
+        self.full()
+        self.card['body'] = 'Skills: super-paper2code\n\n## Papers\nA paper.'
+        result = self.run_cli(extra=['--lane', 'build'], expected=10)
+        names = [entry['name'] for entry in result['entries']]
+        self.assertIn('mattpocock-skills:tdd', names)
+        self.assertIn('mattpocock-skills:implement', names)
+        self.assertIn('super-paper2code', names)
+        self.card['body'] = 'Skills: custom, super-paper2code'
+        self.put('custom')
+        names = [entry['name'] for entry in self.run_cli(extra=['--lane', 'build'], expected=10)['entries']]
+        self.assertIn('custom', names)
+        self.assertNotIn('mattpocock-skills:tdd', names)
+        self.assertNotIn('mattpocock-skills:implement', names)
+        self.assertIn('super-paper2code', names)
+
+    def test_paper2code_runtime_only_blocks_selected_generation(self) -> None:
+        """Require the optional runtime for Builder while preserving ordinary and review paths."""
+        self.full()
+        self.put('super-paper2code')
+        self.run_cli(extra=['--lane', 'build'])
+        self.card['body'] = 'Skills: super-paper2code'
+        result = self.run_cli(extra=['--lane', 'build'], expected=10)
+        entry = next(item for item in result['entries'] if item['name'] == 'super-paper2code-runtime')
+        self.assertEqual(entry['status'], 'missing')
+        self.assertIn('--with-paper2code', entry['error'])
+        self.card.update(status='QA')
+        result = self.run_cli(extra=['--lane', 'qa'])
+        self.assertNotIn('super-paper2code-runtime', [item['name'] for item in result['entries']])
+        self.card.update(status='Review')
+        result = self.run_cli(extra=['--lane', 'review'])
+        self.assertNotIn('super-paper2code-runtime', [item['name'] for item in result['entries']])
+
+    def test_setup_reports_an_installed_optional_capability_only(self) -> None:
+        """Keep ordinary setup independent while diagnosing a partial optional install."""
+        self.full()
+        command = [sys.executable, str(CLI), '--root', str(self.root), '--host', 'claude',
+                   '--home', str(self.home), '--profile', 'setup']
+        result = subprocess.run(command, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(any(entry['name'].startswith('super-paper2code') for entry in json.loads(result.stdout)['entries']))
+        self.put('super-paper2code')
+        result = subprocess.run(command, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 10, result.stderr)
+        entries = json.loads(result.stdout)['entries']
+        self.assertTrue(any(entry['name'] == 'super-paper2code-runtime' and entry['status'] == 'missing' for entry in entries))
+
     def test_empty_selection_conditional_activation_and_no_fallback(self):
         self.run_cli(cards=[])
         self.full()

@@ -198,6 +198,10 @@ Repeat until a done condition or halt gate fires:
    classification. Existing docs/ux/tests/refactor rows keep their chain; check
    any proposed new label chain before writing that label.
 
+   Research cards opting in with the `super-paper2code` capability token follow the shared research preamble, then `../../super-paper2code/SKILL.md` within the existing Builder lifecycle.
+   The capability adds to the helper selection, uses the actual lane host unless the card explicitly overrides it, and produces a candidate for Builder review and integration.
+   No inference failure advances the card to QA; ordinary cards do not require its runtime.
+
    The planner returns `cards`, `sweep`, `resume`, `refreshApproval`, `flag` and `stranded`. **Act on
    `sweep`, `resume`, `refreshApproval`, `flag` and `stranded` BEFORE launching** (run.md → "The wave-start
    sweep"): move every swept card to `Ready` with a comment naming what cleared
@@ -340,6 +344,7 @@ don't stall on prompts:
     "Bash(.claude/bin/super-board-github-read.py:*)",
     "Bash(python3 .claude/bin/super-board-verification-ready.py:*)",
     "Bash(python3 .claude/bin/super-board-skills-ready.py:*)",
+    "Bash(python3 .claude/bin/super-board-paper2code.py:*)",
     "Bash(bash .claude/bin/super-board-usage.sh:*)",
     "Bash(bash .claude/bin/super-board-throttle.sh:*)",
     "Bash(bash .claude/bin/super-board-codex-lane.sh:*)",

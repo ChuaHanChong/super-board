@@ -1,0 +1,3 @@
+[submodule "Paper2Code"]
+	path = vendor/Paper2Code
+	url = https://github.com/ChuaHanChong/Paper2Code
