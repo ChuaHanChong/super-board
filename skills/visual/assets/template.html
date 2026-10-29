@@ -304,6 +304,9 @@
   .crumb-sep { color: var(--dim); font-size: 12px; }
   .ibtn { width: 32px; height: 32px; flex: none; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel); color: var(--text); cursor: pointer; font: 600 14px var(--sans); }
   .ibtn:hover, .ibtn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+  #m-stage.paused svg, #m-stage.paused svg * { animation-play-state: paused !important; }
+  .ibtn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) { #m-pause { display: none; } }
   .ibtn.sm { width: 26px; height: 26px; font-size: 12px; border-radius: 7px; }
   .pbtn { height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--text); background: var(--text); color: var(--bg); font: 600 13px var(--sans); cursor: pointer; white-space: nowrap; }
   .pbtn:hover { opacity: .88; }
@@ -1795,6 +1798,7 @@
         <button class="ibtn" id="m-theme" title="Light / dark" aria-label="Toggle theme">◐</button>
         <div class="menu"><button class="pbtn" id="m-export" aria-haspopup="true" aria-expanded="false">Export ▾</button>
           <div class="menu-pop" id="m-export-pop" hidden><button data-x="svg">SVG · this view</button><button data-x="png">PNG · this view (2×)</button><button data-x="link">Copy link to view</button><hr><button data-x="json">Map model (JSON)</button></div></div>
+        <button class="ibtn" id="m-pause" type="button" title="Pause" aria-label="Pause" aria-pressed="false">❚❚</button>
         <button class="ibtn" id="m-help" title="Keys (?)" aria-label="Keyboard shortcuts" aria-haspopup="true" aria-expanded="false">?</button>
       </header>
       <aside class="outline" id="m-tree" aria-label="Views"></aside>
@@ -1824,7 +1828,7 @@
         <div class="pft"><span>↑↓ move</span><span>↵ open</span><span>esc close</span></div></div></div>`;
     const $ = id => document.getElementById(id);
     const stage = $('m-stage'), panel = $('m-panel');
-    let cam = null, geo = null, svg = null, cur = null, sel = null, stack = [], busy = false;
+    let cam = null, geo = null, svg = null, cur = null, sel = null, stack = [], busy = false, paused = false;
     let tab = 'when'; try { tab = localStorage.getItem('visual-tab') || 'when'; } catch (_) {}
     const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches || window.__instant;
     const sleep = ms => new Promise(r => setTimeout(r, reduce() ? 0 : ms));
@@ -2111,7 +2115,7 @@
         const { g, markup } = buildView(vid);
         stage.insertAdjacentHTML('afterbegin', markup); geo = g;
       }
-      svg = stage.querySelector('svg'); svg.classList.add('map-svg');
+      svg = stage.querySelector('svg'); svg.classList.add('map-svg'); if (paused) svg.pauseAnimations();
       if (!cam) cam = new Camera(stage, svg, { wheel: 'zoom', maxFit: 1.15, max: 4, mapDepth: 0.3, onChange: onCam, inset: () => { const top = Math.max(58, 26 + $('m-vpill').offsetHeight); if (innerWidth <= 820) return { t: top, r: 12, b: 12, l: 12 }; const lg = $('m-legend'), on = lg && !lg.hidden; // the legend box sits bottom-left: keep the map above it or beside it
         return [{ t: top, r: 20, b: 40 + (on ? lg.offsetHeight + 8 : 0), l: 20 }, { t: top, r: 20, b: 40, l: 20 + (on ? lg.offsetWidth + 8 : 0) }]; } });
       cam.setSvg(svg, geo.bounds);
@@ -2393,6 +2397,7 @@
     if (innerWidth > 1180 && views.length > 1) setTree(true);
     $('m-help').addEventListener('click', () => { const on = $('m-helpbox').hidden; $('m-helpbox').hidden = !on; $('m-help').setAttribute('aria-expanded', on); });
     $('m-theme').addEventListener('click', toggleTheme);
+    $('m-pause').addEventListener('click', e => { paused = !paused; const b = e.currentTarget, l = paused ? 'Play' : 'Pause'; stage.classList.toggle('paused', paused); paused ? svg.pauseAnimations() : svg.unpauseAnimations(); b.setAttribute('aria-pressed', paused); b.title = l; b.setAttribute('aria-label', l); b.textContent = paused ? '▶' : '❚❚'; });
     $('m-export').addEventListener('click', () => { const on = $('m-export-pop').hidden; $('m-export-pop').hidden = !on; $('m-export').setAttribute('aria-expanded', on); });
     $('m-export-pop').addEventListener('click', e => { const x = e.target.closest('[data-x]')?.dataset.x; if (!x) return; closeExport(); exportView(x); });
 

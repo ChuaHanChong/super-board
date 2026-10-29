@@ -108,8 +108,6 @@ h2{font:650 28px/1.2 var(--sans);letter-spacing:-.01em;margin:0 0 6px}
 .board.anim .card .ev.bad{color:var(--lane-red);background:color-mix(in srgb,var(--lane-red) 13%,transparent)}
 .board.anim .card .ev.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 15%,transparent)}
 .board.anim .card.merged{border-color:var(--pri);box-shadow:inset 0 0 0 1px var(--pri)}
-.steps{display:flex;flex-wrap:wrap;gap:8px 20px;margin:16px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px}
-.steps b{color:var(--fg)}
 .btn.bctl{margin-top:14px;padding:5px 12px;font-size:13px}
 
 /* pages */
@@ -223,12 +221,6 @@ h2{font:650 28px/1.2 var(--sans);letter-spacing:-.01em;margin:0 0 6px}
     <div class="bcol done"><div class="bhead"><b>🎉 Done</b><span class="who">merged</span></div><div class="card live">#812 Receipt size error<span class="ev">✓ PR merged · 3 screenshots</span></div><div class="card dim">Fix login redirect</div></div>
     <div class="bcol blocked"><div class="bhead"><b>🙋 Blocked</b><span class="who">you 🙋</span></div></div>
   </div>
-  <ol class="steps">
-    <li><b>1</b> You drag it to Ready</li>
-    <li><b>2</b> Build: own worktree, tests, draft PR</li>
-    <li><b>3</b> QA: tests and screenshots against the acceptance criteria</li>
-    <li><b>4</b> Review, then the merge gate merges when green</li>
-  </ol>
 </div></section>
 
 <section class="sec" id="pages"><div class="in">
@@ -488,7 +480,7 @@ h2{font:650 28px/1.2 var(--sans);letter-spacing:-.01em;margin:0 0 6px}
     paused=false; left=0;
     btn=document.createElement('button'); btn.type='button'; btn.className='btn bctl'; btn.setAttribute('aria-pressed','false'); btn.textContent='Pause';
     btn.addEventListener('click',function(){paused=!paused; btn.textContent=paused?'Play':'Pause'; btn.setAttribute('aria-pressed',paused?'true':'false'); update();});
-    document.querySelector('#how .steps').after(btn);
+    board.after(btn);
   }
   function teardown(){
     if(!on) return; on=false; update(); if(io) io.disconnect(); if(btn){btn.remove(); btn=null;}
