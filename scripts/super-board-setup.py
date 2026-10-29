@@ -370,7 +370,12 @@ def check(root, pack, host="claude", home=None, catalog=None):
 
 
 def backup(root, paths, stamp):
-    dest = os.path.join(root, ".claude", "super-board", "backup", stamp)
+    base = os.path.join(root, ".claude", "super-board", "backup", stamp)
+    dest, n = base, 1
+    while os.path.exists(dest):  # a second fix in the same second gets its own folder
+        n += 1
+        dest = f"{base}-{n}"
+    os.makedirs(dest)
     for p in paths:
         if not os.path.exists(p):
             continue
@@ -385,7 +390,7 @@ def fix(root, pack, helpers=True, dry=False, host="claude", home=None, catalog=N
     before = check(root, pack, host, home, catalog)
     fixed, notes = [], []
     claude = os.path.join(root, ".claude")
-    stamp = dt.datetime.now().strftime("%Y%m%d-%H%M")
+    stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
     to_backup = [os.path.join(claude, "settings.json"), os.path.join(claude, "super-board", "configs")]
     to_backup += [os.path.join(claude, "skills", d) for d in before["old_dirs"]]
     bdir = None
