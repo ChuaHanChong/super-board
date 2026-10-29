@@ -254,7 +254,8 @@ def migrate_config(cfg, host=None):
     if isinstance(ref, dict) and "qa_hook_rounds" in ref:
         ref.pop("qa_hook_rounds")
         changes.append("refine.qa_hook_rounds removed (the board no longer runs ui-refine-loop)")
-    if "merge_policy" not in c:
+    # A codex/opencode host leaves the default unset: it merges by hand (#47).
+    if "merge_policy" not in c and (c.get("human_approves_merge") or (c.get("host") or host) in (None, "claude")):
         c["merge_policy"] = {"default": "human" if c.get("human_approves_merge") else "auto"}
         changes.append(f"merge rule: merge_policy.default \"{c['merge_policy']['default']}\" (from human_approves_merge)")
     if "migrations" not in c:

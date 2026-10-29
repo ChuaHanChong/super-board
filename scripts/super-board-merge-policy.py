@@ -23,6 +23,10 @@ unreadable metadata, so the gate fails safe to "human".
 
 Rules, from references/config-schema.json → merge_policy / migrations:
 - merge_policy.default "human" → everything waits for a human.
+- config `host` other than "claude" (codex, opencode) with merge_policy.default
+  unset → everything waits for a human; an explicit "auto" merges as usual.
+  Read from config only (no host detection). No `host` key → the Claude
+  default ("auto"), so configs written before the key existed do not change.
 - merge_policy.auto_max_lines (default 400; 0 = no cap): changed lines
   (additions + deletions) above it → human ("big PR — please review"). Files
   matching merge_policy.size_exclude (default: lockfiles, generated output,
@@ -130,8 +134,12 @@ def main() -> int:
 
     policy = cfg.get("merge_policy") or {}
     human = []
+    host = cfg.get("host")
     if (policy.get("default") or "auto") == "human":
         human.append({"category": "default", "why": "merge_policy.default is \"human\""})
+    elif not policy.get("default") and host not in (None, "claude"):
+        human.append({"category": "default", "why": f"host {host}: auto-merge not turned on "
+                      "(set merge_policy.default to \"auto\")"})
     mig = cfg.get("migrations") or {}
     globs = mig.get("globs") or DEFAULT_MIGRATION_GLOBS
     mig_files = [p for p in paths if matches(p, globs)]
