@@ -287,4 +287,26 @@ else:sys.exit('unexpected gh call: '+str(args))
             self.assertNotIn("Matt Pocock's coding skills added",output.get('fixed',[]))
         self.assertEqual(len([c for c in self.calls() if c['tool']=='npx']),1)
 
+    def test_setup_preserves_optional_paper2code_opt_in_during_repair(self) -> None:
+        """Repair an opted-in runtime through its installer without unrelated helper installs."""
+        self.full('codex')
+        skill = self.root / '.agents/skills/super-paper2code/SKILL.md'
+        skill.parent.mkdir(parents=True)
+        skill.write_text('fixture capability')
+        pack = self.base / 'pack'
+        (pack / 'skills/super-board').mkdir(parents=True)
+        (pack / 'skills/super-board/SKILL.md').write_text('fixture board')
+        (pack / 'VERSION').write_text('3.0.0')
+        (pack / 'install.sh').write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$INSTALL_ARGS"\n')
+        record = self.base / 'install-arguments.txt'
+        result = subprocess.run([sys.executable, str(KIT / 'scripts/super-board-setup.py'), 'fix',
+                                 '--root', str(self.root), '--pack', str(pack), '--host', 'codex', '--home', str(self.home)],
+                                env={**self.env, 'INSTALL_ARGS': str(record)}, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        output = json.loads(result.stdout)
+        self.assertTrue(output['paper2code']['installed'])
+        self.assertFalse(output['paper2code']['ready'])
+        self.assertIn('--with-paper2code', record.read_text().splitlines())
+        self.assertFalse(any(call['tool'] == 'npx' for call in self.calls()))
+
 if __name__=='__main__':unittest.main()

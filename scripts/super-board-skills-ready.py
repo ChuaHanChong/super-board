@@ -8,6 +8,7 @@ No directory, lockfile, or plugin cache is evidence of an available skill.
 """
 from __future__ import annotations
 import argparse
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -127,6 +128,9 @@ def canonical(name):
 
 def requirements(card, lane=None, require=()):
     explicit = override(card['body'])
+    paper2code = explicit is not None and 'super-paper2code' in explicit
+    if paper2code:
+        explicit = [name for name in explicit if name != 'super-paper2code'] or None
     selected = remaining(card, lane)
     for current in selected:
         source = 'boundary: skills/super-' + current + '/SKILL.md'
@@ -144,6 +148,8 @@ def requirements(card, lane=None, require=()):
             rows += [(name, 'required', origin) for name in row]
         elif explicit is not None and 'build' not in selected:
             rows += [(name, 'required', 'override: Skills: + ' + POLICY) for name in explicit]
+        if paper2code:
+            rows.append(('super-paper2code', 'required', 'capability: Skills: super-paper2code'))
         rows += [(name, 'required', source) for name in REGISTRY['boundaries'][current]]
         rows += [(name, 'conditional', source) for name in REGISTRY['conditional'][current]]
         rows += [(name, 'optional', source) for name in REGISTRY['optional'][current]]
@@ -388,6 +394,23 @@ class Inventory:
         return None, None
 
 
+def paper2code_runtime(root: str | Path, host: str) -> dict:
+    """Check the installed optional capability through its public local preflight."""
+    helper = Path(__file__).with_name('super-board-paper2code.py')
+    try:
+        spec = importlib.util.spec_from_file_location('super_board_paper2code', helper)
+        if spec is None or spec.loader is None:
+            raise ValueError('Paper2Code helper cannot be loaded')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        result = module.installed_runtime(Path(root).resolve(strict=True), host)
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        return dict(ready=False, error=str(error) + '; reinstall with --with-paper2code')
+    return dict(ready=result.get('status') == 'ready',
+                error=result.get('error'), runtime=result.get('runtime'), python=result.get('python'),
+                paper2code_revision=result.get('paper2code_revision'), source_dirty=result.get('source_dirty'))
+
+
 def report(root, host, cards=None, profile=None, lane=None, require=(), home=None, catalog=None):
     if not profile and cards == []:
         return dict(ready=True, host=host, entries=[], searched_surfaces=[], remediation='')
@@ -404,6 +427,10 @@ def report(root, host, cards=None, profile=None, lane=None, require=(), home=Non
             chain += [('setup', name, 'required', 'boundary: setup eight-skill installation') for name in CORE]
             for _, names in REGISTRY['build_rows']:
                 chain += [('build', name, 'required', 'label: ' + POLICY) for name in names]
+            installed = [Path(root) / '.agents/lib/paper2code', Path(root) / '.agents/skills/super-paper2code',
+                         Path(root) / '.claude/skills/super-paper2code']
+            if any(path.exists() or path.is_symlink() for path in installed):
+                chain.append(('setup', 'super-paper2code', 'required', 'boundary: installed optional capability'))
         seen = set()
         for current, name, requirement, source in chain:
             if (current, name) in seen:
@@ -414,6 +441,12 @@ def report(root, host, cards=None, profile=None, lane=None, require=(), home=Non
             status = 'resolved' if path else 'fallback' if fallback else 'skipped' if requirement != 'required' else 'missing'
             entries.append(dict(card=card['number'], lane=current, name=name, requirement=requirement, source=source,
                                 status=status, resolved_path=path, visible_path=visible, fallback=fallback))
+            if name == 'super-paper2code' and status == 'resolved' and current in ('build', 'setup'):
+                runtime = paper2code_runtime(root, host)
+                entries.append(dict(card=card['number'], lane=current, name='super-paper2code-runtime', requirement='required',
+                                    source='boundary: installed Paper2Code runtime', status='resolved' if runtime['ready'] else 'missing',
+                                    resolved_path=runtime.get('python'), visible_path=None, fallback=None,
+                                    error=runtime.get('error'), runtime=runtime))
     return dict(ready=not any(entry['status'] == 'missing' for entry in entries), host=host, entries=entries,
                 searched_surfaces=list(dict.fromkeys([str(path) for path in inventory.roots] + inventory.metadata_surfaces)),
                 remediation='Install the exact missing skills in a visible host surface or supply an enabled active catalog, then restart explicitly.')
@@ -478,7 +511,7 @@ def main(argv=None):
         print(json.dumps(result))
         for entry in result['entries']:
             if entry['status'] == 'missing':
-                print('skills-readiness: missing ' + entry['name'] + ' for ' + args.host + '; ' + result['remediation'], file=sys.stderr)
+                print('skills-readiness: missing ' + entry['name'] + ' for ' + args.host + '; ' + (entry.get('error') or result['remediation']), file=sys.stderr)
         return 0 if result['ready'] else 10
     except (OSError, ValueError, TypeError, KeyError) as error:
         print('skills-readiness: ' + str(error), file=sys.stderr)

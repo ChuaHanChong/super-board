@@ -36,6 +36,17 @@ lane review --codex >"$T/out"
 jq -e '.status == "advanced" and .column == "Done"' "$T/out" >/dev/null || fail 'explicit review allowed'
 grep -q -- '--expect-head' "$SB_CODEX_TEST_LOG" || fail 'review must pin reviewed head to merge gate'
 grep -q 'Never run bare gh pr merge' "$SB_CODEX_TEST_LOG" || fail 'review must keep merge protocol'
+python3 - "$SB_CODEX_TEST_LOG" <<'PY'
+import json, pathlib, sys
+prompt = json.loads(pathlib.Path(sys.argv[1]).read_text().splitlines()[-1])['prompt']
+read = 'python3 .claude/bin/super-board-github-read.py --kind comments -- api repos/{owner}/{repo}/issues/<PR>/comments --paginate --slurp'
+assert read in prompt, 'Reviewer must collect complete PR comments through the comments contract'
+assert prompt.index(read) < prompt.index('grade prior R-ids'), 'prior report read must precede grading'
+assert 'actual PR number, not the issue number' in prompt
+assert 'locally in Python' in prompt and 'newest report' in prompt
+assert 'absent report is normal first review' in prompt
+assert 'Do not use --jq for this paginated REST read' in prompt
+PY
 [ "$(last_model)" = default ] || fail 'no model uses Codex default'
 lane build --codex=flag-model >"$T/out"
 [ "$(last_model)" = flag-model ] || fail 'flag model must reach -m'

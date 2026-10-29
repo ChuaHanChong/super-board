@@ -16,6 +16,8 @@ CALLERS = [
     ROOT / "skills/super-build/SKILL.md",
     ROOT / "skills/super-qa/SKILL.md",
     ROOT / "skills/super-review/SKILL.md",
+    ROOT / "skills/super-paper2code/SKILL.md",
+    ROOT / "skills/super-build/references/research-preamble.md",
 ]
 # Not on the base list on purpose: the legacy dispatcher is spawned by the user, and the
 # merge gate is offered with the merge lines (onboard -> Permissions), listed below the base.

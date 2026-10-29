@@ -81,7 +81,7 @@ def render() -> tuple[str, dict[str, int]]:
     parts: list[str] = []
     for fam_key, fam in families.items():
         counts[fam_key] = len(fam["skills"])
-        title = re.sub(r"— \d+ ", f"— {len(fam['skills'])} ", fam["title"])
+        title = re.sub(r"\d+(?= (?:skills|lanes)$)", str(len(fam['skills'])), fam["title"])
         parts += [f"**{title}**", "", "| Skill | What it does |", "|---|---|"]
         for skill, brief in fam["skills"].items():
             fm = frontmatter(on_disk[skill])

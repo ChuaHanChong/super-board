@@ -35,6 +35,7 @@ class GitHubErrors(ValueError):
 # Valid read per --kind, quoted back when a payload fails its shape.
 FORMS = {
     'issue': 'issue view <N> --json number,title,body',
+    'prs-open': 'pr list --repo <owner/repo> --state open --limit 100 --json number,title,body,url,headRefName,files',
     'comments': 'api repos/{owner}/{repo}/issues/<N>/comments --paginate --slurp',
     'json': '<gh args> (JSON output; no --jq that prints a plain string)',
     'head': 'pr view <N> --json headRefName,headRefOid --jq \'"\\(.headRefName) \\(.headRefOid)"\'',

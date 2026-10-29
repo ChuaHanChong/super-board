@@ -14,6 +14,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import stat
 import subprocess
 import sys
 import tempfile
@@ -119,6 +120,21 @@ if not skills['ready']:
     result('halted', 'skills-readiness: missing ' + ', '.join(dict.fromkeys(e['name'] for e in skills['entries'] if e['status'] == 'missing')))
     sys.exit(10)
 
+installation_id = None
+if args.lane == 'build' and any(entry['name'] == 'super-paper2code' and entry['status'] == 'resolved'
+                                and entry['lane'] == 'build' for entry in skills['entries']):
+    try:
+        codex_home = Path(os.environ.get('CODEX_HOME') or Path.home() / '.codex').resolve(strict=True)
+        if not codex_home.is_dir():
+            raise ValueError('CODEX_HOME must be an existing directory')
+        installation_id = codex_home / 'installation_id'
+        metadata = installation_id.lstat()
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+            raise ValueError('installation_id must be an existing regular file without symlinks or hard links')
+    except (OSError, ValueError, RuntimeError) as error:
+        result('halted', f'Paper2Code Codex permissions: unsafe or missing installation_id: {error}; preserve claims and worktrees')
+        sys.exit(79)
+
 skill = {'build': 'super-build', 'qa': 'super-qa', 'review': 'super-review'}[args.lane]
 section = {'build': 'Builder', 'qa': 'Tester', 'review': 'Reviewer'}[args.lane]
 prompt = f'''Run {skill} for issue #{card['number']} as a Codex lane worker.
@@ -139,7 +155,7 @@ if args.lane == 'build':
 elif args.lane == 'qa' and card['status'] == 'Ready':
     prompt += 'This qa-labelled Ready card skips Building: move Ready → QA and create the issue branch from the base; test the existing product per run.md qa cards.\n'
 elif args.lane == 'review':
-    prompt += '''The owner explicitly chose run --codex: you may review and own the merge. First load the latest <!-- super-review:report -->; grade prior R-ids fixed/not fixed/no longer applies, bounce any not fixed and edit the same report in place. Form hypotheses from the issue AC and diff before reading the Builder narrative.
+    prompt += '''The owner explicitly chose run --codex: you may review and own the merge. Before grading prior findings, collect complete PR comments with `python3 .claude/bin/super-board-github-read.py --kind comments -- api repos/{owner}/{repo}/issues/<PR>/comments --paginate --slurp`, using the actual PR number, not the issue number. Flatten and filter the returned pages locally in Python for comments containing <!-- super-review:report --> and select the newest report; an absent report is normal first review. Do not use --jq for this paginated REST read. Then grade prior R-ids fixed/not fixed/no longer applies, bounce any not fixed and edit the same report in place. Form hypotheses from the issue AC and diff before reading the Builder narrative.
 Rerun the Tester's tests. When truth_gate triggers, apply super-review's fixed Adversarial mode brief inline in two distinct passes (code-grounder and historian); collect evidence and aggregate confidence against truth_threshold. Over-engineering is Should fix, never Blocker alone and never lowers confidence. Missing evidence fails closed.
 Merge ONLY through the unchanged .claude/bin/super-board-merge-gate.sh, pinning the exact head you reviewed at review pass using --expect-head "$HEAD" --config <config> --pr <N> --subject <title> --body-file <msg.md>. Never run bare gh pr merge or bypass the gate. Follow run.md Merge protocol and route every gate exit exactly: 2/5 rebase pass, 3 Blocked, 4 stay Review, 6 fresh review, 7/8 human gate with pinned approval-request; 9 verification-readiness means halt and preserve card/worktree/approval/claims until config repair and explicit restart, never a Build bounce or rebase retry. Respect human_approves_merge and merge_policy. Confirm MERGED <sha>, fetch base and prove merge-base --is-ancestor <sha> origin/<base> before closing issue or moving Done.
 '''
@@ -190,12 +206,18 @@ with tempfile.TemporaryDirectory(prefix='super-board-codex-') as temporary:
     # https://learn.chatgpt.com/docs/permissions → File access limited to workspace
     filesystem = {':root': 'read', ':slash_tmp': 'write', ':tmpdir': 'write',
                   str(root): 'write', str(git_dir): 'write', str(common_dir): 'write'}
+    if installation_id is not None:
+        # Codex v0.165.0 opens this nonsecret ID read/write before app-server startup.
+        # https://github.com/openai/codex/blob/rust-v0.165.0/codex-rs/core/src/installation_id.rs#L20-L29
+        filesystem[str(installation_id)] = 'write'
     grants = '{' + ', '.join(json.dumps(key) + '=' + json.dumps(value) for key, value in filesystem.items()) + '}'
     command = ['codex', 'exec', '-C', str(root), '-c', 'approval_policy="never"',
                '-c', 'default_permissions="super-board-lane"',
                '-c', 'permissions.super-board-lane.filesystem=' + grants,
                '-c', 'permissions.super-board-lane.network.enabled=true',
                '--output-schema', str(schema_path), '--output-last-message', str(output), '-']
+    if installation_id is not None:
+        command[2:2] = ['-c', 'shell_environment_policy.set.CODEX_HOME=' + json.dumps(str(installation_id.parent))]
     if model and model.strip():
         command[2:2] = ['-m', model]
     try:

@@ -49,7 +49,7 @@ python3 "$SYNC" >/dev/null
 read -r NY NB <<<"$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(len(d["you_type"]["skills"]), len(d["board_runs"]["skills"]))' "$T/skills/families.json")"
 PHRASE="$((NY + NB)) skills ($NY you type, $NB the board runs)"
 [ "$(grep -cF "$PHRASE" "$T/README.md")" -ge 2 ] || fail "header and Skills counts not both updated to: $PHRASE"
-grep -qF "**You type — $NY skills**" "$T/README.md" || fail "family title count not updated"
+grep -qF "**You type - $NY skills**" "$T/README.md" || fail "family title count not updated"
 if grep -q "badge/skills-" README.md; then  # the badge is optional; when present it must follow
   grep -q "badge/skills-$((NY + NB))-" "$T/README.md" || fail "skills badge not updated"
 fi
