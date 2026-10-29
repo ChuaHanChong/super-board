@@ -26,6 +26,15 @@ The security check moves to QA, and `/super-collect` hands its findings to Matt 
   that reads "dev" from disk; `pages.yml` stamps `VERSION` in at build
   (`diagrams/_shared/stamp_version.py`) and redeploys when `VERSION` changes. The release pill
   links to `releases/latest`. Replaces the hardcoded v3.0.2. `test_pages_version.py` pins it.
+- ✨ **Non-Claude hosts merge by hand unless auto is set** (#47). With config `host` `codex` or
+  `opencode` and no `merge_policy.default`, the merge gate stops at the human gate (exit 7).
+  Setup's migration no longer writes an auto merge policy for a non-Claude host.
+- ♻️ **One lane launcher, `scripts/super-board-lane.sh --backend`.** Each worker host is one
+  backend (Codex today); `super-board-codex-lane.sh` is now a one-line wrapper around
+  `--backend codex`. A missing or unknown `--backend` exits 64 and names the valid ones.
+- 🐛 **Back-to-back setup fixes no longer crash on the backup folder.** The backup stamp has
+  seconds, and an existing folder gets a `-2`, `-3` … suffix, so a second fix in the same
+  minute migrates the config instead of failing with `EEXIST`.
 
 Ported from the EricOS vendored fork, each in its own PR:
 
