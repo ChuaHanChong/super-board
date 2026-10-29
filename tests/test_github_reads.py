@@ -67,6 +67,7 @@ sys.exit(r.get('rc', 0))
         self.assertEqual(self.log.read_text(), '1')
 
     def test_successful_exit_with_malformed_or_partial_payload_halts(self):
+        self.env['SB_GITHUB_READ_STRICT'] = '1'
         for out, kind in [('{"resources":{"graphql":null,"core":null}}', 'quota'), ('[{}]', 'prs-open'), ('{"items":[{"id":"I","content":{}}],"totalCount":1}', 'items'), ('{"items":[]}', 'items'),
                           ('{"items":[],"totalCount":1}', 'items'),
                           ('{"data":{},"errors":[{"message":"partial"}]}', 'json')]:
@@ -77,6 +78,48 @@ sys.exit(r.get('rc', 0))
                 self.assertEqual(r.returncode, 79)
                 self.assertEqual(self.log.read_text(), '3')
                 self.assertEqual(r.stdout, '')
+
+    def test_agent_prs_open_shape_error_reports_complete_corrected_form(self) -> None:
+        """Reject partial REST evidence locally and accept the documented complete PR list."""
+        partial = dict(number=2, title='attention', body='Fixes #1', url='https://api.github.com/repos/acme/repo/pulls/2',
+                       head={'ref': 'issue-1-attention'})
+        result = self.read([{'out': json.dumps([partial])}], 'prs-open',
+                           ['api', 'repos/acme/repo/pulls?state=open'])
+        self.assertEqual(result.returncode, 64, result.stderr)
+        self.assertEqual(result.stdout, '')
+        self.assertEqual(self.log.read_text(), '3')
+        self.assertFalse(self.halt.exists())
+        self.assertIn('Valid form: --kind prs-open -- pr list --repo <owner/repo> --state open --limit 100 '
+                      '--json number,title,body,url,headRefName,files', result.stderr)
+        self.log.unlink()
+        complete = dict(number=2, title='attention', body='Fixes #1', url='https://github.com/acme/repo/pull/2',
+                        headRefName='issue-1-attention', files=[{'path': 'attention.py'}])
+        output = json.dumps([complete])
+        result = self.read([{'out': output}], 'prs-open',
+                           ['pr', 'list', '--repo', 'acme/repo', '--state', 'open', '--limit', '100',
+                            '--json', 'number,title,body,url,headRefName,files'])
+        self.assertEqual((result.returncode, result.stdout), (0, output), result.stderr)
+        self.assertEqual(self.log.read_text(), '1')
+        self.assertFalse(self.halt.exists())
+
+    def test_strict_prs_open_shape_failure_preserves_halt(self) -> None:
+        """Keep fixed preflight reads halted on incomplete open-PR evidence."""
+        self.env['SB_GITHUB_READ_STRICT'] = '1'
+        result = self.read([{'out': '[{}]'}], 'prs-open')
+        self.assertEqual(result.returncode, 79, result.stderr)
+        self.assertEqual(self.log.read_text(), '3')
+        original = self.halt.read_text()
+        self.assertEqual(json.loads(original)['operation']['kind'], 'prs-open')
+        self.assertEqual(self.read([{'out': '[]'}], 'prs-open').returncode, 79)
+        self.assertEqual(self.halt.read_text(), original)
+        self.assertEqual(self.log.read_text(), '3')
+
+    def test_agent_prs_open_authentication_error_still_halts(self) -> None:
+        """Keep actual authentication failures fatal for agent open-PR reads."""
+        result = self.read([{'rc': 1, 'err': 'HTTP 401: Bad credentials'}], 'prs-open')
+        self.assertEqual(result.returncode, 79, result.stderr)
+        self.assertEqual(self.log.read_text(), '1')
+        self.assertEqual(json.loads(self.halt.read_text())['attempts'], 1)
 
     def test_agent_shape_mismatch_fails_only_that_read(self):
         # #32: a malformed agent read is not an outage; zero comments is a valid read.
