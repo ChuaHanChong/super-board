@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Dispatch an explicitly selected Codex wave; stdout/--output matches the
+# Dispatch an explicitly selected Codex or OpenCode wave; stdout/--output matches the
 # Claude workflow's {cards:[summary...], halted} reconciliation contract.
-# Usage: --config f --cards '<JSON array>' --codex[=model] [--tier low|medium|high] [--output f]
+# Usage: --config f --cards '<JSON array>' --codex[=model]|--opencode[=model] [--tier low|medium|high] [--output f]
 # Unless one model is pinned (--codex=<model> or codex.model), a cheap router
 # (ROUTER_MODEL) grades each Ready card low/medium/high; the lane launcher maps
-# tier x grade to a model through its Codex.LADDERS table.
+# tier x grade to a model through its Codex.LADDERS table. OpenCode has no ladder,
+# so it is never graded: opencode.model, else the provider default.
 set -euo pipefail
 exec python3 - "${BASH_SOURCE[0]}" "$@" <<'PY'
 import argparse
@@ -20,16 +21,19 @@ import tempfile
 import threading
 import time
 
-parser = argparse.ArgumentParser(description='Dispatch one explicitly opted-in Codex wave.')
+parser = argparse.ArgumentParser(description='Dispatch one explicitly opted-in Codex or OpenCode wave.')
 parser.add_argument('--config', required=True)
 parser.add_argument('--cards', required=True, help='planner card array JSON or JSON file')
 parser.add_argument('--output')
 parser.add_argument('--tier', default='medium', choices=['low', 'medium', 'high'])
 raw = sys.argv[2:]
-codex = [arg for arg in raw if arg == '--codex' or arg.startswith('--codex=')]
-if len(codex) != 1 or (codex[0].startswith('--codex=') and not codex[0].partition('=')[2].strip()):
-    parser.error('exactly one explicit --codex[=<non-empty-model>] is required')
-args = parser.parse_args([arg for arg in raw if arg not in codex])
+chosen = [arg for arg in raw if arg.startswith('--codex') or arg.startswith('--opencode')]
+if len(chosen) != 1 or ('=' in chosen[0] and not chosen[0].partition('=')[2].strip()):
+    parser.error('exactly one explicit --codex[=<non-empty-model>] or --opencode[=<non-empty-model>] is required')
+choice = chosen[0]
+backend = 'opencode' if choice.startswith('--opencode') else 'codex'
+label = {'codex': 'Codex', 'opencode': 'OpenCode'}[backend]
+args = parser.parse_args([arg for arg in raw if arg != choice])
 output_path = Path(args.output).resolve() if args.output else None
 launcher = Path(sys.argv[1]).resolve().with_name('super-board-lane.sh')
 try:
@@ -55,8 +59,8 @@ try:
         raise ValueError('max_workers must be a non-negative integer')
     workers = workers or max(1, min(16, (os.cpu_count() or 2) - 2))
     root = Path(subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], text=True).strip()).resolve()
-    configured = (config.get('codex') or {}).get('model')
-    pinned = codex[0].startswith('--codex=') or (isinstance(configured, str) and configured.strip())
+    configured = (config.get(backend) or {}).get('model')
+    pinned = '=' in choice or (isinstance(configured, str) and configured.strip())
 except (OSError, ValueError, subprocess.CalledProcessError) as error:
     parser.error(str(error))
 readiness = launcher.with_name('super-board-verification-ready.py')
@@ -75,7 +79,7 @@ try:
     resolver = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(resolver)
     resolver.hydrate(cards, root)
-    skills = resolver.report(root, 'codex', cards, home=os.environ.get('SUPER_BOARD_SKILLS_HOME'),
+    skills = resolver.report(root, backend, cards, home=os.environ.get('SUPER_BOARD_SKILLS_HOME'),
                              catalog=os.environ.get('SUPER_BOARD_SKILLS_CATALOG'))
 except SystemExit as error:
     code, detail = error.code, 'required GitHub reads halted while hydrating skills; preserve claims and worktrees'
@@ -97,7 +101,7 @@ halted = threading.Event()
 mutex = threading.RLock()
 active = set()
 inflight = root / '.claude/super-board/inflight'
-marker = root / '.claude/super-board/codex-wave.pid'
+marker = root / f'.claude/super-board/{backend}-wave.pid'
 inflight.mkdir(parents=True, exist_ok=True)
 owner = str(os.getpid())
 
@@ -110,7 +114,7 @@ def cancel(signum, frame):
                 os.killpg(process.pid, signal.SIGTERM)
             except ProcessLookupError:
                 pass
-    # Process groups include the launcher, Codex, and shell descendants. Kill
+    # Process groups include the launcher, the host CLI, and shell descendants. Kill
     # lingering descendants too, even when their launcher already exited.
     time.sleep(2)
     for process in processes:
@@ -125,16 +129,18 @@ try:
     with marker.open('x') as stream:
         stream.write(owner + '\n')
 except FileExistsError:
-    parser.error('Codex wave PID marker exists; reconcile the previous wave before starting another')
+    parser.error(f'{label} wave PID marker exists; reconcile the previous wave before starting another')
 
-# The router only grades scope; it writes nothing. A Codex-only run grades with
-# the cheapest Codex model rather than waking Claude.
+# The router only grades scope; it writes nothing. A Codex run grades with the
+# cheapest Codex model rather than waking Claude. OpenCode has no ladder to feed.
 ROUTER_MODEL = 'gpt-6-luna'
 GRADE_SCHEMA = {'type': 'object', 'additionalProperties': False, 'required': ['complexity'],
                 'properties': {'complexity': {'type': 'string', 'enum': ['low', 'medium', 'high']}}}
 
 def grade(card):
     """Return (complexity or None, halted). A failed grade falls back to the medium cell."""
+    if backend != 'codex':
+        return None, False
     if pinned or card['status'] != 'Ready':
         return card.get('complexity') if card.get('complexity') in ['low', 'medium', 'high'] else None, False
     if card.get('complexity') in ['low', 'medium', 'high']:
@@ -192,7 +198,7 @@ def run_card(card):
             if halted.is_set():
                 history.append(dict(lane='none', status='halted', column=current['status'], detail='run halted; preserve claims and worktrees'))
                 break
-            boundary = resolver.report(root, 'codex', [current], lane=lane,
+            boundary = resolver.report(root, backend, [current], lane=lane,
                                        home=os.environ.get('SUPER_BOARD_SKILLS_HOME'), catalog=os.environ.get('SUPER_BOARD_SKILLS_CATALOG'))
             if not boundary['ready']:
                 skills_halted.set()
@@ -203,8 +209,8 @@ def run_card(card):
             process = None
             lock = inflight / str(card['number'])
             try:
-                process = subprocess.Popen(['bash', str(launcher), '--backend', 'codex', '--config', str(config_path),
-                                            '--card', json.dumps(current), '--lane', lane, codex[0],
+                process = subprocess.Popen(['bash', str(launcher), '--backend', backend, '--config', str(config_path),
+                                            '--card', json.dumps(current), '--lane', lane, choice,
                                             '--tier', args.tier] + (['--complexity', complexity] if complexity else []),
                                            stdout=subprocess.PIPE, text=True, start_new_session=True)
                 active.add(process)

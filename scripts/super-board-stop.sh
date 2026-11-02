@@ -166,36 +166,39 @@ fi
 
 DISPATCHER_PIDS=$(pgrep -f 'super-board-run\.sh' 2>/dev/null || true)
 ORPHAN_WORKERS=$(pgrep -f 'claude -p .*super-board' 2>/dev/null || true)
-CODEX_WAVE_MARKER=".claude/super-board/codex-wave.pid"
-CODEX_WAVE_PID=""
-if [ -f "$CODEX_WAVE_MARKER" ]; then
-  CODEX_WAVE_PID=$(cat "$CODEX_WAVE_MARKER")
-  case "$CODEX_WAVE_PID" in ''|*[!0-9]*)
-    log "🛑 invalid Codex wave PID marker; preserve claims and inspect $CODEX_WAVE_MARKER"
+WAVE_PIDS=""
+for host in codex opencode; do
+  WAVE_MARKER=".claude/super-board/$host-wave.pid"
+  [ -f "$WAVE_MARKER" ] || continue
+  WAVE_PID=$(cat "$WAVE_MARKER")
+  case "$WAVE_PID" in ''|*[!0-9]*)
+    log "🛑 invalid $host wave PID marker; preserve claims and inspect $WAVE_MARKER"
     exit 1 ;;
   esac
-  if kill -0 "$CODEX_WAVE_PID" 2>/dev/null; then
+  if kill -0 "$WAVE_PID" 2>/dev/null; then
     # Refuse a reused PID, or an unavailable process identity, rather than
     # signal an unrelated process and release a still-running wave's claims.
-    if ! ps -p "$CODEX_WAVE_PID" -o args= 2>/dev/null | grep -q 'super-board-codex-wave'; then
-      log "🛑 cannot identify Codex wave PID $CODEX_WAVE_PID; preserve claims and inspect $CODEX_WAVE_MARKER"
+    if ! ps -p "$WAVE_PID" -o args= 2>/dev/null | grep -qE "super-board-$host-wave|super-board-codex-wave\.sh.*--$host"; then
+      log "🛑 cannot identify $host wave PID $WAVE_PID; preserve claims and inspect $WAVE_MARKER"
       exit 1
     fi
   fi
-fi
+  WAVE_PIDS="$WAVE_PIDS $host|$WAVE_PID"
+done
 
-if [ "${#WORKERS[@]}" -eq 0 ] && [ -z "$DISPATCHER_PIDS" ] && [ -z "$ORPHAN_WORKERS" ] && [ -z "$CODEX_WAVE_PID" ]; then
+if [ "${#WORKERS[@]}" -eq 0 ] && [ -z "$DISPATCHER_PIDS" ] && [ -z "$ORPHAN_WORKERS" ] && [ -z "$WAVE_PIDS" ]; then
   echo "  ✓ nothing to stop — no dispatcher, no in-flight workers, no orphans"
   echo "════════════════════════════════════════════════════════"
   exit 0
 fi
 
-# Stop new Codex dispatch first. Its TERM handler cancels lane process groups
+# Stop new wave dispatch first. Its TERM handler cancels lane process groups
 # and reaps them (up to five seconds), before any claim can be released.
-if [ -n "$CODEX_WAVE_PID" ]; then
-  log "🛑 stopping Codex wave and its lane workers"
-  kill_pid "$CODEX_WAVE_PID" "codex-wave" 7
-fi
+for entry in $WAVE_PIDS; do
+  IFS='|' read -r host wave_pid <<< "$entry"
+  log "🛑 stopping $host wave and its lane workers"
+  kill_pid "$wave_pid" "$host-wave" 7
+done
 
 # 2. Per-worker wrap-up: comment, release claim, kill.
 if [ "${#WORKERS[@]}" -gt 0 ]; then
@@ -237,11 +240,17 @@ if [ -d "$INFLIGHT_DIR" ] && [ -n "$(ls -A "$INFLIGHT_DIR" 2>/dev/null)" ]; then
   log ""
   log "🧽 cleared $INFLIGHT_DIR"
 fi
-[ -z "$CODEX_WAVE_PID" ] || rm -f "$INFLIGHT_DIR/workflow-wave.lock" "$CODEX_WAVE_MARKER"
+if [ -n "$WAVE_PIDS" ]; then
+  rm -f "$INFLIGHT_DIR/workflow-wave.lock"
+  for entry in $WAVE_PIDS; do
+    IFS='|' read -r host wave_pid <<< "$entry"
+    rm -f ".claude/super-board/$host-wave.pid"
+  done
+fi
 
 # 6. Summary.
 DISP_COUNT=$(echo "$DISPATCHER_PIDS" | tr ' ' '\n' | grep -c . || true)
-[ -z "$CODEX_WAVE_PID" ] || DISP_COUNT=$((DISP_COUNT + 1))
+for entry in $WAVE_PIDS; do DISP_COUNT=$((DISP_COUNT + 1)); done
 echo ""
 echo "════════════════════════════════════════════════════════"
 echo "  ✅ stopped: ${#WORKERS[@]} worker(s), ${DISP_COUNT} dispatcher(s)"

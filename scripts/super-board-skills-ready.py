@@ -266,9 +266,11 @@ class Inventory:
         self.metadata_surfaces = []
         self.disabled = set()
         self.catalog_only = False
-        if host == 'claude':
+        if host in ('claude', 'opencode'):
+            # OpenCode reads .claude/skills by default, so it shares the Claude roots.
             self.roots = [self.root / '.claude/skills', self.home / '.claude/skills']
-            self.claude_plugins()
+            if host == 'claude':
+                self.claude_plugins()
         else:
             # Codex discovery stops at this independent repository's root.
             process = subprocess.run(['git', '-C', str(self.root), 'rev-parse', '--show-toplevel'],
@@ -480,7 +482,7 @@ class UsageParser(argparse.ArgumentParser):
 def main(argv=None):
     parser = UsageParser(description=__doc__)
     parser.add_argument('--root', required=True)
-    parser.add_argument('--host', required=True, choices=['claude', 'codex'])
+    parser.add_argument('--host', required=True, choices=['claude', 'codex', 'opencode'])
     selection = parser.add_mutually_exclusive_group(required=True)
     selection.add_argument('--cards')
     selection.add_argument('--profile', choices=['setup'])

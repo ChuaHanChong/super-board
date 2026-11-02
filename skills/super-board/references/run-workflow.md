@@ -25,9 +25,9 @@ Keep this run choice in each wave and resume command; skip only the Claude usage
 `--codex=<model>` still apply); it counts as explicit `--codex`, Review included.
 Say so once, in the first wave report: `🔁 codex host — running as --codex`. Never improvise a Claude workflow wave in Codex.
 
-**Unknown host halts.** Run the host check before preconditions. Exit 65 (no host sign) or
-`opencode` (no OpenCode backend yet) halts before any claim, even with no Workflow tool, with one line:
-`⛔ unknown host — set SUPER_BOARD_HOST=claude|codex and re-run`. Never guess a backend.
+**Unknown host halts.** Run the host check before preconditions. Exit 65 (no host sign)
+halts before any claim, even with no Workflow tool, with one line:
+`⛔ unknown host — set SUPER_BOARD_HOST=claude|codex|opencode and re-run`. Never guess a backend.
 
 After the same plan and claim steps, launch this command as a background task:
 `bash .claude/bin/super-board-codex-wave.sh --config <config-path> --cards <claimed-cards.json> --codex[=<model>] --tier <low|medium|high> --output <wave-result.json>`.
@@ -41,6 +41,28 @@ Review is allowed only with explicit `--codex`; merges still use the unchanged
 merge gate with `--expect-head <reviewed-SHA>` and verify landing per `run.md`.
 Concurrent reviews share that gate's merge mutex. Network and repo/git-dir writes
 use the lane launcher's sandbox settings, including an external submodule git dir.
+
+## OpenCode runs
+
+`/super-board run --opencode` uses headless OpenCode for every lane of every wave,
+overriding `worker_backend`. Inside OpenCode, plain `run` is `--opencode`: when your tool
+list has no Workflow tool, or `bash .claude/bin/super-board-host.sh --config <config-path>`
+prints `opencode`, run as `--opencode` and say so once in the first wave report:
+`🔁 opencode host — running as --opencode`. It counts as explicit, Review included.
+Never improvise a Claude workflow wave in OpenCode.
+
+A cheap router is not used: OpenCode has no model ladder, so `--opencode=<model>`, else
+optional `opencode.model`, else the provider default. `--tier` is accepted and ignored.
+
+Launch the same helper with the OpenCode flag:
+`bash .claude/bin/super-board-codex-wave.sh --config <config-path> --cards <claimed-cards.json> --opencode[=<model>] --output <wave-result.json>`.
+Each lane is `opencode run --format json --standalone --auto` wrapped in an OS write jail
+(Seatbelt on macOS, bubblewrap on Linux): writes reach the worktree, tmp and OpenCode's own
+state dirs only, because OpenCode's own permission rules do not stop a `bash` tool from
+writing elsewhere. No `--output-schema` flag exists, so the launcher takes the last text
+event, extracts its JSON object and validates it against the lane schema; a reply without
+that object fails the lane. Paper2Code resolves only on claude and codex, so a card that
+needs it halts at skills-readiness instead of running unguarded.
 
 ## Required GitHub evidence and a paused run
 
@@ -107,8 +129,8 @@ Run the same preconditions as `run.md` §Preconditions, minus PID checks:
       (mkdir -p the directory) containing the config slug and start time:
       `(set -C; printf 'SLUG=%s\nSTARTED=%s\n' <slug> "$(date -u +%FT%TZ)" > <lock>)`.
       Before replacing an existing marker, check `/workflows` and verify the PID
-      in `.claude/super-board/codex-wave.pid` (plain numeric PID) with `kill -0` plus its process command.
-      Only if neither backend has an active wave and no repo-local Codex lane
+      in `.claude/super-board/<codex|opencode>-wave.pid` (plain numeric PID) with `kill -0` plus its process command.
+      Only if neither backend has an active wave and no repo-local Codex/OpenCode lane
       remains is the marker stale from a crashed run — replace it.
       Remove the lock when the run ends or stops. The legacy dispatcher
       refuses to start (and halts mid-run) while it exists.
@@ -250,9 +272,9 @@ Repeat until a done condition or halt gate fires:
    bot_identity is unset — accepted single-orchestrator risk: without it
    there is no cross-session claim at all, so never run two orchestrators
    (or /loop re-entries) against the same board without bot_identity.
-4. **Launch** — With `--codex`, or no Workflow tool, or the host check printing `codex`, use
-   "Codex runs" above. The host check printing `claude` uses the Workflow tool; exit 65 or
-   `opencode` never reaches Launch (see "Unknown host halts"). Workflow tool with
+4. **Launch** — With `--codex`, `--opencode`, no Workflow tool, or the host check printing
+   `codex`/`opencode`, use "Codex runs" or "OpenCode runs" above. The host check printing
+   `claude` uses the Workflow tool; exit 65 never reaches Launch (see "Unknown host halts"). Workflow tool with
    `scriptPath: .claude/workflows/super-board-wave.js` and
    `args: { configPath, cards, humanApprovesMerge, tier }` (`cards` hydrated after the planner: each
    carries `lane` and `labels`, and a `qa` card skips the Builder). Runs in the background; the
