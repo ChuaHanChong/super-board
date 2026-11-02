@@ -56,7 +56,7 @@ security_audit_present() {
 }
 
 main() {
-  local target="" ref="${SUPER_BOARD_REF:-}" helpers=1 paper2code=0 board_commit=""
+  local target="" ref="${SUPER_BOARD_REF:-}" helpers=1 paper2code=0
   local repo="${SUPER_BOARD_REPO:-EricTechPro/super-board}"
   local pass=()
 
@@ -91,6 +91,11 @@ main() {
   elif have git; then fetch="git"
   else die "I need either curl + tar, or git, to download super-board. Install one of those and run this again." 69
   fi
+  if [ "$paper2code" -eq 1 ]; then  # the pinned runtime is a submodule, which archives omit
+    [ -z "${SUPER_BOARD_TARBALL:-}" ] || die "--with-paper2code needs a git clone; unset SUPER_BOARD_TARBALL." 64
+    have git || die "--with-paper2code needs git. Install it and run this again." 69
+    fetch="git"
+  fi
   have python3 || die "python3 is missing. super-board's installer and scripts use it. Install Python 3 (https://www.python.org/downloads/) and run this again." 69
 
   # One grouped line: what is here ✓, what is not ✗ (onboard's 🔍 Checks installs it).
@@ -119,10 +124,6 @@ main() {
   local url="${SUPER_BOARD_TARBALL:-}" label
   if [ -n "$url" ]; then
     fetch="tar"; label="$url"
-    if [ "$paper2code" -eq 1 ]; then
-      [[ "$ref" =~ ^[0-9a-f]{40}$ ]] || die "--with-paper2code and a custom tarball require --ref <exact Board commit SHA>." 64
-      board_commit="$ref"
-    fi
   elif [ "$fetch" = "tar" ]; then
     if [ -z "$ref" ]; then
       ref="$(curl -fsSL "https://api.github.com/repos/$repo/releases/latest" 2>/dev/null \
@@ -131,15 +132,7 @@ try: print(json.load(sys.stdin).get("tag_name",""))
 except Exception: print("")' 2>/dev/null || true)"
       if [ -z "$ref" ]; then warn "couldn't find a published release; using the main branch instead."; ref="main"; fi
     fi
-    if [ "$paper2code" -eq 1 ]; then
-      board_commit="$(curl -fsSL "https://api.github.com/repos/$repo/commits/$ref" | python3 -c 'import json,re,sys
-value=json.load(sys.stdin).get("sha", "")
-if not re.fullmatch(r"[0-9a-f]{40}",value): sys.exit("Board commit is missing from GitHub response")
-print(value)')" || die "could not resolve the exact Board commit for Paper2Code installation." 1
-      url="https://codeload.github.com/$repo/tar.gz/$board_commit"
-    else
-      url="https://codeload.github.com/$repo/tar.gz/$ref"
-    fi
+    url="https://codeload.github.com/$repo/tar.gz/$ref"
     label="$repo@$ref"
   else
     label="$repo@${ref:-default branch}"
@@ -159,7 +152,9 @@ print(value)')" || die "could not resolve the exact Board commit for Paper2Code 
       done
     fi
   else
-    if [ -n "$ref" ]; then
+    if [ "$paper2code" -eq 1 ] && [[ "$ref" =~ ^[0-9a-f]{40}$ ]]; then  # --branch only takes tags and branches
+      git clone -q "https://github.com/$repo.git" "$tmp/x" && git -C "$tmp/x" checkout -q "$ref" || die "git clone of $label failed." 1
+    elif [ -n "$ref" ]; then
       git clone -q --depth 1 --branch "$ref" "https://github.com/$repo.git" "$tmp/x" || die "git clone of $label failed." 1
     else
       git clone -q --depth 1 "https://github.com/$repo.git" "$tmp/x" || die "git clone of $label failed." 1
@@ -168,45 +163,7 @@ print(value)')" || die "could not resolve the exact Board commit for Paper2Code 
   fi
   [ -n "$src" ] && [ -f "$src/install.sh" ] || die "the download has no install.sh at its top level — is '$label' really super-board?" 1
   if [ "$paper2code" -eq 1 ]; then
-    if [ "$fetch" = git ]; then
-      git -C "$src" submodule update --init -- vendor/Paper2Code || die "could not initialize the pinned Paper2Code submodule." 1
-    else
-      local paper_commit
-      paper_commit="$(curl -fsSL "https://api.github.com/repos/$repo/git/trees/$board_commit?recursive=1" | python3 -c 'import json,re,sys
-tree=json.load(sys.stdin)
-if tree.get("truncated"): sys.exit("truncated Board tree cannot prove the Paper2Code pin")
-matches=[entry for entry in tree.get("tree",[]) if entry.get("path")=="vendor/Paper2Code" and entry.get("mode")=="160000" and entry.get("type")=="commit"]
-if len(matches)!=1 or not re.fullmatch(r"[0-9a-f]{40}",matches[0].get("sha","")): sys.exit("Board commit has no exact Paper2Code gitlink")
-print(matches[0]["sha"])')" || die "could not read the pinned Paper2Code revision from Board commit $board_commit." 1
-      curl -fsSL "https://codeload.github.com/ChuaHanChong/Paper2Code/tar.gz/$paper_commit" -o "$tmp/paper2code.tgz" || die "could not download pinned Paper2Code revision $paper_commit." 1
-      python3 - "$tmp/paper2code.tgz" "$src/vendor/Paper2Code" "$paper_commit" <<'PY'
-from pathlib import Path, PurePosixPath
-import shutil
-import sys
-import tarfile
-import tempfile
-
-archive_path, destination = Path(sys.argv[1]), Path(sys.argv[2])
-with tempfile.TemporaryDirectory(prefix='paper2code-', dir=archive_path.parent) as temporary:
-    unpacked = Path(temporary)
-    with tarfile.open(archive_path, 'r:gz') as archive:
-        for member in archive.getmembers():
-            path = PurePosixPath(member.name)
-            if path.is_absolute() or '..' in path.parts or not (member.isfile() or member.isdir()):
-                sys.exit('Paper2Code archive contains an unsafe path or link')
-        archive.extractall(unpacked)
-    roots = list(unpacked.iterdir())
-    if len(roots) != 1 or not roots[0].is_dir() or not (roots[0] / 'codes/pipeline.py').is_file():
-        sys.exit('Pinned Paper2Code revision does not contain the converted CLI runtime')
-    if destination.is_symlink() or destination.parent.is_symlink():
-        sys.exit('refusing a symlinked Paper2Code archive destination')
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    if destination.exists():
-        destination.rmdir()
-    shutil.move(str(roots[0]), str(destination))
-    (destination / '.paper2code-revision').write_text(sys.argv[3] + '\n')
-PY
-    fi
+    git -C "$src" submodule update --init -- vendor/Paper2Code || die "could not initialize the pinned Paper2Code submodule." 1
   fi
   local version="?"
   [ -f "$src/VERSION" ] && version="$(tr -d '[:space:]' < "$src/VERSION")"

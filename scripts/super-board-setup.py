@@ -73,7 +73,7 @@ OLD_LABELS = {
 }
 SKILLS = ["super-board", "super-build", "super-qa", "super-review", "super-collect", "visual", "git-sync", "ui-refine-loop", "pr-security-review"]
 OLD_SKILL_DIRS = ["super-refine", "cleanup-wt", "arch-loop"]
-BIN = ["super-board-project-verifier.py", "super-board-paper2code.py", "super-board-skills-ready.py", "super-board-host.sh", "super-board-codex-wave.sh", "super-board-lane.sh", "super-board-codex-lane.sh", "super-board-calibration.py", "super-board-verification-ready.py", "super-board-github-read.py", "super-board-collect-state.py", "super-board-run.sh", "super-board-gh-guard.sh", "super-board-card.sh", "super-board-status.py", "super-board-wave-plan.sh",
+BIN = ["super-board-project-verifier.py", "super-board-skills-ready.py", "super-board-host.sh", "super-board-codex-wave.sh", "super-board-lane.sh", "super-board-codex-lane.sh", "super-board-calibration.py", "super-board-verification-ready.py", "super-board-github-read.py", "super-board-collect-state.py", "super-board-run.sh", "super-board-gh-guard.sh", "super-board-card.sh", "super-board-status.py", "super-board-wave-plan.sh",
        "super-board-deps.sh", "super-board-preflight.sh", "super-board-merge-gate.sh",
        "super-board-merge-policy.py", "super-board-approval.py", "super-board-env-check.sh", "super-board-agents-md.py",
        "super-board-settings.py", "super-board-setup.py", "super-board-usage.sh", "super-board-pr-body.sh",
@@ -451,9 +451,7 @@ def fix(root, pack, helpers=True, dry=False, host="claude", home=None, catalog=N
             run(["git", "init", "-q"], cwd=root)
         fixed.append("git repo created (git init)")
 
-    worker_missing = any(entry["status"] == "missing" and entry["name"] not in ("super-paper2code", "super-paper2code-runtime")
-                         for entry in before["helper_readiness"].get("entries", []))
-    if helpers and not before["helper_skills"] and (worker_missing or before["helper_readiness"].get("error")) and have("npx"):
+    if helpers and not before["helper_skills"] and have("npx"):
         if not dry:
             r = run(["bash", "-c", HELPERS_CMD], cwd=root, input="")
             confirmed = helper_readiness(root, host, home, catalog)

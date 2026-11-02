@@ -138,9 +138,7 @@ PY
 if [ "$PAPER2CODE" -eq 1 ]; then
   python3 - "$REPO_ROOT" "$TARGET" <<'PY'
 from pathlib import Path
-import hashlib
 import json
-import re
 import shutil
 import subprocess
 import sys
@@ -150,36 +148,18 @@ root = Path(sys.argv[1]).resolve()
 target = Path(sys.argv[2]).resolve()
 source = root / 'vendor/Paper2Code'
 destination = target / '.agents/lib/paper2code'
-if sys.version_info < (3, 10):
-    sys.exit('Paper2Code requires Python 3.10+; ordinary Board installs do not.')
-for path in [target / '.agents', target / '.agents/lib', destination]:
-    if path.is_symlink():
-        sys.exit(f'refusing symlinked Paper2Code runtime path: {path}')
-resolved = destination.resolve()
-if source.resolve() == resolved or source.resolve() in resolved.parents or resolved in source.resolve().parents:
-    sys.exit('refusing overlapping Paper2Code source and runtime')
-required = ['codes/pipeline.py', 'codes/cli_runner.py', 'codes/prompts.py', 'codes/auxiliary.py', 'LICENSE', 'CONTRACTS.md', 'requirements.txt']
+required = ['codes/1_planning.py', 'codes/cli_client.py', 'LICENSE']
 if not (root / 'skills/super-paper2code/SKILL.md').is_file() or any(not (source / name).is_file() for name in required):
-    sys.exit('Paper2Code converted runtime is missing; initialize vendor/Paper2Code at the tested CLI revision with git submodule update --init --recursive.')
-if destination.exists() and not (destination / 'installation.json').is_file():
-    sys.exit(f'refusing to replace unmanaged Paper2Code runtime: {destination}')
-selected = [source / 'codes', source / 'data/prompts'] + [source / name for name in ['LICENSE', 'CONTRACTS.md', 'requirements.txt', 'requirements-lookup.txt'] if (source / name).exists()]
-for path in selected:
-    if not path.exists() or path.is_symlink() or any(child.is_symlink() for child in path.rglob('*')):
-        sys.exit(f'Paper2Code source contains a missing path or symlink: {path}')
+    sys.exit('Paper2Code source is missing; initialize vendor/Paper2Code with git submodule update --init.')
+selected = [source / 'codes', source / 'data/prompts', source / 'LICENSE']
 top = subprocess.run(['git', '-C', str(source), 'rev-parse', '--show-toplevel'], capture_output=True, text=True, check=False) if shutil.which('git') else None
-if top is not None and top.returncode == 0 and Path(top.stdout.strip()).resolve() == source.resolve():
-    revision = subprocess.run(['git', '-C', str(source), 'rev-parse', 'HEAD'], capture_output=True, text=True, check=True).stdout.strip()
-    dirty = bool(subprocess.run(['git', '-C', str(source), 'status', '--porcelain'], capture_output=True, text=True, check=True).stdout.strip())
-else:
-    marker = source / '.paper2code-revision'
-    revision = marker.read_text().strip() if marker.is_file() else ''
-    dirty = False
-if not re.fullmatch(r'[0-9a-f]{40}', revision):
-    sys.exit('Paper2Code revision is unavailable; use its Git checkout or get.sh pinned download.')
+if top is None or top.returncode != 0 or Path(top.stdout.strip()).resolve() != source.resolve():
+    sys.exit('Paper2Code revision is unavailable; initialize its Git checkout with git submodule update --init.')
+if subprocess.run(['git', '-C', str(source), 'status', '--porcelain'], capture_output=True, text=True, check=True).stdout.strip():
+    sys.exit('Paper2Code source has local changes; commit or discard them so the recorded revision is true.')
+revision = subprocess.run(['git', '-C', str(source), 'rev-parse', 'HEAD'], capture_output=True, text=True, check=True).stdout.strip()
 destination.parent.mkdir(parents=True, exist_ok=True)
 stage = Path(tempfile.mkdtemp(prefix='.paper2code-', dir=destination.parent))
-backup = stage.with_name(stage.name + '-previous')
 try:
     for path in selected:
         output = stage / path.relative_to(source)
@@ -188,29 +168,15 @@ try:
             shutil.copytree(path, output, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
         else:
             shutil.copy2(path, output)
-    hashes = {str(path.relative_to(stage)): hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(stage.rglob('*')) if path.is_file()}
-    constraints = stage / 'constraints.txt'
-    constraints.write_text('PyYAML==6.0.3\n')
     subprocess.run([sys.executable, '-m', 'venv', str(stage / '.venv')], check=True, capture_output=True, text=True)
-    interpreter = stage / '.venv/bin/python'
-    subprocess.run([str(interpreter), '-m', 'pip', 'install', '--disable-pip-version-check', '--no-input', '-r', str(stage / 'requirements.txt'), '-c', str(constraints)], check=True, capture_output=True, text=True)
-    version = subprocess.run([str(interpreter), '-c', 'import yaml; print(yaml.__version__)'], check=True, capture_output=True, text=True).stdout.strip()
-    if version != '6.0.3':
-        raise ValueError('Paper2Code dependency version differs from the verified constraint')
-    (stage / 'installation.json').write_text(json.dumps({'revision': revision, 'dirty': dirty, 'source_sha256': hashes, 'dependency_versions': {'PyYAML': version}}, indent=2) + '\n')
+    subprocess.run([str(stage / '.venv/bin/python'), '-m', 'pip', 'install', '--disable-pip-version-check', '--no-input', 'tqdm'], check=True, capture_output=True, text=True)
+    (stage / 'installation.json').write_text(json.dumps({'revision': revision}, indent=2) + '\n')
     if destination.exists():
-        destination.rename(backup)
-    try:
-        stage.rename(destination)
-    except OSError:
-        if backup.exists():
-            backup.rename(destination)
-        raise
-    if backup.exists():
-        shutil.rmtree(backup)
-except (OSError, subprocess.CalledProcessError, ValueError) as error:
+        shutil.rmtree(destination)
+    stage.rename(destination)
+except (OSError, subprocess.CalledProcessError) as error:
     detail = (error.stderr or error.stdout or str(error)) if isinstance(error, subprocess.CalledProcessError) else str(error)
-    sys.exit('Paper2Code installation failed; prior runtime preserved: ' + detail.strip())
+    sys.exit('Paper2Code installation failed: ' + detail.strip())
 finally:
     if stage.exists():
         shutil.rmtree(stage)
@@ -314,7 +280,6 @@ for skill in $PRIMARY_SKILLS $SECONDARY_SKILLS; do
 done
 
 SCRIPTS="super-board-project-verifier.py super-board-skills-ready.py super-board-calibration.py super-board-verification-ready.py super-board-github-read.py super-board-collect-state.py super-board-run.sh super-board-gh-guard.sh super-board-card.sh super-board-status.py super-board-wave-plan.sh super-board-lane.sh super-board-codex-lane.sh super-board-codex-wave.sh super-board-deps.sh super-board-preflight.sh super-board-merge-gate.sh super-board-merge-policy.py super-board-approval.py super-board-env-check.sh super-board-agents-md.py super-board-settings.py super-board-setup.py super-board-usage.sh super-board-throttle.sh super-board-host.sh super-board-pr-body.sh super-review-file-refactor.sh super-qa-file-bug.sh super-board-stop.sh"
-SCRIPTS="$SCRIPTS super-board-paper2code.py"
 for script in $SCRIPTS; do
   if [ -f "$REPO_ROOT/scripts/$script" ]; then
     copy_file "$REPO_ROOT/scripts/$script" "$SHARED/bin/$script"

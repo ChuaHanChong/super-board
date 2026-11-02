@@ -8,7 +8,7 @@
 
 <p>Stop babysitting coding agents: cards you drop in Ready come back as tested, reviewed PRs.</p>
 
-<p>10 skills (6 you type, 4 the board runs) · 9 commands · 6 guard hooks</p>
+<p>10 skills (5 you type, 5 the board runs) · 9 commands · 6 guard hooks</p>
 
 <p>
 <img alt="Version" src="https://img.shields.io/badge/version-3.3.0-1f883d?style=flat-square">
@@ -66,7 +66,7 @@ Claude Code's built-in `/security-review` is left as it is.
 Running from Codex or OpenCode? See [supported hosts](docs/hosts.md) for tested versions, sign-in and gaps.
 
 Optional [Paper2Code](skills/super-paper2code/README.md) generates paper-to-project candidates for research cards that explicitly select it.
-From a checkout containing the converted pinned submodule, install with `bash install.sh --with-paper2code --hosts codex <project>`; ordinary installations do not download its runtime or require Python 3.10+.
+From a checkout containing the pinned submodule, install with `bash install.sh --with-paper2code --hosts codex <project>`; ordinary installations do not download its runtime.
 
 Optional post-run learning can delegate an already installed `calibrate` skill after
 verified selected work completes. It applies only to explicitly permitted existing
@@ -106,10 +106,10 @@ Add cards to `Ready`. The board drains on its own.
 
 ## Skills
 
-**10 skills (6 you type, 4 the board runs).** Uses [Matt Pocock skills](https://github.com/mattpocock/skills), ponytail, impeccable, humanizer, [Anthropic's security review](https://github.com/anthropics/claude-code-security-review) and [Cloudflare's security-audit](https://github.com/cloudflare/security-audit-skill).
+**10 skills (5 you type, 5 the board runs).** Uses [Matt Pocock skills](https://github.com/mattpocock/skills), ponytail, impeccable, humanizer, [Anthropic's security review](https://github.com/anthropics/claude-code-security-review) and [Cloudflare's security-audit](https://github.com/cloudflare/security-audit-skill).
 
 <!-- skills:start -->
-**You type - 6 skills**
+**You type — 5 skills**
 
 | Skill | What it does |
 |---|---|
@@ -118,9 +118,8 @@ Add cards to `Ready`. The board drains on its own.
 | [`/ui-refine-loop`](skills/ui-refine-loop/README.md) | Critique → refine loop that polishes one page or component. |
 | [`/visual`](skills/visual/README.md) | One HTML page: branch recap, plan, or codebase map with diagrams. |
 | [`/git-sync`](skills/git-sync/README.md) | Commit per logical change, merge-pull, push without force, report. |
-| [`/super-paper2code`](skills/super-paper2code/README.md) | Optional research capability: generates paper-to-project candidates for Builder integration. |
 
-**The board runs — 4 skills**
+**The board runs — 5 skills**
 
 | Skill | What it does |
 |---|---|
@@ -128,6 +127,7 @@ Add cards to `Ready`. The board drains on its own.
 | [`/super-qa`](skills/super-qa/README.md) | Tester lane: evidence, test-gap check, screenshots, or bounce to Build. |
 | [`/super-review`](skills/super-review/README.md) | Reviewer lane: own hypotheses, remembers prior findings, merge gate. |
 | [`/pr-security-review`](skills/pr-security-review/README.md) | Security pass on every PR diff; super-qa runs it, findings fail QA. |
+| [`/super-paper2code`](skills/super-paper2code/README.md) | Optional research capability: generates paper-to-project candidates for Builder integration. |
 <!-- skills:end -->
 
 Each name links to that skill's README. Adding a skill? Write its `SKILL.md` and `README.md`, add a line to `skills/families.json`, and this table updates itself.

@@ -19,10 +19,9 @@ If code must change, make a new version commit and tag instead of moving an exis
 
 ## Tests
 
-The Paper2Code source job recursively checks out the pinned submodule and runs its offline CLI contract suite with Python 3.12 and PyYAML 6.0.3 on Linux and macOS.
-Publish the tested converted Paper2Code commit before updating Super Board's gitlink; an unpublished local commit or a dirty submodule cannot produce a reproducible release.
-GitHub source archives omit submodules, so optional `get.sh --with-paper2code` installation resolves the exact downloaded Board commit and fetches its recorded Paper2Code gitlink.
-Custom `SUPER_BOARD_TARBALL` downloads require `--ref <exact Board commit SHA>` with this capability so the nested revision can be resolved without following a moving branch.
+The Paper2Code source job recursively checks out the pinned submodule and runs its offline CLI backend tests with Python 3.12 on Linux and macOS.
+Publish the tested Paper2Code commit before updating Super Board's gitlink; an unpublished local commit or a dirty submodule cannot produce a reproducible release.
+GitHub source archives omit submodules, so `get.sh --with-paper2code` always uses a git clone and initializes the recorded gitlink.
 Ordinary installs do not fetch Paper2Code or install its dependencies.
 To develop from Git, use `git clone --recurse-submodules <super-board-url>` or run `git submodule update --init --recursive` in an existing checkout.
 Keep Apache-2.0 licensing and notices in the installed runtime.

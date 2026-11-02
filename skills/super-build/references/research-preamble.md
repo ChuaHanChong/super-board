@@ -55,7 +55,7 @@ other Builder rule still applies: smallest safe change, PR size cap, commits, PR
      `none: no usable repo` when step 3 found none;
    - `GitNexus:` each query, labelled `ref` or `dev`, with the symbol it found, and each
      `impact` target with its risk.
-   - For opted-in cards, `Paper2Code:` provenance, stage manifest, selected candidate files, and independent verification evidence as required by the capability.
+   - For opted-in cards, `Paper2Code:` provenance, completed stages, selected candidate files, and independent verification evidence as required by the capability.
 9. **Clean up** on every exit from the lane, Blocked and split exits included:
    `gitnexus clean --force` in the worktree and in each clone, then `rm -rf <refs>`. The PR
    evidence is the record.
