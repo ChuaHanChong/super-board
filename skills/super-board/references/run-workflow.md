@@ -345,7 +345,6 @@ don't stall on prompts:
     "Bash(.claude/bin/super-board-github-read.py:*)",
     "Bash(python3 .claude/bin/super-board-verification-ready.py:*)",
     "Bash(python3 .claude/bin/super-board-skills-ready.py:*)",
-    "Bash(python3 .claude/bin/super-board-paper2code.py:*)",
     "Bash(bash .claude/bin/super-board-usage.sh:*)",
     "Bash(bash .claude/bin/super-board-throttle.sh:*)",
     "Bash(bash .claude/bin/super-board-codex-lane.sh:*)",
@@ -353,13 +352,9 @@ don't stall on prompts:
     "Bash(bash .claude/bin/super-board-host.sh:*)",
     "Bash(bash .claude/bin/super-board-pr-body.sh:*)", "Bash(gh pr edit:*)",
     "Bash(bash .claude/bin/super-board-stop.sh:*)",
-    research cards (`## Papers`) also need "Bash(gitnexus:*)", "Bash(git clone:*)", "Bash(git -C:*)",
-    "Bash(mktemp -d /tmp/super-board-refs.*)", "Bash(rm -rf /tmp/super-board-refs.*)",
-    "Bash(curl -fsSL https://raw.githubusercontent.com/*)", "mcp__alphaxiv__discover_papers",
-    "mcp__alphaxiv__get_paper_content", "mcp__alphaxiv__answer_pdf_queries",
-    "mcp__alphaxiv__read_files_from_github_repository", "mcp__gitnexus__query",
-    "mcp__gitnexus__context", "mcp__gitnexus__impact",
     plus your project's test runners (e.g. "Bash(npm test:*)", "Bash(npx playwright:*)").
+
+Only a project that runs research cards (`## Papers`) also adds "Bash(*/.agents/lib/paper2code/.venv/bin/python *)" for Paper2Code, "Bash(gitnexus:*)", "Bash(git clone:*)", "Bash(git -C:*)", "Bash(mktemp -d /tmp/super-board-refs.*)", "Bash(rm -rf /tmp/super-board-refs.*)", "Bash(curl -fsSL https://raw.githubusercontent.com/*)", "mcp__alphaxiv__discover_papers", "mcp__alphaxiv__get_paper_content", "mcp__alphaxiv__answer_pdf_queries", "mcp__alphaxiv__read_files_from_github_repository", "mcp__gitnexus__query", "mcp__gitnexus__context", "mcp__gitnexus__impact".
 
 `tests/test_run_allowlist.py` fails when pre-flight or a lane calls a `.claude/bin`
 script this list does not cover. The read helper is listed in both forms: scripts call

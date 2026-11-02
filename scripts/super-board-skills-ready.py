@@ -8,7 +8,6 @@ No directory, lockfile, or plugin cache is evidence of an available skill.
 """
 from __future__ import annotations
 import argparse
-import importlib.util
 import json
 import os
 from pathlib import Path
@@ -148,7 +147,7 @@ def requirements(card, lane=None, require=()):
             rows += [(name, 'required', origin) for name in row]
         elif explicit is not None and 'build' not in selected:
             rows += [(name, 'required', 'override: Skills: + ' + POLICY) for name in explicit]
-        if paper2code:
+        if paper2code and current == 'build':
             rows.append(('super-paper2code', 'required', 'capability: Skills: super-paper2code'))
         rows += [(name, 'required', source) for name in REGISTRY['boundaries'][current]]
         rows += [(name, 'conditional', source) for name in REGISTRY['conditional'][current]]
@@ -395,20 +394,14 @@ class Inventory:
 
 
 def paper2code_runtime(root: str | Path, host: str) -> dict:
-    """Check the installed optional capability through its public local preflight."""
-    helper = Path(__file__).with_name('super-board-paper2code.py')
-    try:
-        spec = importlib.util.spec_from_file_location('super_board_paper2code', helper)
-        if spec is None or spec.loader is None:
-            raise ValueError('Paper2Code helper cannot be loaded')
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        result = module.installed_runtime(Path(root).resolve(strict=True), host)
-    except (OSError, ValueError, subprocess.SubprocessError) as error:
-        return dict(ready=False, error=str(error) + '; reinstall with --with-paper2code')
-    return dict(ready=result.get('status') == 'ready',
-                error=result.get('error'), runtime=result.get('runtime'), python=result.get('python'),
-                paper2code_revision=result.get('paper2code_revision'), source_dirty=result.get('source_dirty'))
+    """Check that the optional runtime is installed for a backend it supports."""
+    runtime = Path(root) / '.agents/lib/paper2code'
+    python = runtime / '.venv/bin/python'
+    if host not in ('codex', 'claude'):
+        return dict(ready=False, error='Paper2Code supports only codex or claude; select a supported lane host explicitly')
+    if not os.access(python, os.X_OK) or not (runtime / 'codes/1_planning.py').is_file() or not (runtime / 'installation.json').is_file():
+        return dict(ready=False, error='Paper2Code is not installed; reinstall with --with-paper2code')
+    return dict(ready=True, python=str(python))
 
 
 def report(root, host, cards=None, profile=None, lane=None, require=(), home=None, catalog=None):

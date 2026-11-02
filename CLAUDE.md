@@ -6,7 +6,7 @@ This repo ships nine skills under `skills/`: five you type (`super-board`, `supe
 `security-audit` is not shipped: get.sh and onboard fetch it with `npx skills`, and no lane runs it. Architecture findings come from `/super-collect architecture`.
 Worktree cleanup (`hooks/cleanup-wt.py`) is a hook, not a skill. README skill tables are generated
 by `scripts/super-board-readme-sync.py` from SKILL.md frontmatter and `skills/families.json`.
-`super-paper2code` is an optional tenth skill, installed only with `--with-paper2code`; research cards must explicitly select it in `Skills:`.
+`super-paper2code` is an optional tenth skill the board runs, which the README tables count as a fifth board skill; it is installed only with `--with-paper2code`; research cards must explicitly select it in `Skills:`.
 
 ## The cardinal rule
 
@@ -50,7 +50,7 @@ always linked; `.codex/` and `.opencode/` only when that folder already exists, 
 key names it, `super-board-host.sh` reports it, or `--hosts` asks. A real-directory `.claude/`
 install is replaced by links on upgrade; a user's own links and anything not super-board's are
 left alone; where no symlink can be made the file is copied. Settings and run state stay in `.claude/`.
-`--with-paper2code` additionally copies the converted, pinned `vendor/Paper2Code` runtime and isolated Python 3.10+ environment into `.agents/lib/paper2code/`; ordinary installs keep their existing requirements.
+`--with-paper2code` additionally copies the pinned `vendor/Paper2Code` runtime and an isolated Python environment into `.agents/lib/paper2code/`; ordinary installs keep their existing requirements.
 
 ```
 .agents/
@@ -60,7 +60,7 @@ left alone; where no symlink can be made the file is copied. Settings and run st
 └── bin/super-board-*.sh (incl. pr-body), super-board-*.py (status, merge-policy, agents-md, settings, setup), super-qa-file-bug.sh, super-review-file-refactor.sh
 ```
 
-The optional capability adds `.agents/skills/super-paper2code/`, `.agents/lib/paper2code/`, and the bounded `super-board-paper2code.py` entry point.
+The optional capability adds `.agents/skills/super-paper2code/` and `.agents/lib/paper2code/`.
 Builder generates a separate candidate inside the existing issue worktree, integrates only AC-required files, and hands provenance and independent checks to the existing QA/Review gates.
 
 It also refreshes the managed `<!-- super-board:begin … -->` block in the target's AGENTS.md when

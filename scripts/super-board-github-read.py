@@ -35,7 +35,6 @@ class GitHubErrors(ValueError):
 # Valid read per --kind, quoted back when a payload fails its shape.
 FORMS = {
     'issue': 'issue view <N> --json number,title,body',
-    'prs-open': 'pr list --repo <owner/repo> --state open --limit 100 --json number,title,body,url,headRefName,files',
     'comments': 'api repos/{owner}/{repo}/issues/<N>/comments --paginate --slurp',
     'json': '<gh args> (JSON output; no --jq that prints a plain string)',
     'head': 'pr view <N> --json headRefName,headRefOid --jq \'"\\(.headRefName) \\(.headRefOid)"\'',
@@ -47,6 +46,7 @@ FORMS = {
              'if you pushed in between, re-take the metadata'),
     'state': 'issue view <N> --json state --jq .state',
     'merge-state': 'pr view <N> --json state,headRefOid,mergeCommit',
+    'prs-open': 'pr list --state open --json number,title,body,url,headRefName,files',
     'prs-merged': 'pr list --state merged --json number,title,body,url',
     'issues-closed': 'issue list --state closed --json number,title,body,stateReason',
     'issues': ('api graphql --paginate --slurp -f query=\'query($owner:String!,$repo:String!,$endCursor:String){ '

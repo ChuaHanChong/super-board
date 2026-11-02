@@ -330,7 +330,7 @@ column), never built unchecked. `qa` cards are not pre-flighted: nothing is buil
 ### Builder (rebuild)
 
 Research card (`## Papers`): also follow `../../super-build/references/research-preamble.md` → "Rebuild"; keep its evidence bullets in `solution`.
-For Paper2Code cards, preserve the earlier manifest/candidate evidence and use a fresh directory for any full regeneration; keep the normal branch, tests, PR size cap, and QA handoff.
+For Paper2Code cards, preserve the earlier candidate evidence and use a fresh directory for any full regeneration; keep the normal branch, tests, PR size cap, and QA handoff.
 
 1. Worktree as above.
 2. Read PR review threads on this branch's PR; filter `[builder]` prefix.
