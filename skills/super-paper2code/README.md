@@ -1,6 +1,6 @@
 # Paper2Code for Super Board
 
-An optional capability that generates a paper-to-project candidate through Codex or Claude Code using an existing CLI login.
+An optional capability that generates a paper-to-project candidate through Codex, Claude Code or OpenCode using an existing CLI login.
 The default installation and cards without the opt-in keep their existing behavior.
 
 Install the capability explicitly:

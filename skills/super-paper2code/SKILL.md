@@ -29,7 +29,7 @@ Use the existing issue worktree and branch; Builder owns integration, tests, PRs
 4. Choose a fresh output directory strictly inside that issue worktree, then run Paper2Code's stages in order, each one only after the last exits 0:
 
    ```sh
-   export PAPER2CODE_BACKEND=codex  # the lane host: codex or claude
+   export PAPER2CODE_BACKEND=codex  # the lane host: codex, claude or opencode
    P=<project-root>/.agents/lib/paper2code; OUT=<worktree>/paper2code/run-1/artifacts; REPO=<worktree>/paper2code/run-1/candidate
    ARGS="--paper_name <name> --gpt_version o3-mini --paper_format JSON --pdf_json_path <paper.json> --output_dir $OUT"  # the CLI backends ignore --gpt_version
    mkdir -p "$OUT" "$REPO"
