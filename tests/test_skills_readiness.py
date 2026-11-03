@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Exercise the resolver's public CLI against isolated host installations."""
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 KIT = Path(__file__).resolve().parents[1]
 CLI = KIT / 'scripts/super-board-skills-ready.py'
@@ -118,6 +120,30 @@ class Readiness(unittest.TestCase):
         names = [e['name'] for e in result['entries']]
         self.assertIn('mattpocock-skills:diagnosing-bugs', names)
         self.assertNotIn('mattpocock-skills:implement', names)
+
+    def research_card(self, gitnexus: bool, alphaxiv: bool) -> list:
+        """Readiness entries for a research card with only the given tools on PATH."""
+        self.full()
+        self.card['body'] = '## Papers\n- 1908.08681'
+        tools = self.root / 'tools'
+        tools.mkdir()
+        (tools / 'claude').write_text('#!/bin/sh\necho alphaxiv\nexit %d\n' % (0 if alphaxiv else 1))
+        if gitnexus:
+            (tools / 'gitnexus').write_text('#!/bin/sh\n')
+        for tool in tools.iterdir():
+            tool.chmod(0o755)
+        with mock.patch.dict(os.environ, PATH=str(tools) + os.pathsep + '/usr/bin:/bin'):
+            return self.run_cli(extra=['--lane', 'build'], expected=0 if gitnexus and alphaxiv else 10)['entries']
+
+    def test_research_card_requires_gitnexus(self) -> None:
+        """Halt a research card before claim when gitnexus is missing."""
+        entries = {entry['name']: entry['status'] for entry in self.research_card(gitnexus=False, alphaxiv=True)}
+        self.assertEqual((entries['gitnexus'], entries['alphaxiv']), ('missing', 'resolved'))
+
+    def test_research_card_requires_alphaxiv(self) -> None:
+        """Halt a research card before claim when alphaXiv is not configured."""
+        entries = {entry['name']: entry['status'] for entry in self.research_card(gitnexus=True, alphaxiv=False)}
+        self.assertEqual((entries['gitnexus'], entries['alphaxiv']), ('resolved', 'missing'))
 
     def test_paper2code_opt_in_keeps_the_label_chain(self) -> None:
         """Add the optional capability without replacing ordinary Builder helpers."""
