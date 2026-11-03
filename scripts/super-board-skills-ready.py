@@ -408,21 +408,30 @@ def paper2code_runtime(root: str | Path, host: str) -> dict:
 
 
 PROBE_TIMEOUT_SECONDS = 60  # matches the lane's `opencode debug paths` bound
+ALPHAXIV_URL = 'https://api.alphaxiv.org/mcp/v1'
+
+
+def reachable(url: str) -> bool:
+    """Return whether a URL answers a POST at all; any HTTP status counts, because no login is sent."""
+    return subprocess.run(['curl', '-s', '-o', os.devnull, '-X', 'POST', url], capture_output=True,
+                          timeout=PROBE_TIMEOUT_SECONDS).returncode == 0
 
 
 def research_tools(host: str) -> dict:
-    """Probe alphaXiv through the host: connected on Claude and OpenCode, enabled and reachable on Codex."""
-    command = ['opencode', 'mcp', 'list'] if host == 'opencode' else [host, 'mcp', 'get', 'alphaxiv']
+    """Probe alphaXiv through the host: connected on Claude, logged in and reachable on OpenCode, enabled and reachable on Codex."""
+    command = {'claude': ['claude', 'mcp', 'get', 'alphaxiv'], 'codex': ['codex', 'mcp', 'get', 'alphaxiv'],
+               'opencode': ['opencode', 'auth', 'list']}[host]
     try:
         output = subprocess.run(command, capture_output=True, text=True, timeout=PROBE_TIMEOUT_SECONDS)
-        if host == 'claude':
-            connected = output.returncode == 0 and 'Connected' in output.stdout
-        elif host == 'opencode':
-            connected = output.returncode == 0 and re.search(r'alphaxiv\s+connected', output.stdout) is not None
+        if output.returncode:
+            connected = False
+        elif host == 'claude':
+            connected = 'Connected' in output.stdout
+        elif host == 'opencode':  # `opencode mcp list` varies with the directory and background service
+            connected = 'alphaxiv' in output.stdout and reachable(ALPHAXIV_URL)
         else:
             url = re.search(r'url: (\S+)', output.stdout)
-            connected = output.returncode == 0 and 'enabled: false' not in output.stdout and url is not None and subprocess.run(
-                ['curl', '-s', '-o', os.devnull, '-X', 'POST', url[1]], capture_output=True, timeout=PROBE_TIMEOUT_SECONDS).returncode == 0  # any HTTP status counts; Codex has no login probe
+            connected = 'enabled: false' not in output.stdout and url is not None and reachable(url[1])
     except (OSError, subprocess.TimeoutExpired):
         connected = False
     return {'alphaxiv': connected}

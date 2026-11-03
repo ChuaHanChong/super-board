@@ -155,7 +155,7 @@ class Readiness(unittest.TestCase):
         tools = self.root / 'tools'
         tools.mkdir()
         cases = [('claude', 'echo "Status: Connected"', True), ('claude', 'echo "Status: Failed to connect"', False),
-                 ('opencode', 'echo "alphaxiv    connected"', True), ('opencode', 'echo "alphaxiv    failed"', False),
+                 ('opencode', 'echo "alphaxiv  alphaxiv  stored"', True), ('opencode', 'echo "DeepSeek  DeepSeek  stored"', False),
                  ('codex', 'echo "enabled: true"; echo "url: https://x.invalid"', True), ('codex', 'echo "enabled: false"; echo "url: https://x.invalid"', False)]
         (tools / 'curl').write_text('#!/bin/sh\nexit ${FAKE_CURL:-0}\n')
         (tools / 'curl').chmod(0o755)
