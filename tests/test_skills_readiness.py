@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Exercise the resolver's public CLI against isolated host installations."""
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -138,13 +139,34 @@ class Readiness(unittest.TestCase):
         self.card['body'] = '## Papers\n- 1908.08681'
         tools = self.root / 'tools'
         tools.mkdir()
-        (tools / 'claude').write_text('#!/bin/sh\necho alphaxiv\nexit %d\n' % (0 if alphaxiv else 1))
+        (tools / 'claude').write_text('#!/bin/sh\necho "Status: Connected"\nexit %d\n' % (0 if alphaxiv else 1))
         if gitnexus:
             (tools / 'gitnexus').write_text('#!/bin/sh\n')
         for tool in tools.iterdir():
             tool.chmod(0o755)
         with mock.patch.dict(os.environ, PATH=str(tools) + os.pathsep + '/usr/bin:/bin'):
             return self.run_cli(extra=['--lane', 'build'], expected=0 if gitnexus and alphaxiv else 10)['entries']
+
+    def test_alphaxiv_probe_by_host(self) -> None:
+        """Accept only a connected server, or on Codex an enabled and reachable one."""
+        spec = importlib.util.spec_from_file_location('skills_ready', CLI)
+        resolver = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(resolver)
+        tools = self.root / 'tools'
+        tools.mkdir()
+        cases = [('claude', 'echo "Status: Connected"', True), ('claude', 'echo "Status: Failed to connect"', False),
+                 ('opencode', 'echo "alphaxiv    connected"', True), ('opencode', 'echo "alphaxiv    failed"', False),
+                 ('codex', 'echo "enabled: true"; echo "url: https://x.invalid"', True), ('codex', 'echo "enabled: false"; echo "url: https://x.invalid"', False)]
+        (tools / 'curl').write_text('#!/bin/sh\nexit ${FAKE_CURL:-0}\n')
+        (tools / 'curl').chmod(0o755)
+        with mock.patch.dict(os.environ, PATH=str(tools) + os.pathsep + '/usr/bin:/bin'):
+            for host, body, expected in cases:
+                (tools / host).write_text('#!/bin/sh\n' + body + '\n')
+                (tools / host).chmod(0o755)
+                self.assertEqual(resolver.research_tools(host)['alphaxiv'], expected, (host, body))
+            with mock.patch.dict(os.environ, FAKE_CURL='7'):
+                (tools / 'codex').write_text('#!/bin/sh\necho "enabled: true"; echo "url: https://x.invalid"\n')
+                self.assertFalse(resolver.research_tools('codex')['alphaxiv'])
 
     def test_research_card_requires_gitnexus(self) -> None:
         """Halt a research card before claim when gitnexus is missing."""
@@ -155,6 +177,10 @@ class Readiness(unittest.TestCase):
         """Halt a research card before claim when alphaXiv is not configured."""
         entries = {entry['name']: entry['status'] for entry in self.research_card(gitnexus=True, alphaxiv=False)}
         self.assertEqual((entries['gitnexus'], entries['alphaxiv']), ('resolved', 'missing'))
+        with mock.patch.dict(os.environ, PATH=str(self.root / 'tools') + os.pathsep + '/usr/bin:/bin'):
+            for lane in ('qa', 'review'):
+                names = [entry['name'] for entry in self.run_cli(extra=['--lane', lane], expected=10)['entries']]
+                self.assertIn('alphaxiv', names)
 
     def test_paper2code_opt_in_keeps_the_label_chain(self) -> None:
         """Add the optional capability without replacing ordinary Builder helpers."""

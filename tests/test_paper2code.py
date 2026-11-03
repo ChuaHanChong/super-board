@@ -47,9 +47,10 @@ class Paper2Code(unittest.TestCase):
         self.assertIn('--with-paper2code', resolver.paper2code_runtime(self.project, 'codex')['error'])
         self.install()
         self.assertTrue(resolver.paper2code_runtime(self.project, 'claude')['ready'])
+        self.assertTrue(resolver.paper2code_runtime(self.project, 'opencode')['ready'])
         (self.project / '.agents/lib/paper2code/codes/1_planning.py').unlink()
         self.assertFalse(resolver.paper2code_runtime(self.project, 'claude')['ready'])
-        self.assertIn('codex or claude', resolver.paper2code_runtime(self.project, 'opencode')['error'])
+        self.assertIn('codex, claude or opencode', resolver.paper2code_runtime(self.project, 'gemini')['error'])
 
     def test_codex_wave_runs_selected_capability_through_all_lanes(self) -> None:
         """Keep real wave thread readiness from halting an installed optional capability."""

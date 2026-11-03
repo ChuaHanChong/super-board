@@ -400,23 +400,32 @@ def paper2code_runtime(root: str | Path, host: str) -> dict:
     """Check that the optional runtime is installed for a backend it supports."""
     runtime = Path(root) / '.agents/lib/paper2code'
     python = runtime / '.venv/bin/python'
-    if host not in ('codex', 'claude'):
-        return dict(ready=False, error='Paper2Code supports only codex or claude; select a supported lane host explicitly')
+    if host not in ('codex', 'claude', 'opencode'):
+        return dict(ready=False, error='Paper2Code supports only codex, claude or opencode; select a supported lane host explicitly')
     if not os.access(python, os.X_OK) or not (runtime / 'codes/1_planning.py').is_file() or not (runtime / 'installation.json').is_file():
         return dict(ready=False, error='Paper2Code is not installed; reinstall with --with-paper2code')
     return dict(ready=True, python=str(python))
 
 
+PROBE_TIMEOUT_SECONDS = 60  # matches the lane's `opencode debug paths` bound
+
+
 def research_tools(host: str) -> dict:
-    """Check what a research card needs on top of gitnexus: alphaXiv in the host's MCP config."""
+    """Probe alphaXiv through the host: connected on Claude and OpenCode, enabled and reachable on Codex."""
     command = ['opencode', 'mcp', 'list'] if host == 'opencode' else [host, 'mcp', 'get', 'alphaxiv']
     try:
-        # These can probe the server live; 60s matches the lane's `opencode debug paths` bound.
-        process = subprocess.run(command, capture_output=True, text=True, timeout=60)
-        configured = process.returncode == 0 and 'alphaxiv' in process.stdout
+        output = subprocess.run(command, capture_output=True, text=True, timeout=PROBE_TIMEOUT_SECONDS)
+        if host == 'claude':
+            connected = output.returncode == 0 and 'Connected' in output.stdout
+        elif host == 'opencode':
+            connected = output.returncode == 0 and re.search(r'alphaxiv\s+connected', output.stdout) is not None
+        else:
+            url = re.search(r'url: (\S+)', output.stdout)
+            connected = output.returncode == 0 and 'enabled: false' not in output.stdout and url is not None and subprocess.run(
+                ['curl', '-s', '-o', os.devnull, '-X', 'POST', url[1]], capture_output=True, timeout=PROBE_TIMEOUT_SECONDS).returncode == 0  # any HTTP status counts; Codex has no login probe
     except (OSError, subprocess.TimeoutExpired):
-        configured = False
-    return {'alphaxiv': configured}
+        connected = False
+    return {'alphaxiv': connected}
 
 
 def report(root, host, cards=None, profile=None, lane=None, require=(), home=None, catalog=None):
@@ -460,7 +469,7 @@ def report(root, host, cards=None, profile=None, lane=None, require=(), home=Non
         needed = {}
         if not profile and (research or 'docs' not in labels_of(card)):  # setup's sample card is not a real card; `check` reports the tool
             needed['gitnexus'] = shutil.which('gitnexus') is not None
-        if research and any(current == 'build' for current, *_ in chain):
+        if research:
             tools = tools or research_tools(host)  # the Claude probe takes seconds; one per report, not per card
             needed.update(tools)
         for name, found in needed.items():
@@ -469,7 +478,7 @@ def report(root, host, cards=None, profile=None, lane=None, require=(), home=Non
                                 resolved_path=None, visible_path=None, fallback=None))
     return dict(ready=not any(entry['status'] == 'missing' for entry in entries), host=host, entries=entries,
                 searched_surfaces=list(dict.fromkeys([str(path) for path in inventory.roots] + inventory.metadata_surfaces)),
-                remediation='Install the exact missing skills in a visible host surface, install gitnexus on PATH, add the alphaxiv MCP server to the host, or supply an enabled active catalog, then restart explicitly.')
+                remediation='Install the exact missing skills in a visible host surface, install gitnexus on PATH, add or log in to the alphaxiv MCP server on the host, or supply an enabled active catalog, then restart explicitly.')
 
 
 def hydrate(cards, root):
