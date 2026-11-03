@@ -26,6 +26,6 @@ Use GitNexus on every code card, in the lane's own worktree. A code card is any 
 
 ## Rules
 
-1. `gitnexus` is required on a code card: readiness halts without it. A failed index is 🔑 Blocked, naming the error.
+1. `gitnexus` is required on a code card: readiness halts without it. A failed index is Blocked, naming the error.
    A row's skill the host does not have: run its commands directly.
 2. An empty `impact` is not proof of safety: `getattr`, registries, decorators and Hydra `_target_` leave no edge. Also text-search the symbol, including config files.

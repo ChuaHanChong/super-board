@@ -96,8 +96,8 @@ TOOLS = {
              {"mac": "brew install node", "apt": "sudo apt-get install -y nodejs npm",
               "dnf": "sudo dnf install -y nodejs npm", "win": "winget install --id OpenJS.NodeJS.LTS -e"}),
     "gitnexus": ("every code card indexes its worktree with it",
-                 {"mac": "npm install -g gitnexus", "apt": "npm install -g gitnexus",
-                  "dnf": "npm install -g gitnexus", "win": "npm install -g gitnexus"}),
+                 {"mac": "npm install -g gitnexus", "apt": "sudo npm install -g gitnexus",
+                  "dnf": "sudo npm install -g gitnexus", "win": "npm install -g gitnexus"}),
 }
 
 

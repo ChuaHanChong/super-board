@@ -61,6 +61,8 @@ class Codex:
                    '-c', 'permissions.super-board-lane.filesystem=' + grants,
                    '-c', 'permissions.super-board-lane.network.enabled=true',
                    '--output-schema', str(run['schema_path']), '--output-last-message', str(run['output']), '-']
+        if os.environ.get('GITNEXUS_HOME'):  # a custom home must reach the shell, or `analyze` writes the ungranted default
+            command[2:2] = ['-c', 'shell_environment_policy.set.GITNEXUS_HOME=' + json.dumps(str(run['gitnexus_home']))]
         if run['installation_id'] is not None:
             command[2:2] = ['-c', 'shell_environment_policy.set.CODEX_HOME=' + json.dumps(str(run['installation_id'].parent))]
         if run['model'] and run['model'].strip():
@@ -73,7 +75,7 @@ class Codex:
 
 
 def write_grants(run):
-    """Directories an OpenCode lane may write: the repo, its git dirs, tmp, and OpenCode's own state."""
+    """Directories an OpenCode lane may write: the repo, its git dirs, tmp, the GitNexus home, and OpenCode's own state."""
     grants = [run['root'], run['git_dir'], run['common_dir'], Path(tempfile.gettempdir()),
               Path(run['schema_path']).parent, run['gitnexus_home']]
     try:

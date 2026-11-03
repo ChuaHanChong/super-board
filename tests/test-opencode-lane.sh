@@ -85,6 +85,7 @@ profile, repo, home = pathlib.Path(sys.argv[1]).read_text(), str(pathlib.Path(sy
 assert '(deny file-write*)' in profile and '(allow default)' in profile, profile
 assert f'(subpath "{repo}")' in profile, 'the repo must be writable'
 assert f'(subpath "{home}")' not in profile, 'the home directory must not be writable'
+assert '/.gitnexus")' in profile, 'the lane must be able to write the GitNexus home'
 assert '(subpath "/private/' in profile or '(subpath "/Users/' in profile, 'paths must be canonical'
 assert '(literal "/dev/null")' in profile, 'git and every shell need /dev/null inside the jail'
 PY

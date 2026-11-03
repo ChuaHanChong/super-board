@@ -458,7 +458,7 @@ def report(root, host, cards=None, profile=None, lane=None, require=(), home=Non
                                     error=runtime.get('error'), runtime=runtime))
         research = re.search(r'^## Papers\s*$', card.get('body') or '', re.M)
         needed = {}
-        if research or 'docs' not in labels_of(card):
+        if not profile and (research or 'docs' not in labels_of(card)):  # setup's sample card is not a real card; `check` reports the tool
             needed['gitnexus'] = shutil.which('gitnexus') is not None
         if research and any(current == 'build' for current, *_ in chain):
             tools = tools or research_tools(host)  # the Claude probe takes seconds; one per report, not per card
@@ -469,7 +469,7 @@ def report(root, host, cards=None, profile=None, lane=None, require=(), home=Non
                                 resolved_path=None, visible_path=None, fallback=None))
     return dict(ready=not any(entry['status'] == 'missing' for entry in entries), host=host, entries=entries,
                 searched_surfaces=list(dict.fromkeys([str(path) for path in inventory.roots] + inventory.metadata_surfaces)),
-                remediation='Install the exact missing skills or research tools (gitnexus, the alphaxiv MCP server) in a visible host surface or supply an enabled active catalog, then restart explicitly.')
+                remediation='Install the exact missing skills in a visible host surface, install gitnexus on PATH, add the alphaxiv MCP server to the host, or supply an enabled active catalog, then restart explicitly.')
 
 
 def hydrate(cards, root):
