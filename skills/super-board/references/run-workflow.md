@@ -377,11 +377,13 @@ don't stall on prompts:
     "Bash(gitnexus:*)", "mcp__gitnexus__list_repos", "mcp__gitnexus__query", "mcp__gitnexus__context", "mcp__gitnexus__impact", "mcp__gitnexus__trace", "mcp__gitnexus__detect_changes", "mcp__gitnexus__check", "mcp__gitnexus__cypher", "mcp__gitnexus__explain", "mcp__gitnexus__pdg_query", "mcp__gitnexus__route_map", "mcp__gitnexus__shape_check", "mcp__gitnexus__api_impact", "mcp__gitnexus__tool_map",
     plus your project's test runners (e.g. "Bash(npm test:*)", "Bash(npx playwright:*)").
 
-Only a project that runs research cards (`## Papers`) also adds "Bash(*/.agents/lib/paper2code/.venv/bin/python *)" for Paper2Code, "Bash(git clone:*)", "Bash(git -C:*)", "Bash(mktemp -d /tmp/super-board-refs.*)", "Bash(rm -rf /tmp/super-board-refs.*)", "Bash(curl -fsSL https://raw.githubusercontent.com/*)", "mcp__alphaxiv__discover_papers", "mcp__alphaxiv__get_paper_content", "mcp__alphaxiv__answer_pdf_queries", "mcp__alphaxiv__read_files_from_github_repository".
+Only a project that runs research cards (`## Papers`) also adds "Bash(*/.agents/lib/paper2code/.venv/bin/python *)" for Paper2Code, "Bash(git clone:*)", "Bash(git -C:*)", "Bash(mktemp -d /tmp/super-board-refs.*)", "Bash(rm -rf /tmp/super-board-refs.*)", "Bash(shasum:*)", "Bash(curl -fsSL https://raw.githubusercontent.com/*)", "mcp__alphaxiv__discover_papers", "mcp__alphaxiv__get_paper_content", "mcp__alphaxiv__answer_pdf_queries", "mcp__alphaxiv__read_files_from_github_repository".
 
 `tests/test_run_allowlist.py` fails when pre-flight or a lane calls a `.claude/bin`
 script this list does not cover. The read helper is listed in both forms: scripts call
 `python3 .claude/bin/super-board-github-read.py`, lane prompts call it directly.
+
+A headless worker ignores `permissions.allow` until the folder is trusted: run `claude` there once and accept the trust dialog.
 
 **Headless runs (`claude -p "/super-board run"`).** Supported only where Claude Code may
 write the project's `.claude/` folder without a prompt. `.claude/` is a protected path:

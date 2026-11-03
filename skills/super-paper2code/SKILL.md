@@ -57,7 +57,7 @@ Run independent project tests against the integrated change; a generated test or
 Keep the existing Builder, QA, Review, and human merge gates.
 
 Add a `Paper2Code:` evidence bullet to the existing `solution` block and Builder handoff: backend, recorded model/CLI version, runtime revision from `.agents/lib/paper2code/installation.json`, input transformation, completed stages, candidate path, selected files, verification command and outcome.
-Make the required verification evidence reachable from the normal PR/issue handoff before worktree cleanup; local scratch paths alone are insufficient.
+Commit `docs/super-board/runs/issue-<N>-build-v<V>/paper2code.md` before worktree cleanup, because the run directory goes with the worktree: each stage's exit code, backend, model (`PAPER2CODE_MODEL` or `CLI default`), CLI version, and each candidate file's SHA-256.
 Keep failed/interrupted evidence and name the failed stage; use a new run directory for a rebuild rather than overwriting the old result.
 
 QA and Review consume the recorded evidence and rerun independent project checks; they do not start fresh inference automatically.

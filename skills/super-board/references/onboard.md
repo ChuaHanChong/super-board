@@ -318,9 +318,9 @@ Write it atomically (temp file + rename) after every answer. A halt never loses 
        failure is fixed here, not discovered at the first merge. For Supabase the URL is the
        Session pooler string (port 5432) with special characters in the password URL-encoded,
        and a just-reset password takes ~20 s to reach the pooler — retry once before calling it wrong.
-   Permission lines: the base list in run-workflow.md → "Mid-run permission prompts", plus the
-   merge lines when merge_policy.default is "auto" ("Bash(bash .claude/bin/super-board-merge-gate.sh:*)",
-   "Bash(gh pr merge:*)"), one "Bash(<migrate command>)" per allowed env, "Bash(bash
+   Permission lines: the base list in run-workflow.md → "Mid-run permission prompts", plus
+   "Bash(bash .claude/bin/super-board-merge-gate.sh:*)" unless human_approves_merge is true,
+   "Bash(gh pr merge:*)" when merge_policy.default is "auto", one "Bash(<migrate command>)" per allowed env, "Bash(bash
    .claude/bin/super-board-env-check.sh:*)" and the test runner. N counts what is NOT already in
    settings.json: `super-board-settings.py allow .claude/settings.json <rules…> --dry-run`.
 

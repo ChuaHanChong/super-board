@@ -130,6 +130,8 @@ This means a board with 30 cards in `Ready` and zero elsewhere does **not** star
 
 ## Branch + PR model — one branch, one PR per issue
 
+Run `.claude/bin/` scripts from the project root, as `cd <project root> && bash .claude/bin/<script>`: a repo that ignores that folder has none in its worktrees, and the allowlist names this relative path. Never replace a script with raw `gh`.
+
 Format: **`issue-<N>-<kebab-title>`** (no lane prefix).
 
 Example: `issue-42-add-chat-streaming`.
