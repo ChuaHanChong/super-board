@@ -60,7 +60,8 @@ other Builder rule still applies: smallest safe change, PR size cap, commits, PR
    `gitnexus clean --force` in the worktree and in each clone, then `rm -rf <refs>`. The PR
    evidence is the record.
 
-**Rebuild.** Keep the `Papers:` / `Reused:` / `GitNexus:` bullets and any `Paper2Code:` evidence when rewriting `solution`.
+**Rebuild.** Fix bugs only: do not change an AC's threshold, metric, split or seeds, or tune to reach it, unless the ticket allows it. A real result that misses with no bug found → ❓ Blocked with the numbers.
+Keep the `Papers:` / `Reused:` / `GitNexus:` bullets and any `Paper2Code:` evidence when rewriting `solution`.
 For new full generation, use a fresh run directory and preserve the previous candidate and failure records; do not overwrite user work or imply automatic resume.
 Index the new worktree (step 4, this-repo part). A thread that needs reference code → step 3
 at the recorded sha, then steps 4 (reference part) and 5. Run step 6 again for any symbol the

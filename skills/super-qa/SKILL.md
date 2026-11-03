@@ -653,6 +653,9 @@ When invoked by super-board (env `SUPER_BOARD_RUN=1` or invocation contains "sup
 - **Built card (`feature`, `bug`, no label):** worktree at `.claude/worktrees/issue-<N>-qa/` checked out at Builder's branch tip.
 - **`qa` card (skipped Building):** move it Ready → QA yourself, create `issue-<N>-<slug>` from the base branch, test what is already there (run.md → "qa cards").
 - **A live URL with no repo** is not a board card: `/super-qa <url>` runs standalone.
+- **Metric AC:** one proof line per AC: `command · commit · seeds · split · value vs threshold · kind: real|smoke|fixture · log path`.
+  Cannot run it as named (GPU, data, weights or time missing), or only a `smoke` or `fixture` number for a real AC: Blocked, never a pass and never a smaller run.
+  Report every seed. Commit logs only, never weights or datasets.
 - **Paper2Code research card:** read the Builder's `Paper2Code:` evidence, confirm completed generation and the input/runtime provenance, then test the integrated files against independently authored AC checks.
   Missing or failed generation evidence is a failing handoff; model success and generated tests alone prove no AC.
   Reuse the normal QA evidence/PR protocol and verification command; fresh inference or generated setup/training execution is not automatic.
