@@ -77,7 +77,7 @@ class Readiness(unittest.TestCase):
         for name in ['tdd', 'implement', 'codebase-design', 'code-review', 'diagnosing-bugs', 'verification-before-completion', 'testing-strategy']:
             (directory / name).symlink_to(self.root / '.claude/skills' / name, target_is_directory=True)
         result = self.run_cli(host='codex')
-        self.assertTrue(all(Path(e['resolved_path']).is_file() for e in result['entries'] if e['status'] == 'resolved'))
+        self.assertTrue(all(Path(e['resolved_path']).is_file() for e in result['entries'] if e['status'] == 'resolved' and e['name'] != 'gitnexus'))
 
     def test_empty_unreadable_broken_and_directory_are_missing(self):
         self.full()
@@ -120,6 +120,17 @@ class Readiness(unittest.TestCase):
         names = [e['name'] for e in result['entries']]
         self.assertIn('mattpocock-skills:diagnosing-bugs', names)
         self.assertNotIn('mattpocock-skills:implement', names)
+
+    def test_code_card_requires_gitnexus_and_docs_card_does_not(self) -> None:
+        """Halt a code card without gitnexus, and leave a docs card alone."""
+        self.full()
+        self.card['body'] = 'A plain card.'
+        with mock.patch.dict(os.environ, PATH='/usr/bin:/bin'):
+            entries = self.run_cli(extra=['--lane', 'build'], expected=10)['entries']
+            self.assertEqual([e['status'] for e in entries if e['name'] == 'gitnexus'], ['missing'])
+            self.card['labels'] = ['docs']
+            entries = self.run_cli(extra=['--lane', 'build'])['entries']
+            self.assertNotIn('gitnexus', [e['name'] for e in entries])
 
     def research_card(self, gitnexus: bool, alphaxiv: bool) -> list:
         """Readiness entries for a research card with only the given tools on PATH."""
@@ -305,7 +316,7 @@ class Readiness(unittest.TestCase):
         for labels, expected in cases:
             self.card['labels'] = labels
             result = self.run_cli(extra=['--lane','build'])
-            names = [e['name'] for e in result['entries'] if e['requirement']=='required']
+            names = [e['name'] for e in result['entries'] if e['requirement']=='required' and e['name'] != 'gitnexus']
             self.assertEqual(names, ['super-board','super-build', *expected, 'ponytail:ponytail','verification-before-completion','mattpocock-skills:code-review'])
         # A docs chain can be ready while a proposed feature chain is incomplete.
         (self.root / '.claude/skills/implement/SKILL.md').unlink()

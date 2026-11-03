@@ -8,6 +8,10 @@ for tool in bash python3 git jq node curl tar; do
   command -v "$tool" >/dev/null || { echo "Missing test dependency: $tool" >&2; exit 1; }
 done
 
+# A required lane tool the suites never really run, so a checkout without it still tests.
+stub=$(mktemp -d); trap 'rm -rf "$stub"' EXIT
+printf '#!/bin/sh\n' > "$stub/gitnexus"; chmod +x "$stub/gitnexus"; export PATH="$stub:$PATH"
+
 shopt -s nullglob
 suites=(tests/test-*.sh tests/test_*.py)
 [ "${#suites[@]}" -gt 0 ] || { echo 'No safety suites found' >&2; exit 1; }

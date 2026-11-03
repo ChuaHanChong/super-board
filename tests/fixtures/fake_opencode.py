@@ -31,7 +31,7 @@ with open(os.environ['SB_OPENCODE_TEST_LOG'], 'a') as log:
     counter = Path(os.environ['SB_OPENCODE_TEST_LOG'] + '.active')
     active = int(counter.read_text()) + 1 if counter.exists() else 1
     counter.write_text(str(active))
-    log.write(json.dumps(dict(args=args[:-1], prompt=prompt, number=card['number'], lane=lane, active=active, gitnexus_home=os.environ.get('GITNEXUS_HOME'))) + '\n')
+    log.write(json.dumps(dict(args=args[:-1], prompt=prompt, number=card['number'], lane=lane, active=active)) + '\n')
 if os.environ.get('SB_OPENCODE_TEST_SLEEP'):
     descendant = subprocess.Popen(['sleep', '60'])
     Path(os.environ['SB_OPENCODE_TEST_PID']).write_text(str(descendant.pid))
