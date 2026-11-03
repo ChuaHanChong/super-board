@@ -47,6 +47,7 @@ class Paper2Code(unittest.TestCase):
         self.assertIn('--with-paper2code', resolver.paper2code_runtime(self.project, 'codex')['error'])
         self.install()
         self.assertTrue(resolver.paper2code_runtime(self.project, 'claude')['ready'])
+        self.assertTrue(resolver.paper2code_runtime(self.project, 'opencode')['ready'])
         (self.project / '.agents/lib/paper2code/codes/1_planning.py').unlink()
         self.assertFalse(resolver.paper2code_runtime(self.project, 'claude')['ready'])
         self.assertIn('codex, claude or opencode', resolver.paper2code_runtime(self.project, 'gemini')['error'])

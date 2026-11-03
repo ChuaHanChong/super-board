@@ -177,6 +177,10 @@ class Readiness(unittest.TestCase):
         """Halt a research card before claim when alphaXiv is not configured."""
         entries = {entry['name']: entry['status'] for entry in self.research_card(gitnexus=True, alphaxiv=False)}
         self.assertEqual((entries['gitnexus'], entries['alphaxiv']), ('resolved', 'missing'))
+        with mock.patch.dict(os.environ, PATH=str(self.root / 'tools') + os.pathsep + '/usr/bin:/bin'):
+            for lane in ('qa', 'review'):
+                names = [entry['name'] for entry in self.run_cli(extra=['--lane', lane], expected=10)['entries']]
+                self.assertIn('alphaxiv', names)
 
     def test_paper2code_opt_in_keeps_the_label_chain(self) -> None:
         """Add the optional capability without replacing ordinary Builder helpers."""

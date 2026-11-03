@@ -42,7 +42,8 @@ Use the existing issue worktree and branch; Builder owns integration, tests, PRs
    ```
 
    On a Claude lane run each line as its own command, with the variables expanded and `PAPER2CODE_BACKEND=claude` as its prefix: the allowlist cannot match `export` or `$P`.
-   For LaTeX input use `--paper_format LaTeX --pdf_latex_path <paper.tex>`; set `PAPER2CODE_MODEL` only when a model is explicitly selected.
+   For LaTeX input use `--paper_format LaTeX --pdf_latex_path <paper.tex>`; set `PAPER2CODE_MODEL` only when a model is explicitly selected, or on an OpenCode lane to the board's `opencode.model`, which does not reach nested stages by itself.
+   Run the lane host's own backend on Codex and OpenCode lanes: their write jails do not grant another CLI's state.
    Calls have no timeout and do not retry, so run long stages in the background; a transient capacity error fails the stage, and rerunning that stage is safe.
    The scripts write `artifacts/` and `candidate/`; they do not run generated commands or integrate candidate files.
    Any nonzero exit, including a missing login or an interruption, is failure, never permission to advance to QA.

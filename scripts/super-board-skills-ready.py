@@ -407,12 +407,14 @@ def paper2code_runtime(root: str | Path, host: str) -> dict:
     return dict(ready=True, python=str(python))
 
 
+PROBE_TIMEOUT_SECONDS = 60  # matches the lane's `opencode debug paths` bound
+
+
 def research_tools(host: str) -> dict:
-    """Probe alphaXiv through the host: connected on Claude and OpenCode, enabled and reachable on Codex, which cannot probe."""
+    """Probe alphaXiv through the host: connected on Claude and OpenCode, enabled and reachable on Codex."""
     command = ['opencode', 'mcp', 'list'] if host == 'opencode' else [host, 'mcp', 'get', 'alphaxiv']
-    # 60s matches the lane's `opencode debug paths` bound.
     try:
-        output = subprocess.run(command, capture_output=True, text=True, timeout=60)
+        output = subprocess.run(command, capture_output=True, text=True, timeout=PROBE_TIMEOUT_SECONDS)
         if host == 'claude':
             connected = output.returncode == 0 and 'Connected' in output.stdout
         elif host == 'opencode':
@@ -420,7 +422,7 @@ def research_tools(host: str) -> dict:
         else:
             url = re.search(r'url: (\S+)', output.stdout)
             connected = output.returncode == 0 and 'enabled: false' not in output.stdout and url is not None and subprocess.run(
-                ['curl', '-s', '-o', os.devnull, '-m', '60', '-X', 'POST', url[1]], capture_output=True, timeout=70).returncode == 0  # any HTTP status counts
+                ['curl', '-s', '-o', os.devnull, '-X', 'POST', url[1]], capture_output=True, timeout=PROBE_TIMEOUT_SECONDS).returncode == 0  # any HTTP status counts; Codex has no login probe
     except (OSError, subprocess.TimeoutExpired):
         connected = False
     return {'alphaxiv': connected}
@@ -476,7 +478,7 @@ def report(root, host, cards=None, profile=None, lane=None, require=(), home=Non
                                 resolved_path=None, visible_path=None, fallback=None))
     return dict(ready=not any(entry['status'] == 'missing' for entry in entries), host=host, entries=entries,
                 searched_surfaces=list(dict.fromkeys([str(path) for path in inventory.roots] + inventory.metadata_surfaces)),
-                remediation='Install the exact missing skills in a visible host surface, install gitnexus on PATH, add the alphaxiv MCP server to the host, or supply an enabled active catalog, then restart explicitly.')
+                remediation='Install the exact missing skills in a visible host surface, install gitnexus on PATH, add or log in to the alphaxiv MCP server on the host, or supply an enabled active catalog, then restart explicitly.')
 
 
 def hydrate(cards, root):
