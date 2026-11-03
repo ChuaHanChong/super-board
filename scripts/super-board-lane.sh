@@ -59,6 +59,7 @@ class Codex:
                    '-c', 'default_permissions="super-board-lane"',
                    '-c', 'permissions.super-board-lane.filesystem=' + grants,
                    '-c', 'permissions.super-board-lane.network.enabled=true',
+                   '-c', 'shell_environment_policy.set.GITNEXUS_HOME=' + json.dumps(str(run['gitnexus_home'])),
                    '--output-schema', str(run['schema_path']), '--output-last-message', str(run['output']), '-']
         if run['installation_id'] is not None:
             command[2:2] = ['-c', 'shell_environment_policy.set.CODEX_HOME=' + json.dumps(str(run['installation_id'].parent))]
@@ -291,6 +292,7 @@ Read .claude/skills/{skill}/SKILL.md and .claude/skills/super-board/references/r
 Source .claude/bin/super-board-gh-guard.sh and use its quota checks. Required GitHub reads go through .claude/bin/super-board-github-read.py; a read that misses its --kind shape exits 64 for that call only and prints the valid form, so fix the read. A --kind diff read needs --meta <file> from a --kind metadata read first. Check --check before new writes, migrations and merges; exit 79 means status=halted, no more GitHub calls, preserve claims/worktree/card/approval. Never retry a mutation.
 Use .claude/bin/super-board-card.sh for board reads/moves and .claude/bin/super-board-pr-body.sh for owned PR blocks; follow writing-standard.md and pr-author-notes.md.
 Use your own worktree under .claude/worktrees/; never edit the main checkout. Clean up on ordinary exit, preserve work on halt/interruption.
+GitNexus here is CLI-only: GITNEXUS_HOME is private to this lane, so MCP tools and gitnexus:// resources cannot see its index; see gitnexus-lanes.md rule 3.
 {backend.label} adaptation: do not launch Claude or other sub-agents. Perform preflight, classification, independent review and truth-check duties inline. This changes the execution host, never the evidence requirements, confidence threshold or merge policy.
 Return JSON: status=advanced|bounced|blocked|human-gate|failed|halted; column=current board column; detail=one line; prUrl/branch when known, otherwise null; priorFindings=review counts or null. A non-advanced exit ends this card's lane chain. On merge-gate exit 9, return status=halted with detail starting exactly "verification-readiness:"; preserve work and never bounce/retry.
 '''
@@ -344,12 +346,15 @@ signal.signal(signal.SIGTERM, interrupted)
 signal.signal(signal.SIGINT, interrupted)
 with tempfile.TemporaryDirectory(prefix=f'super-board-{backend.name}-') as temporary:
     run = dict(root=root, git_dir=git_dir, common_dir=common_dir, model=model, prompt=prompt, installation_id=installation_id,
-               schema_path=Path(temporary) / 'schema.json', output=Path(temporary) / 'result.json')
+               schema_path=Path(temporary) / 'schema.json', output=Path(temporary) / 'result.json',
+               gitnexus_home=Path(temporary) / 'gitnexus')
     run['schema_path'].write_text(json.dumps(schema))
     command, stdin = backend.command(run)
     try:
+        # Sandboxed lanes cannot write ~/.gitnexus; a plain `gitnexus analyze` exits 1 there.
         child = subprocess.Popen(command, stdin=subprocess.PIPE if stdin is not None else subprocess.DEVNULL,
-                                 stdout=subprocess.PIPE if backend.capture_stdout else sys.stderr, text=True)
+                                 stdout=subprocess.PIPE if backend.capture_stdout else sys.stderr, text=True,
+                                 env={**os.environ, 'GITNEXUS_HOME': str(run['gitnexus_home'])})
         stdout, _ = child.communicate(stdin)
         require_verification_ready()
         if child.returncode:

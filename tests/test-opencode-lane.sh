@@ -48,6 +48,7 @@ RC=0; lane build >"$T/out" || RC=$?
 
 lane review --opencode >"$T/out"
 jq -e '.status == "advanced" and .column == "Done"' "$T/out" >/dev/null || fail 'explicit review allowed'
+tail -1 "$SB_OPENCODE_TEST_LOG" | jq -e '.gitnexus_home | test("super-board-opencode-.*/gitnexus$")' >/dev/null || fail 'lane needs a private GITNEXUS_HOME'
 python3 - "$SB_OPENCODE_TEST_LOG" <<'PY' || fail 'lane argv keeps the headless jail contract'
 import json, pathlib, sys
 call = json.loads(pathlib.Path(sys.argv[1]).read_text().splitlines()[-1])
