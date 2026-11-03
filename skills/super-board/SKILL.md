@@ -44,8 +44,8 @@ In Codex the skill is not a slash command: it is `$super-board <verb>`, found in
 
 super-board is an **autonomous trader**. The interactive Claude session that invokes any of the five verbs is an **orchestrator**, not a worker. The orchestrator:
 
-- Validates preconditions, then dispatches per the config's `worker_backend`: `"workflow"` (default) → stay in-session and run the wave loop in `references/run-workflow.md` (launch workflow, reconcile, repeat); `"claude-p"` (legacy, explicit opt-in only) → `nohup .claude/bin/super-board-run.sh`, report PID + log path, exit. Explicit `--codex` overrides either backend with headless Codex waves; so does a host with no Workflow tool, or `bash .claude/bin/super-board-host.sh` printing `codex`. The orchestrator never does product work itself.
-- Delegates all build / QA / review work to workers — headless `claude -p` (claude-p backend), workflow lane agents (workflow backend), or headless `codex exec` (explicit `--codex`).
+- Validates preconditions, then dispatches per the config's `worker_backend`: `"workflow"` (default) → stay in-session and run the wave loop in `references/run-workflow.md` (launch workflow, reconcile, repeat); `"claude-p"` (legacy, explicit opt-in only) → `nohup .claude/bin/super-board-run.sh`, report PID + log path, exit. Explicit `--codex` or `--opencode` overrides either backend with headless waves; so does a host with no Workflow tool, or `bash .claude/bin/super-board-host.sh` printing `codex`/`opencode`. The orchestrator never does product work itself.
+- Delegates all build / QA / review work to workers — headless `claude -p` (claude-p backend), workflow lane agents (workflow backend), headless `codex exec` (explicit `--codex`), or headless `opencode run` (explicit `--opencode`).
 - Must NOT do product work itself, must NOT patch the dispatcher mid-run, must NOT wait for workers, must NOT hold context for multi-card progress.
 
 If anything goes wrong during a run, the orchestrator captures the symptom and reports back — it does not silently expand the task into a fix. See `references/run.md` "Orchestrator delegation contract" for the full rule.

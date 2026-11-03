@@ -17,6 +17,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import shutil
 import signal
 import stat
 import subprocess
@@ -70,10 +71,99 @@ class Codex:
         return run['output'].read_text()
 
 
+def write_grants(run):
+    """Directories an OpenCode lane may write: the repo, its git dirs, tmp, and OpenCode's own state."""
+    grants = [run['root'], run['git_dir'], run['common_dir'], Path(tempfile.gettempdir()),
+              Path(run['schema_path']).parent]
+    try:
+        listing = subprocess.run(['opencode', 'debug', 'paths'], capture_output=True, text=True,
+                                 timeout=60, check=True).stdout
+    except (OSError, subprocess.SubprocessError) as error:
+        raise ValueError(f'cannot read OpenCode state paths ({error}); refusing an unjailed lane') from error
+    # `home` and `db` are skipped on purpose: the home directory is the whole machine,
+    # and the database sits under `data`, which is already granted.
+    state = [Path(parts[1]) for parts in (line.split() for line in listing.splitlines())
+             if len(parts) >= 2 and parts[0] in {'data', 'cache', 'config', 'state', 'tmp', 'log', 'bin'}]
+    if not state:
+        raise ValueError('opencode debug paths printed nothing usable; refusing an unjailed lane')
+    for path in state:
+        path.mkdir(parents=True, exist_ok=True)  # inside the jail these dirs must already exist
+    return [path.resolve() for path in grants + state]
+
+
+def jailed(run, argv):
+    """Wrap argv in an OS write jail limited to write_grants, so a lane cannot write outside its workspace."""
+    grants = write_grants(run)
+    if sys.platform == 'darwin':
+        executable = shutil.which('sandbox-exec') or '/usr/bin/sandbox-exec'
+        if not Path(executable).exists():
+            raise ValueError('OpenCode lanes need sandbox-exec, which macOS ships; refusing an unjailed lane')
+        rules = ' '.join(f'(subpath "{path}")' for path in grants)
+        # Device nodes stay writable: every shell and git opens /dev/null, /dev/fd and /dev/tty.
+        devices = ('(literal "/dev/null") (literal "/dev/zero") (literal "/dev/stdout") '
+                   '(literal "/dev/stderr") (literal "/dev/tty") (literal "/dev/dtracehelper") '
+                   '(subpath "/dev/fd")')
+        profile = Path(run['schema_path']).parent / 'write.sb'
+        profile.write_text(f'(version 1)\n(allow default)\n(deny file-write*)\n'
+                           f'(allow file-write* {rules})\n(allow file-write* {devices})\n')
+        return [executable, '-f', str(profile)] + argv
+    # shortcut: these bubblewrap arguments are unverified on Linux here; the first Linux run must
+    # prove that a write outside the grants fails.
+    if not shutil.which('bwrap'):
+        raise ValueError('OpenCode lanes need bubblewrap (bwrap) on Linux; refusing an unjailed lane')
+    command = ['bwrap', '--ro-bind', '/', '/', '--dev', '/dev', '--proc', '/proc']
+    for path in grants:
+        command += ['--bind', str(path), str(path)]
+    return command + ['--chdir', str(run['root']), '--'] + argv
+
+
+class OpenCode:
+    """`opencode run --format json` inside an OS write jail; the last text part is the lane result."""
+    name, label = 'opencode', 'OpenCode'
+    LADDERS = None  # provider model names are per board; opencode.model is the only pin
+    capture_stdout = True
+
+    def command(self, run):
+        """(argv, stdin text) for one lane run; the prompt rides as the message argument."""
+        argv = ['opencode', 'run', '--format', 'json', '--standalone', '--auto']
+        if run['model'] and run['model'].strip():
+            argv += ['--model', run['model']]
+        return jailed(run, argv + [run['prompt']]), None
+
+    def final_message(self, run, stdout):
+        """The last assistant text event, reduced to the JSON object the lane contract requires."""
+        for line in reversed(stdout.splitlines()):
+            try:
+                event = json.loads(line)
+            except ValueError:
+                continue
+            part = event.get('part') if isinstance(event, dict) else None
+            if isinstance(part, dict) and part.get('type') == 'text' and isinstance(part.get('text'), str):
+                return json.dumps(lane_result(part['text']))
+        raise ValueError('OpenCode returned no text event')
+
+
+def lane_result(text):
+    """The last complete JSON object in a reply; OpenCode sometimes narrates before it."""
+    found, decoder = None, json.JSONDecoder()
+    for index, character in enumerate(text):
+        if character != '{':
+            continue
+        try:
+            value, _ = decoder.raw_decode(text[index:])
+        except ValueError:
+            continue
+        if isinstance(value, dict):
+            found = value
+    if found is None:
+        raise ValueError('OpenCode reply held no JSON object')
+    return found
+
+
 # One entry per worker host. A new host is one more class with the same members:
 # name, label, LADDERS (or None), capture_stdout (True hands stdout to final_message),
 # command(run) and final_message(run, stdout). Everything else in this file is shared.
-BACKENDS = {backend.name: backend for backend in [Codex()]}
+BACKENDS = {backend.name: backend for backend in [Codex(), OpenCode()]}
 
 raw = sys.argv[2:]
 choice = None
