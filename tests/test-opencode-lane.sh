@@ -48,7 +48,6 @@ RC=0; lane build >"$T/out" || RC=$?
 
 lane review --opencode >"$T/out"
 jq -e '.status == "advanced" and .column == "Done"' "$T/out" >/dev/null || fail 'explicit review allowed'
-tail -1 "$SB_OPENCODE_TEST_LOG" | jq -e '.gitnexus_home | test("super-board-opencode-.*/gitnexus$")' >/dev/null || fail 'lane needs a private GITNEXUS_HOME'
 python3 - "$SB_OPENCODE_TEST_LOG" <<'PY' || fail 'lane argv keeps the headless jail contract'
 import json, pathlib, sys
 call = json.loads(pathlib.Path(sys.argv[1]).read_text().splitlines()[-1])
@@ -86,6 +85,7 @@ profile, repo, home = pathlib.Path(sys.argv[1]).read_text(), str(pathlib.Path(sy
 assert '(deny file-write*)' in profile and '(allow default)' in profile, profile
 assert f'(subpath "{repo}")' in profile, 'the repo must be writable'
 assert f'(subpath "{home}")' not in profile, 'the home directory must not be writable'
+assert '/.gitnexus")' in profile, 'the lane must be able to write the GitNexus home'
 assert '(subpath "/private/' in profile or '(subpath "/Users/' in profile, 'paths must be canonical'
 assert '(literal "/dev/null")' in profile, 'git and every shell need /dev/null inside the jail'
 PY

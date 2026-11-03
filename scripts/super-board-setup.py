@@ -95,6 +95,9 @@ TOOLS = {
     "node": ("the helper installer; actual skill files are checked separately",
              {"mac": "brew install node", "apt": "sudo apt-get install -y nodejs npm",
               "dnf": "sudo dnf install -y nodejs npm", "win": "winget install --id OpenJS.NodeJS.LTS -e"}),
+    "gitnexus": ("every code card indexes its worktree with it",
+                 {"mac": "npm install -g gitnexus", "apt": "sudo npm install -g gitnexus",
+                  "dnf": "sudo npm install -g gitnexus", "win": "npm install -g gitnexus"}),
 }
 
 
@@ -336,7 +339,7 @@ def check(root, pack, host="claude", home=None, catalog=None):
     from_v = upgrade_rec.get("from") or (have_v if have_v and pack_version and vtuple(have_v) < vtuple(pack_version) else None)
     fam = os_family()
     needs = []
-    for t in ("git", "gh", "jq", "node"):
+    for t in ("git", "gh", "jq", "node", "gitnexus"):
         if not have(t if t != "node" else "npx"):
             why, cmds = TOOLS[t]
             cmd = cmds[fam]

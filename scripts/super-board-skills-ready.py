@@ -408,7 +408,7 @@ def paper2code_runtime(root: str | Path, host: str) -> dict:
 
 
 def research_tools(host: str) -> dict:
-    """Check what a research card needs: gitnexus on PATH and alphaXiv in the host's MCP config."""
+    """Check what a research card needs on top of gitnexus: alphaXiv in the host's MCP config."""
     command = ['opencode', 'mcp', 'list'] if host == 'opencode' else [host, 'mcp', 'get', 'alphaxiv']
     try:
         # These can probe the server live; 60s matches the lane's `opencode debug paths` bound.
@@ -416,7 +416,7 @@ def research_tools(host: str) -> dict:
         configured = process.returncode == 0 and 'alphaxiv' in process.stdout
     except (OSError, subprocess.TimeoutExpired):
         configured = False
-    return {'gitnexus': shutil.which('gitnexus') is not None, 'alphaxiv': configured}
+    return {'alphaxiv': configured}
 
 
 def report(root, host, cards=None, profile=None, lane=None, require=(), home=None, catalog=None):
@@ -456,15 +456,20 @@ def report(root, host, cards=None, profile=None, lane=None, require=(), home=Non
                                     source='boundary: installed Paper2Code runtime', status='resolved' if runtime['ready'] else 'missing',
                                     resolved_path=runtime.get('python'), visible_path=None, fallback=None,
                                     error=runtime.get('error'), runtime=runtime))
-        if re.search(r'^## Papers\s*$', card.get('body') or '', re.M) and any(current == 'build' for current, *_ in chain):
+        research = re.search(r'^## Papers\s*$', card.get('body') or '', re.M)
+        needed = {}
+        if not profile and (research or 'docs' not in labels_of(card)):  # setup's sample card is not a real card; `check` reports the tool
+            needed['gitnexus'] = shutil.which('gitnexus') is not None
+        if research and any(current == 'build' for current, *_ in chain):
             tools = tools or research_tools(host)  # the Claude probe takes seconds; one per report, not per card
-            for name, found in tools.items():
-                entries.append(dict(card=card['number'], lane='build', name=name, requirement='required',
-                                    source='boundary: research card (## Papers)', status='resolved' if found else 'missing',
-                                    resolved_path=None, visible_path=None, fallback=None))
+            needed.update(tools)
+        for name, found in needed.items():
+            entries.append(dict(card=card['number'], lane=lane or 'all', name=name, requirement='required',
+                                source='boundary: code or research card', status='resolved' if found else 'missing',
+                                resolved_path=None, visible_path=None, fallback=None))
     return dict(ready=not any(entry['status'] == 'missing' for entry in entries), host=host, entries=entries,
                 searched_surfaces=list(dict.fromkeys([str(path) for path in inventory.roots] + inventory.metadata_surfaces)),
-                remediation='Install the exact missing skills or research tools (gitnexus, the alphaxiv MCP server) in a visible host surface or supply an enabled active catalog, then restart explicitly.')
+                remediation='Install the exact missing skills in a visible host surface, install gitnexus on PATH, add the alphaxiv MCP server to the host, or supply an enabled active catalog, then restart explicitly.')
 
 
 def hydrate(cards, root):

@@ -57,7 +57,7 @@ optional `opencode.model`, else the provider default. `--tier` is accepted and i
 Launch the same helper with the OpenCode flag:
 `bash .claude/bin/super-board-codex-wave.sh --config <config-path> --cards <claimed-cards.json> --opencode[=<model>] --output <wave-result.json>`.
 Each lane is `opencode run --format json --standalone --auto` wrapped in an OS write jail
-(Seatbelt on macOS, bubblewrap on Linux): writes reach the worktree, tmp and OpenCode's own
+(Seatbelt on macOS, bubblewrap on Linux): writes reach the worktree, tmp, the GitNexus home and OpenCode's own
 state dirs only, because OpenCode's own permission rules do not stop a `bash` tool from
 writing elsewhere. No `--output-schema` flag exists, so the launcher takes the last text
 event, extracts its JSON object and validates it against the lane schema; a reply without

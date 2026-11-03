@@ -49,7 +49,8 @@ class Codex:
         # .git as read-only. Explicit git/common-dir grants also cover submodules.
         # https://learn.chatgpt.com/docs/permissions → File access limited to workspace
         filesystem = {':root': 'read', ':slash_tmp': 'write', ':tmpdir': 'write',
-                      str(run['root']): 'write', str(run['git_dir']): 'write', str(run['common_dir']): 'write'}
+                      str(run['root']): 'write', str(run['git_dir']): 'write', str(run['common_dir']): 'write',
+                      str(run['gitnexus_home']): 'write'}
         if run['installation_id'] is not None:
             # Codex v0.165.0 opens this nonsecret ID read/write before app-server startup.
             # https://github.com/openai/codex/blob/rust-v0.165.0/codex-rs/core/src/installation_id.rs#L20-L29
@@ -59,8 +60,9 @@ class Codex:
                    '-c', 'default_permissions="super-board-lane"',
                    '-c', 'permissions.super-board-lane.filesystem=' + grants,
                    '-c', 'permissions.super-board-lane.network.enabled=true',
-                   '-c', 'shell_environment_policy.set.GITNEXUS_HOME=' + json.dumps(str(run['gitnexus_home'])),
                    '--output-schema', str(run['schema_path']), '--output-last-message', str(run['output']), '-']
+        if os.environ.get('GITNEXUS_HOME'):  # a custom home must reach the shell, or `analyze` writes the ungranted default
+            command[2:2] = ['-c', 'shell_environment_policy.set.GITNEXUS_HOME=' + json.dumps(str(run['gitnexus_home']))]
         if run['installation_id'] is not None:
             command[2:2] = ['-c', 'shell_environment_policy.set.CODEX_HOME=' + json.dumps(str(run['installation_id'].parent))]
         if run['model'] and run['model'].strip():
@@ -73,9 +75,9 @@ class Codex:
 
 
 def write_grants(run):
-    """Directories an OpenCode lane may write: the repo, its git dirs, tmp, and OpenCode's own state."""
+    """Directories an OpenCode lane may write: the repo, its git dirs, tmp, the GitNexus home, and OpenCode's own state."""
     grants = [run['root'], run['git_dir'], run['common_dir'], Path(tempfile.gettempdir()),
-              Path(run['schema_path']).parent]
+              Path(run['schema_path']).parent, run['gitnexus_home']]
     try:
         listing = subprocess.run(['opencode', 'debug', 'paths'], capture_output=True, text=True,
                                  timeout=60, check=True).stdout
@@ -250,6 +252,9 @@ if not helper.exists() or subprocess.run([sys.executable, str(helper), '--check'
 
 resolver_path = script_path.with_name('super-board-skills-ready.py')
 try:
+    # The lane's CLI and the host's MCP server must share one index; a sandbox denies this home by default.
+    gitnexus_home = Path(os.environ.get('GITNEXUS_HOME') or Path.home() / '.gitnexus').resolve()
+    gitnexus_home.mkdir(parents=True, exist_ok=True)
     spec = importlib.util.spec_from_file_location('skills_ready', resolver_path)
     resolver = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(resolver)
@@ -292,7 +297,6 @@ Read .claude/skills/{skill}/SKILL.md and .claude/skills/super-board/references/r
 Source .claude/bin/super-board-gh-guard.sh and use its quota checks. Required GitHub reads go through .claude/bin/super-board-github-read.py; a read that misses its --kind shape exits 64 for that call only and prints the valid form, so fix the read. A --kind diff read needs --meta <file> from a --kind metadata read first. Check --check before new writes, migrations and merges; exit 79 means status=halted, no more GitHub calls, preserve claims/worktree/card/approval. Never retry a mutation.
 Use .claude/bin/super-board-card.sh for board reads/moves and .claude/bin/super-board-pr-body.sh for owned PR blocks; follow writing-standard.md and pr-author-notes.md.
 Use your own worktree under .claude/worktrees/; never edit the main checkout. Clean up on ordinary exit, preserve work on halt/interruption.
-GitNexus here is CLI-only: GITNEXUS_HOME is private to this lane, so MCP tools and gitnexus:// resources cannot see its index; see gitnexus-lanes.md rule 3.
 {backend.label} adaptation: do not launch Claude or other sub-agents. Perform preflight, classification, independent review and truth-check duties inline. This changes the execution host, never the evidence requirements, confidence threshold or merge policy.
 Return JSON: status=advanced|bounced|blocked|human-gate|failed|halted; column=current board column; detail=one line; prUrl/branch when known, otherwise null; priorFindings=review counts or null. A non-advanced exit ends this card's lane chain. On merge-gate exit 9, return status=halted with detail starting exactly "verification-readiness:"; preserve work and never bounce/retry.
 '''
@@ -346,15 +350,12 @@ signal.signal(signal.SIGTERM, interrupted)
 signal.signal(signal.SIGINT, interrupted)
 with tempfile.TemporaryDirectory(prefix=f'super-board-{backend.name}-') as temporary:
     run = dict(root=root, git_dir=git_dir, common_dir=common_dir, model=model, prompt=prompt, installation_id=installation_id,
-               schema_path=Path(temporary) / 'schema.json', output=Path(temporary) / 'result.json',
-               gitnexus_home=Path(temporary) / 'gitnexus')
+               schema_path=Path(temporary) / 'schema.json', output=Path(temporary) / 'result.json', gitnexus_home=gitnexus_home)
     run['schema_path'].write_text(json.dumps(schema))
     command, stdin = backend.command(run)
     try:
-        # Sandboxed lanes cannot write ~/.gitnexus; a plain `gitnexus analyze` exits 1 there.
         child = subprocess.Popen(command, stdin=subprocess.PIPE if stdin is not None else subprocess.DEVNULL,
-                                 stdout=subprocess.PIPE if backend.capture_stdout else sys.stderr, text=True,
-                                 env={**os.environ, 'GITNEXUS_HOME': str(run['gitnexus_home'])})
+                                 stdout=subprocess.PIPE if backend.capture_stdout else sys.stderr, text=True)
         stdout, _ = child.communicate(stdin)
         require_verification_ready()
         if child.returncode:
