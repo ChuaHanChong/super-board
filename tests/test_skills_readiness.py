@@ -145,6 +145,11 @@ class Readiness(unittest.TestCase):
         entries = {entry['name']: entry['status'] for entry in self.research_card(gitnexus=True, alphaxiv=False)}
         self.assertEqual((entries['gitnexus'], entries['alphaxiv']), ('resolved', 'missing'))
 
+    def test_research_tools_never_set_a_path_to_load(self) -> None:
+        """Keep tool entries out of the resolved_path files a lane loads."""
+        entries = self.research_card(gitnexus=True, alphaxiv=True)
+        self.assertEqual([e['resolved_path'] for e in entries if e['name'] in ('gitnexus', 'alphaxiv')], [None, None])
+
     def test_paper2code_opt_in_keeps_the_label_chain(self) -> None:
         """Add the optional capability without replacing ordinary Builder helpers."""
         self.full()

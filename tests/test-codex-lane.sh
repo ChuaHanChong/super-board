@@ -53,6 +53,7 @@ RC=0; lane review >"$T/out" || RC=$?
 lane review --codex >"$T/out"
 jq -e '.status == "advanced" and .column == "Done"' "$T/out" >/dev/null || fail 'explicit review allowed'
 tail -1 "$SB_CODEX_TEST_LOG" | jq -e '.args | any(test("shell_environment_policy.set.GITNEXUS_HOME=.*super-board-codex-.*/gitnexus"))' >/dev/null || fail 'lane needs a private GITNEXUS_HOME'
+grep -q 'GitNexus here is CLI-only' "$SB_CODEX_TEST_LOG" || fail 'lane must be told GitNexus is CLI-only'
 grep -q -- '--expect-head' "$SB_CODEX_TEST_LOG" || fail 'review must pin reviewed head to merge gate'
 grep -q 'Never run bare gh pr merge' "$SB_CODEX_TEST_LOG" || fail 'review must keep merge protocol'
 [ "$(last_model)" = default ] || fail 'no model uses Codex default'
