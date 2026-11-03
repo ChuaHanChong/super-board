@@ -483,6 +483,7 @@ These run in Phase 1 regression alongside `e2e/paths/`.
 Issue-scoped mode only (super-board Tester, or any run handed a finished diff). The
 Builder's tests answer "does it do what I built?"; this answers "what breaks silently?".
 Scope is the diff: `git diff --name-only $(git merge-base HEAD origin/<base>)...HEAD`.
+On a code card, also use the QA rows of [gitnexus-lanes.md](../super-build/references/gitnexus-lanes.md).
 On auth, money, data-loss or security changes, hand steps 1-3 to a read-only sub-agent
 given only the ACs, the range and the changed-file list, so it is not anchored on the
 Builder's reasoning.

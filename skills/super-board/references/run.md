@@ -316,6 +316,7 @@ column), never built unchecked. `qa` cards are not pre-flighted: nothing is buil
     with GitNexus, locate the code in both, and record the evidence in the PR.
     With the explicit `super-paper2code` capability token, then follow `../../super-paper2code/SKILL.md` in this same issue worktree before integrating selected candidate files.
     Failed, malformed, or interrupted generation preserves its artifacts and prevents advancement to QA; ordinary research cards do not invoke the capability.
+3d. Code card? Follow `../../super-build/references/gitnexus-lanes.md`: index the worktree, then run the row for its label.
 4. Implement smallest safe change covering ACs, under the PR size cap
    (`merge_policy.auto_max_lines`, default 400 changed lines). Growing past it mid-build → stop,
    push what you have, propose the split (vertical slices via `/to-tickets`) in a PR comment and
@@ -352,6 +353,7 @@ For Paper2Code cards, preserve the earlier candidate evidence and use a fresh di
 for affected feature selection, actual host readiness and new run-owned proof.
 Record uncovered/stale optional coverage alongside ordinary issue AC checks.
 4b. **Test-gap check** (super-qa → "Test-gap check (after build)"): map every AC to unit / component / e2e tests, hunt edge cases, write the High gaps red-first. A High gap that needs app code changed → Fail (step 7) with the gap list. Medium/Low go in the handoff under `Test gaps (not written)`.
+   Code card: both this check and the next also use the QA rows of `../../super-build/references/gitnexus-lanes.md`.
 4c. **Security pass** (super-qa → "Security pass (every PR)"): run `pr-security-review` on the PR's diff against its base. Each kept finding is a failing check → Fail (step 7) with a `[builder]` thread on its file:line. Skill missing → Block.
 5. Run the tests. Capture evidence to `docs/super-board/runs/issue-<N>-qa-v<N>/`. For UI/visual ACs, capture screenshots at the standard viewports (1920×1080 desktop, 1024×768 tablet, 375×667 mobile). Commit the screenshots to the issue branch BEFORE writing the comment (the markdown image URLs depend on the files being present on the branch).
 6. **Pass** → commit test files + screenshots to same branch + push → tick the `ac` block with proof lines, write `visual` for UI, append a `history` row, rewrite `status` → `[qa] [report] ✅` PR comment with results + evidence path **+ inline screenshot embeds** (see "Screenshot embed format" below) → issue comment with the SAME inline screenshot embeds → move card QA → Review. Clean up worktree.
@@ -402,6 +404,7 @@ If a screenshot file is >5MB, downscale to ≤1920px wide before committing; Git
    - Both open → bounce to whichever is older; the other gets picked up later.
    - Clean up worktree, exit.
 3. Read the issue ACs and the raw diff (code + test files) FIRST and write 2–4 hypotheses of your own — what must hold, where it would break. Only then read the PR description, the `[builder] [report]` comment and Tester's handoff, and check each claim like a hypothesis. Spot-check Tester's evidence (one screenshot at least), read CLAUDE.md / AGENTS.md.
+   Code card: also run the Review rows of `../../super-build/references/gitnexus-lanes.md`.
    Research card (`## Papers`): also run the research checks in super-review → "Two card types".
 3b. **Prior-report check (review remembers — added 2.5.0).** Load the last Reviewer report on this PR as `prior_report`. One call:
    ```
