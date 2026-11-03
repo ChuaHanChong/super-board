@@ -55,12 +55,14 @@ other Builder rule still applies: smallest safe change, PR size cap, commits, PR
      `none: no usable repo` when step 3 found none;
    - `GitNexus:` each query, labelled `ref` or `dev`, with the symbol it found, and each
      `impact` target with its risk.
+   - A ticket `needs-you: <command>` line is copied into the PR body unchanged, so the merge gate sees it.
    - For opted-in cards, `Paper2Code:` provenance, completed stages, selected candidate files, and independent verification evidence as required by the capability.
 9. **Clean up** on every exit from the lane, Blocked and split exits included:
    `gitnexus clean --force` in the worktree and in each clone, then `rm -rf <refs>`. The PR
    evidence is the record.
 
-**Rebuild.** Keep the `Papers:` / `Reused:` / `GitNexus:` bullets and any `Paper2Code:` evidence when rewriting `solution`.
+**Rebuild.** Fix bugs only: do not change an AC's threshold, metric, split or seeds, or tune to reach it, unless the ticket allows it. A real result that misses with no bug found → ❓ Blocked with the numbers.
+Keep the `Papers:` / `Reused:` / `GitNexus:` bullets and any `Paper2Code:` evidence when rewriting `solution`.
 For new full generation, use a fresh run directory and preserve the previous candidate and failure records; do not overwrite user work or imply automatic resume.
 Index the new worktree (step 4, this-repo part). A thread that needs reference code → step 3
 at the recorded sha, then steps 4 (reference part) and 5. Run step 6 again for any symbol the
