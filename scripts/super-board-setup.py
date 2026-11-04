@@ -31,7 +31,7 @@ command for this OS, for onboard to ask about.
 
 `board-migrate` is the board half (needs `gh` with project scope): adds the missing
 Status options (--prune-empty also drops unused extras such as a new board's Todo),
-creates the three labels, maps old type labels, labels every card `qa`
+creates the labels, maps old type labels, labels every card `qa`
 on a board that was "qa-only" (--qa-all), moves Skipped cards to Done, removes the Skipped
 option, and puts back any card status the option rewrite cleared. Before any write it saves
 all cards and conversion intent in .claude/super-board/migrations/ (under --root, the config project root, or cwd).
@@ -64,6 +64,7 @@ LABELS = {
     "qa": ("0e8a16", "Test what exists; skips Building (super-board)"),
     "bug": ("d73a4a", "Something is broken; built, tested, reviewed (super-board)"),
     "feature": ("1d76db", "New behaviour; built, tested, reviewed (super-board)"),
+    "needs-you": ("b60205", "Blocked on a human-only step (super-board)"),
 }
 # Type labels from older packs and common trackers → the three v3 labels.
 OLD_LABELS = {
@@ -870,7 +871,7 @@ def prepare_migration(binding, url, qa_all, prune_empty):
                 after.discard(label)
                 after.add(OLD_LABELS[label.lower()])
                 result['labels_mapped'] += 1
-        if qa_all and item['status'] not in ('Done', 'Skipped') and not {n.lower() for n in after} & set(LABELS):
+        if qa_all and item['status'] not in ('Done', 'Skipped') and not {n.lower() for n in after} & (set(LABELS) - {'needs-you'}):
             after.add('qa')
             result['qa_labelled'] += 1
         issue['want'] = sorted(after)
