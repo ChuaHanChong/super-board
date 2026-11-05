@@ -274,7 +274,7 @@ fi
 # Refuse while the named issue still has open boxes: bulk-ticking at merge hides a gap.
 open_claim=""
 for issue in $(jq -r '.body // ""' "$META" \
-    | grep -oiE '(closes|fixes|resolves) +#[0-9]+' \
+    | grep -oiE '^[[:space:]]*(closes|fixes|resolves)[[:space:]]+#[0-9]+' \
     | grep -oE '[0-9]+' | sort -u || true); do
   boxes=$(gh issue view "$issue" ${REPO:+--repo "$REPO"} --json body --jq .body 2>/dev/null \
     | grep '^- \[ \]' || true)

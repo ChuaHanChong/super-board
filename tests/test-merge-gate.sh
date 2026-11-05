@@ -231,6 +231,16 @@ RC=0; STUB_OID="$SHA" gate --expect-head "$SHA" >/dev/null 2>&1 || RC=$?
 grep -q '^pr merge' "$GH_LOG" && fail "no merge may run with stale board tooling"
 teardown
 
+# 9e — prose that mentions "closes #42" is not a closure directive: it must not
+#      read the issue's boxes or block the merge.
+head_setup
+RC=0; STUB_OID="$SHA" \
+  STUB_META='{"files":[],"labels":[],"body":"Phase F closes #42 in the plan.","additions":0,"deletions":0,"changedFiles":0}' \
+  gate --expect-head "$SHA" >/dev/null 2>&1 || RC=$?
+[ "$RC" -eq 0 ] || fail "prose mentioning closes #42 must merge, got $RC"
+grep -q '^issue view' "$GH_LOG" && fail "prose must not trigger the open-box check"
+teardown
+
 # 10 — a push lands during verification: GitHub refuses the pinned merge and the
 #      head has moved, so this is void evidence (6), not branch protection (3).
 head_setup
