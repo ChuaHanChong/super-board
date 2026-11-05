@@ -81,10 +81,23 @@ for n in ${ISSUES//,/ }; do
   TARGETS=$(jq -c --argjson one "$one" '. + [$one]' <<<"$TARGETS")
 done
 
-jq -n --argjson targets "$TARGETS" --argjson merged "$MERGED" --argjson open "$OPEN" \
-      --argjson closed "$CLOSED" --argjson cards "$CARDS" --arg files "$FILES" \
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+printf '%s' "$TARGETS" > "$TMP/targets.json"
+printf '%s' "$MERGED" > "$TMP/merged.json"
+printf '%s' "$OPEN" > "$TMP/open.json"
+printf '%s' "$CLOSED" > "$TMP/closed.json"
+printf '%s' "$CARDS" > "$TMP/cards.json"
+jq -n --rawfile targets "$TMP/targets.json" --rawfile merged "$TMP/merged.json" \
+      --rawfile open "$TMP/open.json" --rawfile closed "$TMP/closed.json" \
+      --rawfile cards "$TMP/cards.json" --arg files "$FILES" \
       --argjson th "$THRESHOLD" '
-  def stop: ["the","and","for","with","from","into","when","that","this","add","fix","make","use","should","not","are","can","new"];
+  ($targets | fromjson) as $targets
+  | ($merged | fromjson) as $merged
+  | ($open | fromjson) as $open
+  | ($closed | fromjson) as $closed
+  | ($cards | fromjson) as $cards
+  | def stop: ["the","and","for","with","from","into","when","that","this","add","fix","make","use","should","not","are","can","new"];
   def toks: ascii_downcase | [scan("[a-z0-9]+")] | map(select(length > 2)) | . - stop | unique;
   def sim($a; $b): ($a | toks) as $x | ($b | toks) as $y
     | if ($x | length) == 0 or ($y | length) == 0 then 0
@@ -93,7 +106,14 @@ jq -n --argjson targets "$TARGETS" --argjson merged "$MERGED" --argjson open "$O
   def closes($n): (.body // "") | test("(?i)\\b(close[sd]?|fix(e[sd])?|resolve[sd]?)[ :]+#" + ($n | tostring) + "\\b");
   def closed_refs: [ (.body // "") | scan("(?i)\\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)[ :]+#([0-9]+)")[0] | tonumber ] | unique;
   def fps: [ (.body // "") | scan("(?m)^[ \t]*fingerprint:[ \t]*([^\n]*[^ \t\n])")[0] ];
-  def paths: [ (.body // "") | scan("[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)+\\.[A-Za-z0-9]+") ] | unique;
+  def section($name): ((.body // "") / "\n") as $l
+    | [ $l | to_entries[] | select(.value | test("^##[ \t]+" + $name)) | .key ] as $h
+    | if ($h | length) == 0 then (.body // "") else
+        [ $l[($h | last) + 1:][] ] as $t
+        | ([ $t | to_entries[] | select(.value | test("^##[ \t]")) | .key ] | first) as $e
+        | (if $e == null then $t else $t[:$e] end) | join("\n")
+      end;
+  def paths: [ section("Where") | scan("[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)+\\.[A-Za-z0-9]+") ] | unique;
   # The AC section: lines after the LAST "## Acceptance Criteria" heading, up to the next "## ".
   def has_acs: ((.body // "") / "\n") as $l
     | [ $l | to_entries[] | select(.value | test("^##[ \t]+Acceptance Criteria")) | .key ] as $h

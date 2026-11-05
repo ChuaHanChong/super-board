@@ -35,6 +35,7 @@ backend = 'opencode' if choice.startswith('--opencode') else 'codex'
 label = {'codex': 'Codex', 'opencode': 'OpenCode'}[backend]
 args = parser.parse_args([arg for arg in raw if arg != choice])
 output_path = Path(args.output).resolve() if args.output else None
+LANE_TIMEOUT = int(os.environ.get('SUPER_BOARD_LANE_TIMEOUT', '1800'))
 launcher = Path(sys.argv[1]).resolve().with_name('super-board-lane.sh')
 try:
     config_path = Path(args.config).resolve()
@@ -101,9 +102,9 @@ halted = threading.Event()
 mutex = threading.RLock()
 active = set()
 inflight = root / '.claude/super-board/inflight'
-marker = root / f'.claude/super-board/{backend}-wave.pid'
-inflight.mkdir(parents=True, exist_ok=True)
 owner = str(os.getpid())
+marker = root / f'.claude/super-board/{backend}-wave-{owner}.pid'
+inflight.mkdir(parents=True, exist_ok=True)
 
 def cancel(signum, frame):
     halted.set()
@@ -125,11 +126,29 @@ def cancel(signum, frame):
 
 signal.signal(signal.SIGTERM, cancel)
 signal.signal(signal.SIGINT, cancel)
-try:
-    with marker.open('x') as stream:
-        stream.write(owner + '\n')
-except FileExistsError:
-    parser.error(f'{label} wave PID marker exists; reconcile the previous wave before starting another')
+def marker_live(path):
+    """True when the marker names a live process for this wave backend."""
+    try:
+        pid = int(path.read_text().strip())
+    except (OSError, ValueError):
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    try:
+        command = Path(f'/proc/{pid}/cmdline').read_bytes().replace(b'\0', b' ').decode('utf-8', 'replace')
+    except OSError:
+        return True
+    return f'super-board-{backend}-wave' in command or f'super-board-codex-wave.sh' in command
+
+for stale in marker.parent.glob(f'{backend}-wave*.pid'):
+    if stale != marker and not marker_live(stale):
+        stale.unlink()
+with marker.open('x') as stream:
+    stream.write(owner + '\n')
 
 # The router only grades scope; it writes nothing. A Codex run grades with the
 # cheapest Codex model rather than waking Claude. OpenCode has no ladder to feed.
@@ -208,11 +227,18 @@ def run_card(card):
                 break
             process = None
             lock = inflight / str(card['number'])
+            expected_column = {'build': 'Building', 'qa': 'QA', 'review': 'Review'}[lane]
+            if current['status'] != expected_column:
+                card_script = launcher.with_name('super-board-card.sh')
+                subprocess.run(['bash', str(card_script), '--config', str(config_path),
+                                'move', str(card['number']), expected_column],
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                current['status'] = expected_column
             try:
                 process = subprocess.Popen(['bash', str(launcher), '--backend', backend, '--config', str(config_path),
                                             '--card', json.dumps(current), '--lane', lane, choice,
                                             '--tier', args.tier] + (['--complexity', complexity] if complexity else []),
-                                           stdout=subprocess.PIPE, text=True, start_new_session=True)
+                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True)
                 active.add(process)
                 lock.write_text(f'PID={process.pid}\nLANE={lane}\nSTARTED={time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}\n')
             except OSError as error:
@@ -228,7 +254,27 @@ def run_card(card):
                 break
         preserve_lock = False
         try:
-            stdout, _ = process.communicate()
+            try:
+                stdout, stderr = process.communicate(timeout=LANE_TIMEOUT)
+            except subprocess.TimeoutExpired:
+                preserve_lock = True
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+                try:
+                    stdout, stderr = process.communicate(timeout=10)
+                except subprocess.TimeoutExpired:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    stdout, stderr = process.communicate()
+                with mutex:
+                    active.discard(process)
+                history.append(dict(lane=lane, status='halted', column=current['status'],
+                                    detail=f'{lane} lane timed out after {LANE_TIMEOUT}s; worktree preserved'))
+                break
             if process.returncode in (9, 10):
                 preserve_lock = True
                 (readiness_halted if process.returncode == 9 else skills_halted).set()
@@ -241,8 +287,9 @@ def run_card(card):
                 if process.returncode and result['status'] != 'halted':
                     raise ValueError(f'lane exited {process.returncode}')
             except (ValueError, TypeError):
+                tail = ' '.join((stderr or '').strip().splitlines()[-1:])[:240]
                 result = dict(status='halted' if process.returncode in (9, 10, 79) or halted.is_set() else 'failed',
-                              column=current['status'], detail=f'{lane} lane returned no valid result (exit {process.returncode})')
+                              column=current['status'], detail=f'{lane} lane returned no valid result (exit {process.returncode})' + (f': {tail}' if tail else ''))
             with mutex:
                 if result['status'] == 'halted':
                     halted.set()

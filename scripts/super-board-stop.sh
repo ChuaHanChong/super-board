@@ -133,13 +133,21 @@ kill_pid() {
     log "  ⊘ ${name} pid=${pid:-empty} already dead"
     return 0
   fi
-  kill -TERM "$pid" 2>/dev/null || true
+  # Lane launchers start a new session, so their pgid is their pid. Signal the
+  # whole group to reap bwrap/opencode children; never signal our own group.
+  local pgid
+  pgid=$(ps -o pgid= -p "$pid" 2>/dev/null | tr -d ' ')
+  if [ "$pgid" = "$pid" ]; then
+    kill -TERM "-$pid" 2>/dev/null || true
+  else
+    kill -TERM "$pid" 2>/dev/null || true
+  fi
   while kill -0 "$pid" 2>/dev/null && [ "$waited" -lt "$grace" ]; do
     sleep 1
     waited=$((waited + 1))
   done
   if kill -0 "$pid" 2>/dev/null; then
-    kill -KILL "$pid" 2>/dev/null || true
+    if [ "$pgid" = "$pid" ]; then kill -KILL "-$pid" 2>/dev/null || true; else kill -KILL "$pid" 2>/dev/null || true; fi
     log "  ☠ ${name} pid=${pid} SIGKILLed (didn't respond to SIGTERM)"
   else
     log "  ☠ ${name} pid=${pid} SIGTERMed"
@@ -166,24 +174,23 @@ fi
 
 DISPATCHER_PIDS=$(pgrep -f 'super-board-run\.sh' 2>/dev/null || true)
 ORPHAN_WORKERS=$(pgrep -f 'claude -p .*super-board' 2>/dev/null || true)
+ORPHAN_LANES=$(pgrep -f 'opencode run .*Run super-(build|qa|review) for issue' 2>/dev/null || true)
 WAVE_PIDS=""
-for host in codex opencode; do
-  WAVE_MARKER=".claude/super-board/$host-wave.pid"
+for WAVE_MARKER in .claude/super-board/codex-wave*.pid .claude/super-board/opencode-wave*.pid; do
   [ -f "$WAVE_MARKER" ] || continue
+  case "$(basename "$WAVE_MARKER")" in codex-*) host=codex ;; *) host=opencode ;; esac
   WAVE_PID=$(cat "$WAVE_MARKER")
   case "$WAVE_PID" in ''|*[!0-9]*)
     log "🛑 invalid $host wave PID marker; preserve claims and inspect $WAVE_MARKER"
     exit 1 ;;
   esac
   if kill -0 "$WAVE_PID" 2>/dev/null; then
-    # Refuse a reused PID, or an unavailable process identity, rather than
-    # signal an unrelated process and release a still-running wave's claims.
     if ! ps -p "$WAVE_PID" -o args= 2>/dev/null | grep -qE "super-board-$host-wave|super-board-codex-wave\.sh.*--$host"; then
       log "🛑 cannot identify $host wave PID $WAVE_PID; preserve claims and inspect $WAVE_MARKER"
       exit 1
     fi
   fi
-  WAVE_PIDS="$WAVE_PIDS $host|$WAVE_PID"
+  WAVE_PIDS="$WAVE_PIDS $host|$WAVE_PID|$WAVE_MARKER"
 done
 
 if [ "${#WORKERS[@]}" -eq 0 ] && [ -z "$DISPATCHER_PIDS" ] && [ -z "$ORPHAN_WORKERS" ] && [ -z "$WAVE_PIDS" ]; then
@@ -195,7 +202,7 @@ fi
 # Stop new wave dispatch first. Its TERM handler cancels lane process groups
 # and reaps them (up to five seconds), before any claim can be released.
 for entry in $WAVE_PIDS; do
-  IFS='|' read -r host wave_pid <<< "$entry"
+  IFS='|' read -r host wave_pid wave_marker <<< "$entry"
   log "🛑 stopping $host wave and its lane workers"
   kill_pid "$wave_pid" "$host-wave" 7
 done
@@ -221,6 +228,13 @@ if [ -n "$ORPHAN_WORKERS" ]; then
     kill_pid "$pid" "orphan-worker"
   done
 fi
+if [ -n "$ORPHAN_LANES" ]; then
+  log ""
+  log "🧹 sweeping untracked opencode lanes"
+  for pid in $ORPHAN_LANES; do
+    kill_pid "$pid" "orphan-lane"
+  done
+fi
 
 # 4. Kill the dispatcher loop.
 if [ -n "$DISPATCHER_PIDS" ]; then
@@ -243,8 +257,8 @@ fi
 if [ -n "$WAVE_PIDS" ]; then
   rm -f "$INFLIGHT_DIR/workflow-wave.lock"
   for entry in $WAVE_PIDS; do
-    IFS='|' read -r host wave_pid <<< "$entry"
-    rm -f ".claude/super-board/$host-wave.pid"
+    IFS='|' read -r host wave_pid wave_marker <<< "$entry"
+    rm -f "$wave_marker"
   done
 fi
 

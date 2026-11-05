@@ -51,6 +51,8 @@ class Codex:
         filesystem = {':root': 'read', ':slash_tmp': 'write', ':tmpdir': 'write',
                       str(run['root']): 'write', str(run['git_dir']): 'write', str(run['common_dir']): 'write',
                       str(run['gitnexus_home']): 'write'}
+        for path in run['write_roots']:
+            filesystem[str(path)] = 'write'
         if run['installation_id'] is not None:
             # Codex v0.165.0 opens this nonsecret ID read/write before app-server startup.
             # https://github.com/openai/codex/blob/rust-v0.165.0/codex-rs/core/src/installation_id.rs#L20-L29
@@ -77,7 +79,7 @@ class Codex:
 def write_grants(run):
     """Directories an OpenCode lane may write: the repo, its git dirs, tmp, the GitNexus home, and OpenCode's own state."""
     grants = [run['root'], run['git_dir'], run['common_dir'], Path(tempfile.gettempdir()),
-              Path(run['schema_path']).parent, run['gitnexus_home']]
+              Path(run['schema_path']).parent, run['gitnexus_home']] + run['write_roots']
     try:
         listing = subprocess.run(['opencode', 'debug', 'paths'], capture_output=True, text=True,
                                  timeout=60, check=True).stdout
@@ -114,7 +116,8 @@ def jailed(run, argv):
     # prove that a write outside the grants fails.
     if not shutil.which('bwrap'):
         raise ValueError('OpenCode lanes need bubblewrap (bwrap) on Linux; refusing an unjailed lane')
-    command = ['bwrap', '--ro-bind', '/', '/', '--dev', '/dev', '--proc', '/proc']
+    # --dev mounts a minimal /dev and hides nvidia nodes; bind the host /dev so GPU lanes work.
+    command = ['bwrap', '--ro-bind', '/', '/', '--dev-bind', '/dev', '/dev', '--proc', '/proc']
     for path in grants:
         command += ['--bind', str(path), str(path)]
     return command + ['--chdir', str(run['root']), '--'] + argv
@@ -135,6 +138,7 @@ class OpenCode:
 
     def final_message(self, run, stdout):
         """The last assistant text event, reduced to the JSON object the lane contract requires."""
+        last_text = ''
         for line in reversed(stdout.splitlines()):
             try:
                 event = json.loads(line)
@@ -142,8 +146,12 @@ class OpenCode:
                 continue
             part = event.get('part') if isinstance(event, dict) else None
             if isinstance(part, dict) and part.get('type') == 'text' and isinstance(part.get('text'), str):
-                return json.dumps(lane_result(part['text']))
-        raise ValueError('OpenCode returned no text event')
+                last_text = part['text']
+                try:
+                    return json.dumps(lane_result(last_text))
+                except ValueError as error:
+                    raise ValueError(f'{error}; last text: {last_text[-600:]}') from error
+        raise ValueError(f'OpenCode returned no text event; last output: {stdout[-600:]}')
 
 
 def lane_result(text):
@@ -245,6 +253,17 @@ try:
 except subprocess.CalledProcessError:
     fail(f'{backend.label} lane must start inside the target git repository')
 os.chdir(root)
+# Extra write roots a project's lanes need outside the worktree (a shared runtime or
+# env dirs). Paths are relative to the main checkout; they must exist for bwrap.
+lane_config = config.get('lane') or {}
+declared_roots = lane_config.get('write_roots', []) if isinstance(lane_config, dict) else []
+if not isinstance(declared_roots, list) or any(not isinstance(p, str) or not p for p in declared_roots):
+    fail('lane.write_roots must be a list of non-empty paths')
+write_roots = []
+for value in declared_roots:
+    extra = (Path(value) if os.path.isabs(value) else common_dir.parent / value).resolve()
+    extra.mkdir(parents=True, exist_ok=True)
+    write_roots.append(extra)
 helper = script_path.with_name('super-board-github-read.py')
 if not helper.exists() or subprocess.run([sys.executable, str(helper), '--check']).returncode:
     result('halted', 'required GitHub reads halted or helper missing; preserve claims and worktrees')
@@ -350,7 +369,8 @@ signal.signal(signal.SIGTERM, interrupted)
 signal.signal(signal.SIGINT, interrupted)
 with tempfile.TemporaryDirectory(prefix=f'super-board-{backend.name}-') as temporary:
     run = dict(root=root, git_dir=git_dir, common_dir=common_dir, model=model, prompt=prompt, installation_id=installation_id,
-               schema_path=Path(temporary) / 'schema.json', output=Path(temporary) / 'result.json', gitnexus_home=gitnexus_home)
+               schema_path=Path(temporary) / 'schema.json', output=Path(temporary) / 'result.json',
+               gitnexus_home=gitnexus_home, write_roots=write_roots)
     run['schema_path'].write_text(json.dumps(schema))
     command, stdin = backend.command(run)
     try:
