@@ -195,7 +195,9 @@ def validate(text, kind, meta=None):
         require(isinstance(value.get('files'), list) and isinstance(value.get('labels'), list)
                 and isinstance(value.get('body'), str), 'PR policy fields missing')
         require(all(type(value.get(k)) is int and value[k] >= 0 for k in ('additions', 'deletions', 'changedFiles')), 'PR counts missing')
-        require(value['changedFiles'] == len(value['files']), 'PR file list truncated')
+        # A file-to-symlink conversion lists one path twice (remove + add), so
+        # changedFiles counts paths, not entries.
+        require(len({f['path'] for f in value['files']}) == value['changedFiles'], 'PR file list truncated')
         require(all(isinstance(f, dict) and isinstance(f.get('path'), str) and f['path'] for f in value['files']), 'PR paths missing')
         require(all(isinstance(l, dict) and isinstance(l.get('name'), str) for l in value['labels']), 'PR labels missing')
     elif kind == 'items':
@@ -309,6 +311,72 @@ def validate(text, kind, meta=None):
     return value
 
 
+FILE_PAGE = 100
+
+
+def _repo_arg(args):
+    """Return the --repo value from a gh command, if any."""
+    for i, arg in enumerate(args):
+        if arg == '--repo' and i + 1 < len(args):
+            return args[i + 1]
+        if arg.startswith('--repo='):
+            return arg.split('=', 1)[1]
+    return None
+
+
+def read_file_page(path, page):
+    """Read one page of a PR's file list; a failed page is a genuine read failure."""
+    result = subprocess.run(['gh', 'api', f'{path}?per_page={FILE_PAGE}&page={page}'],
+                            capture_output=True, timeout=30)
+    stdout = result.stdout.decode('utf-8', 'replace')
+    stderr = result.stderr.decode('utf-8', 'replace')
+    if result.returncode:
+        raise GitHubErrors(f'PR file page {page} read failed: {stderr.strip() or result.returncode}')
+    try:
+        rows = json.loads(stdout)
+    except ValueError as error:
+        raise GitHubErrors(f'PR file page {page} is not JSON: {error}')
+    if not isinstance(rows, list):
+        raise GitHubErrors(f'PR file page {page} is not a list')
+    return rows
+
+
+def complete_metadata(args, text):
+    """Page the PR file list; `gh pr view --json files` stops at 100 entries."""
+    value = json.loads(text)
+    if not isinstance(value, dict) or not isinstance(value.get('files'), list):
+        return text
+    files = value['files']
+    seen = {f.get('path') for f in files if isinstance(f, dict) and isinstance(f.get('path'), str)}
+    total = value.get('changedFiles')
+    if type(total) is not int or len(seen) >= total:
+        return text
+    require(args[:2] == ['pr', 'view'], 'only `pr view` metadata takes a paged file list')
+    number = next((a for a in args[2:] if re.fullmatch(r'[0-9]+', a)), None)
+    require(number is not None, 'cannot page the file list without a PR number')
+    repo = _repo_arg(args)
+    path = f'repos/{repo}/pulls/{number}/files' if repo else 'repos/{owner}/{repo}/pulls/' + number + '/files'
+    page = len(files) // FILE_PAGE + 1
+    # GitHub serves at most 3,000 files per PR; past that the count check below
+    # fails and the gate stays human instead of reading a partial list.
+    while len(seen) < total:
+        rows = read_file_page(path, page)
+        for row in rows:
+            if isinstance(row, dict) and isinstance(row.get('filename'), str) and 'path' not in row:
+                row['path'] = row['filename']  # REST names it filename; metadata calls it path
+            name = row.get('path') if isinstance(row, dict) else None
+            if isinstance(name, str) and name and name not in seen:
+                seen.add(name)
+                files.append(row)
+        if len(rows) < FILE_PAGE:
+            break
+        page += 1
+    value['files'] = files
+    if len(seen) != total:
+        raise GitHubErrors(f'PR file list incomplete: {len(seen)} of {total}')
+    return json.dumps(value)
+
+
 def read(args, kind='json', meta=None, recovering=False):
     if not read_only(args):
         raise ValueError('retry helper accepts read-only GitHub commands only')
@@ -348,6 +416,8 @@ def read(args, kind='json', meta=None, recovering=False):
                 last = 'GitHub required read failed' + (f' ({status[0]})' if status else '')
             else:
                 try:
+                    if kind == 'metadata':
+                        result.stdout = complete_metadata(args, result.stdout)
                     value = validate(result.stdout, kind, meta)
                     if not recovering:
                         check_halt()
