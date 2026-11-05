@@ -18,6 +18,11 @@ cat > "$TMP/bin/gh" <<'EOF'
 # Fake gh: logs one line per call, answers by query shape.
 q=""; for a in "$@"; do case "$a" in query=*) q="${a#query=}" ;; esac; done
 kind=other
+case "$1 $2" in
+  "issue view") kind=issue-view ;;
+  "issue edit") kind=issue-edit ;;
+  "issue close") kind=issue-close ;;
+esac
 case "$q" in
   *mutation*) kind=mutation ;;
   *'field(name:"Status")'*) kind=ids ;;
@@ -26,11 +31,14 @@ case "$q" in
 esac
 { printf '%s ' "$kind" "$@" | tr '\n' ' '; echo; } >> "$FAKE_LOG"
 case "$kind" in
+  issue-view) cat "$FAKE_DIR/issue-body.md" ;;
+  issue-edit) cat > "$FAKE_DIR/issue-new-body.md" && mv "$FAKE_DIR/issue-new-body.md" "$FAKE_DIR/issue-body.md" ;;
+  issue-close) : > "$FAKE_DIR/issue-closed" ;;
   mutation)
     if [ -f "$FAKE_DIR/fail-mutation-once" ]; then rm -f "$FAKE_DIR/fail-mutation-once"
       echo 'GraphQL: The single select option Id does not belong to the field' >&2; exit 1; fi
     echo '{"data":{"updateProjectV2ItemFieldValue":{"projectV2Item":{"id":"PVTI_232"}}}}' ;;
-  ids) echo '{"data":{"repositoryOwner":{"projectV2":{"id":"PVT_1","field":{"id":"PVTSSF_1","options":[{"id":"opt_ready","name":"Ready"},{"id":"opt_qa","name":"QA"}]}}}}}' ;;
+  ids) echo '{"data":{"repositoryOwner":{"projectV2":{"id":"PVT_1","field":{"id":"PVTSSF_1","options":[{"id":"opt_ready","name":"Ready"},{"id":"opt_qa","name":"QA"},{"id":"opt_done","name":"Done"}]}}}}}' ;;
   card)
     case "$*" in
       *issue=999*) echo '{"data":{"repository":{"issueOrPullRequest":{"projectItems":{"nodes":[{"id":"PVTI_other","project":{"number":7,"owner":{"login":"acme"}},"fieldValueByName":null}]}}}}}' ;;
@@ -124,5 +132,27 @@ G -C "$TMP/super" submodule add -q "$TMP/origin" projects/a
 [ -f "$TMP/super/.git/modules/projects/a/super-board/cache/board-acme-15.json" ] || fail "submodule cache not in its own git dir"
 [ ! -e "$TMP/super/.git/modules/.claude" ] || fail "submodule cache leaked into shared .git/modules"
 ok "cache stays inside its own repo (normal + submodule)"
+
+# 11 — tick one box as its evidence lands; the other box is untouched.
+printf '## Acceptance Criteria\n- [ ] first one\n- [ ] second one\n' > "$TMP/issue-body.md"
+rm -f "$TMP/issue-new-body.md" "$TMP/issue-closed"; reset_log
+card tick 232 "first one" >/dev/null
+grep -q '^- \[x\] first one' "$TMP/issue-body.md" || fail "the named box was not ticked"
+grep -q '^- \[ \] second one' "$TMP/issue-body.md" || fail "tick touched another box"
+RC=0; card tick 232 "absent text" >/dev/null 2>&1 || RC=$?
+[ "$RC" -eq 65 ] || fail "ticking no box should exit 65, got $RC"
+ok "tick one box by text, no match exits 65"
+
+# 12 — close refuses while a box is open; --force closes a parked card.
+RC=0; card close 232 >/dev/null 2>&1 || RC=$?
+[ "$RC" -eq 65 ] && [ ! -f "$TMP/issue-closed" ] || fail "close must refuse an open box (rc=$RC)"
+card tick 232 "second one" >/dev/null
+card close 232 >/dev/null
+[ -f "$TMP/issue-closed" ] || fail "close must close when every box is ticked"
+rm -f "$TMP/issue-closed"
+printf '## Acceptance Criteria\n- [ ] parked\n' > "$TMP/issue-body.md"
+card close 232 --force >/dev/null
+[ -f "$TMP/issue-closed" ] || fail "--force must close a parked card"
+ok "close refuses open boxes, --force closes a park"
 
 echo "PASS: $pass card-helper checks"

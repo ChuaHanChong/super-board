@@ -136,6 +136,10 @@ case "$1 $2" in
     oid="$STUB_OID"; grep -q '^pr merge' "$GH_LOG" && oid="${STUB_OID_AFTER:-$STUB_OID}"
     echo "feat $oid" ;;
   "pr merge") exit "${STUB_MERGE_RC:-0}" ;;
+  "issue view") [ -n "${STUB_ISSUE_BODY:-}" ] || exit 1; cat "$STUB_ISSUE_BODY" ;;
+  "issue edit") [ -n "${STUB_ISSUE_BODY:-}" ] || exit 1
+                cat > "$STUB_ISSUE_BODY.new" && mv "$STUB_ISSUE_BODY.new" "$STUB_ISSUE_BODY" ;;
+  "issue close") : ;;
   "pr diff")
     [ "${STUB_DIFF_FAIL:-0}" = 0 ] || exit 1
     if [ -n "${STUB_DIFF:-}" ]; then printf '%b' "$STUB_DIFF"; exit 0; fi
@@ -194,6 +198,37 @@ grep -q -- "--subject 🐛 \[fix\] receipts: show a size error" "$GH_LOG" || fai
 grep -q -- "--body-file $TMP/msg.md" "$GH_LOG" || fail "merge must pass --body-file, got: $(cat "$GH_LOG")"
 RC=0; STUB_OID="$SHA" gate --expect-head "$SHA" --body-file /nope.md >/dev/null 2>&1 || RC=$?
 [ "$RC" -eq 66 ] || fail "an unreadable --body-file should exit 66, got $RC"
+teardown
+
+# 9c — a Closes line is a delivery claim, so an open acceptance box refuses the
+#      merge (11): ticking belongs to each AC's evidence, not to the end of the flow.
+head_setup
+printf '## Acceptance Criteria\n- [ ] one\n- [x] two\n' > "$TMP/issue.md"
+RC=0; OUT=$(STUB_OID="$SHA" STUB_ISSUE_BODY="$TMP/issue.md" \
+  STUB_META='{"files":[],"labels":[],"body":"Closes #42","additions":0,"deletions":0,"changedFiles":0}' \
+  gate --expect-head "$SHA" 2>&1) || RC=$?
+[ "$RC" -eq 11 ] || fail "an open box should refuse the merge (11), got $RC: $OUT"
+echo "$OUT" | grep -q 'acceptance boxes still open: #42' || fail "exit 11 must name the issue: $OUT"
+grep -q '^pr merge' "$GH_LOG" && fail "no merge may run with an open acceptance box"
+printf '## Acceptance Criteria\n- [x] one\n- [x] two\n' > "$TMP/issue.md"
+RC=0; STUB_OID="$SHA" STUB_ISSUE_BODY="$TMP/issue.md" \
+  STUB_META='{"files":[],"labels":[],"body":"Closes #42","additions":0,"deletions":0,"changedFiles":0}' \
+  gate --expect-head "$SHA" >/dev/null 2>&1 || RC=$?
+[ "$RC" -eq 0 ] || fail "a fully ticked Closes issue should merge, got $RC"
+teardown
+
+# 9d — the gate runs the checkout's board tooling, not the merged one. A tracked
+#      `.agents/bin` file that differs from origin/<base> refuses with 10, so a
+#      merged tick cannot be silently skipped by running an old script.
+head_setup
+mkdir -p "$TMP/.agents/bin"; echo old > "$TMP/.agents/bin/tool"
+git -C "$TMP" -c user.email=t@t -c user.name=t add .agents/bin/tool
+git -C "$TMP" -c user.email=t@t -c user.name=t commit -q -m tooling
+git -C "$TMP" push -q origin staging
+echo new > "$TMP/.agents/bin/tool"
+RC=0; STUB_OID="$SHA" gate --expect-head "$SHA" >/dev/null 2>&1 || RC=$?
+[ "$RC" -eq 10 ] || fail "stale board tooling should exit 10, got $RC"
+grep -q '^pr merge' "$GH_LOG" && fail "no merge may run with stale board tooling"
 teardown
 
 # 10 — a push lands during verification: GitHub refuses the pinned merge and the
