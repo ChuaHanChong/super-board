@@ -19,7 +19,12 @@
 # Usage:
 #   super-board-card.sh [--config <cfg.json>] [--owner O --number N] [--repo owner/name] <verb>
 #     move <issue> <Status>   set the card's Status column (Ready, QA, Review, Blocked, Done, …)
+#                             Done also ticks every acceptance box, so a delivered card
+#                             never shows empty `- [ ]` boxes.
 #     status <issue>          print the card's current Status name (1 point, never cached)
+#     close <issue>           tick every acceptance box, then close the issue (2 points)
+#                             `gh issue close` and a PR's `Closes #N` leave the boxes empty,
+#                             so a closed card must go through this verb.
 #     item-id <issue>         print the card's project item id (cached)
 #     ids                     print {projectId, fieldId, options:{name:id}} (cached)
 #     items                   the whole board in `gh project item-list --format json` shape
@@ -54,7 +59,7 @@ while [ $# -gt 0 ]; do
     *) break ;;
   esac
 done
-VERB="${1:-}"; [ -n "$VERB" ] || { echo "usage: super-board-card.sh <move|status|item-id|ids|items> …" >&2; exit 64; }
+VERB="${1:-}"; [ -n "$VERB" ] || { echo "usage: super-board-card.sh <move|status|close|item-id|ids|items> …" >&2; exit 64; }
 shift
 
 if [ -n "$CONFIG" ]; then
@@ -204,9 +209,21 @@ items() {  # whole board, gh item-list shape, ~1 point per 100 cards
     || { echo "board read incomplete" >&2; return 69; }
 }
 
+tick_boxes() {  # tick every acceptance box; a park or a blocker keeps its own boxes
+  local issue=$1 body
+  body=$(gh issue view "$issue" --json body --jq .body) || return $?
+  printf '%s\n' "$body" | sed 's/^- \[ \]/- [x]/' \
+    | gh issue edit "$issue" --body-file - >/dev/null || return $?
+}
+
+close_card() { tick_boxes "$1" || return $?; gh issue close "$1" >/dev/null; }
+
 case "$VERB" in
-  move)    [ $# -eq 2 ] || { echo "usage: move <issue> <Status>" >&2; exit 64; }; move "$1" "$2" ;;
+  move)    [ $# -eq 2 ] || { echo "usage: move <issue> <Status>" >&2; exit 64; }
+           move "$1" "$2" || exit $?
+           if [ "$2" = Done ]; then tick_boxes "$1" >&2 || true; fi ;;
   status)  [ $# -eq 1 ] || { echo "usage: status <issue>" >&2; exit 64; }; read_card "$1"; echo "$STATUS_NAME" ;;
+  close)   [ $# -eq 1 ] || { echo "usage: close <issue>" >&2; exit 64; }; close_card "$1" ;;
   item-id) [ $# -eq 1 ] || { echo "usage: item-id <issue>" >&2; exit 64; }; item_id "$1"; echo "$ITEM_ID" ;;
   ids)     load_ids; jq -n --arg p "$PROJECT_ID" --arg f "$FIELD_ID" --argjson o "$OPTIONS_JSON" '{projectId:$p, fieldId:$f, options:$o}' ;;
   items)   items ;;

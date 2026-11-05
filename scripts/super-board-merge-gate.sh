@@ -84,6 +84,8 @@
 #      the gate, which then skips the policy check and merges.
 #   9  verification-readiness: repair config.verify_commands and restart; preserve
 #      card/worktree/approval state. Never bounce to Build or retry a rebase.
+#   10 the gate's own checkout is behind origin/<base>: fast-forward it, else
+#      merged board tooling (card moves, acceptance ticks, approvals) never runs.
 #   79 required GitHub evidence unavailable: local run halt; preserve card and
 #      approval state, stop dispatch, and explicitly restart after diagnosis.
 #   8  🙋 needs you — the PR has migrations for a database the robot may not
@@ -268,6 +270,14 @@ fi
 
 git -C "$REPO_PATH" fetch origin "$HEAD_REF" "$BASE" --quiet
 
+# This gate runs the main checkout's copy, not the merged one. A checkout that is
+# behind silently runs old board code (a merged acceptance tick never fired), so
+# refuse instead of merging with stale tooling.
+if ! git -C "$REPO_PATH" diff --quiet "origin/${BASE}" -- .agents/bin; then
+  say "board tooling is stale: fast-forward ${REPO_PATH} to origin/${BASE} before merging"
+  exit 10
+fi
+
 git -C "$REPO_PATH" worktree add --detach "$SCRATCH" "$HEAD_SHA" --quiet 2>/dev/null || {
   say "could not create a scratch worktree for ${HEAD_REF}@${HEAD_SHA}"; exit 5; }
 
@@ -350,6 +360,18 @@ if gh pr merge "$PR" ${REPO:+--repo "$REPO"} --squash --delete-branch \
      ${SUBJECT:+--subject "$SUBJECT"} ${MSG_FILE:+--body-file "$MSG_FILE"} \
      --match-head-commit "$HEAD_SHA" 2>&1 | tail -3 >&2; then
   say "merged ${HEAD_SHA}"
+  # `Closes #N` makes GitHub close the issue but never edit its body, so a delivered
+  # card kept empty acceptance boxes. A `Closes` line is the delivery claim: tick them.
+  # A `for` word list, not a pipeline: with `set -e` + pipefail a body with no
+  # `Closes` line would make grep exit 1 and fail the merge that just succeeded.
+  for issue in $(jq -r '.body // ""' "$META" \
+      | grep -oiE '(closes|fixes|resolves) +#[0-9]+' \
+      | grep -oE '[0-9]+' | sort -u || true); do
+    gh issue view "$issue" ${REPO:+--repo "$REPO"} --json body --jq .body 2>/dev/null \
+      | sed 's/^- \[ \]/- [x]/' \
+      | gh issue edit "$issue" ${REPO:+--repo "$REPO"} --body-file - >/dev/null 2>&1 || true
+    gh issue close "$issue" ${REPO:+--repo "$REPO"} >/dev/null 2>&1 || true
+  done
   # Post-merge tidy-up: drop worktrees and local branches the merge just made
   # redundant. Optional (only when the cleanup-wt hook is installed), local-only, and it
   # can never fail the merge that already happened.
