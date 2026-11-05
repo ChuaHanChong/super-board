@@ -559,6 +559,23 @@ def main() -> int:
             "status": field_status(n),
         })
 
+    # A closed issue cannot be in flight. Render it Done and report it, read-only.
+    repo = str(cfg.get("repo", {}).get("remote", "")).rstrip("/")
+    repo = "/".join(repo.split("/")[-2:]) if "github.com/" in repo else repo
+    stale: list[int] = []
+    if repo:
+        for it in items:
+            if it["status"] not in ("Building", "QA", "Review"):
+                continue
+            state = subprocess.run(
+                ["gh", "issue", "view", str(it["number"]), "--repo", repo,
+                 "--json", "state", "--jq", ".state"],
+                capture_output=True, text=True,
+            )
+            if state.returncode == 0 and state.stdout.strip() == "CLOSED":
+                it["status"] = "Done"
+                stale.append(it["number"])
+
     by_status: dict[str, list[dict[str, Any]]] = {
         s: sorted([i for i in items if i["status"] == s], key=lambda x: -x["number"])
         for s in BOARD_ORDER
@@ -657,6 +674,10 @@ def main() -> int:
 
     # ── kanban ──
     print(render_kanban(by_status, glyph_for_issue, lambda n: reason_for_issue(n)[0]))
+    if stale:
+        print()
+        print("▎Stale  " + ", ".join(f"#{n}" for n in stale) +
+              " closed on GitHub; rendered as Done (read-only).")
 
     # ── workers ──
     print()
