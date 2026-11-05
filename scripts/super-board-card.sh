@@ -19,12 +19,12 @@
 # Usage:
 #   super-board-card.sh [--config <cfg.json>] [--owner O --number N] [--repo owner/name] <verb>
 #     move <issue> <Status>   set the card's Status column (Ready, QA, Review, Blocked, Done, …)
-#                             Done also ticks every acceptance box, so a delivered card
-#                             never shows empty `- [ ]` boxes.
+#                             Done warns, listing any acceptance box still open.
 #     status <issue>          print the card's current Status name (1 point, never cached)
-#     close <issue>           tick every acceptance box, then close the issue (2 points)
-#                             `gh issue close` and a PR's `Closes #N` leave the boxes empty,
-#                             so a closed card must go through this verb.
+#     tick <issue> <text>     tick the first unchecked acceptance box containing <text>.
+#                             Call it as each AC's evidence lands, never all at the end.
+#     close <issue> [--force] close when every acceptance box is ticked; --force closes a
+#                             parked or duplicate card and leaves its open boxes visible.
 #     item-id <issue>         print the card's project item id (cached)
 #     ids                     print {projectId, fieldId, options:{name:id}} (cached)
 #     items                   the whole board in `gh project item-list --format json` shape
@@ -59,7 +59,7 @@ while [ $# -gt 0 ]; do
     *) break ;;
   esac
 done
-VERB="${1:-}"; [ -n "$VERB" ] || { echo "usage: super-board-card.sh <move|status|close|item-id|ids|items> …" >&2; exit 64; }
+VERB="${1:-}"; [ -n "$VERB" ] || { echo "usage: super-board-card.sh <move|status|tick|close|item-id|ids|items> …" >&2; exit 64; }
 shift
 
 if [ -n "$CONFIG" ]; then
@@ -209,21 +209,46 @@ items() {  # whole board, gh item-list shape, ~1 point per 100 cards
     || { echo "board read incomplete" >&2; return 69; }
 }
 
-tick_boxes() {  # tick every acceptance box; a park or a blocker keeps its own boxes
-  local issue=$1 body
+tick_one() {  # tick the first unchecked box whose line contains the text
+  local issue=$1 pattern=$2 body new
   body=$(gh issue view "$issue" --json body --jq .body) || return $?
-  printf '%s\n' "$body" | sed 's/^- \[ \]/- [x]/' \
-    | gh issue edit "$issue" --body-file - >/dev/null || return $?
+  new=$(PATTERN="$pattern" awk '
+    BEGIN { want = ENVIRON["PATTERN"]; done = 0 }
+    !done && /^- \[ \]/ && index($0, want) { sub(/^- \[ \]/, "- [x]"); done = 1 }
+    { print }
+    END { exit(done ? 0 : 1) }' <<<"$body") || {
+      echo "no unchecked acceptance box on #$issue contains: $pattern" >&2
+      return 65
+    }
+  printf '%s\n' "$new" | gh issue edit "$issue" --body-file - >/dev/null || return $?
 }
 
-close_card() { tick_boxes "$1" || return $?; gh issue close "$1" >/dev/null; }
+open_boxes() {  # print the unchecked acceptance boxes; non-zero when any remain
+  local issue=$1 body
+  body=$(gh issue view "$issue" --json body --jq .body) || return $?
+  printf '%s\n' "$body" | grep '^- \[ \]' || return 1
+}
+
+close_card() {  # close only when every box is ticked; --force for a parked or duplicate card
+  local issue=$1 force=${2:-} open
+  if [ "$force" != --force ] && open=$(open_boxes "$issue") && [ -n "$open" ]; then
+    echo "acceptance boxes still open on #$issue; tick each one or pass --force:" >&2
+    printf '%s\n' "$open" >&2
+    return 65
+  fi
+  gh issue close "$issue" >/dev/null
+}
 
 case "$VERB" in
   move)    [ $# -eq 2 ] || { echo "usage: move <issue> <Status>" >&2; exit 64; }
            move "$1" "$2" || exit $?
-           if [ "$2" = Done ]; then tick_boxes "$1" >&2 || true; fi ;;
+           if [ "$2" = Done ] && open=$(open_boxes "$1") && [ -n "$open" ]; then
+             echo "warning: #$1 moved to Done with acceptance boxes still open:" >&2
+             printf '%s\n' "$open" >&2
+           fi ;;
   status)  [ $# -eq 1 ] || { echo "usage: status <issue>" >&2; exit 64; }; read_card "$1"; echo "$STATUS_NAME" ;;
-  close)   [ $# -eq 1 ] || { echo "usage: close <issue>" >&2; exit 64; }; close_card "$1" ;;
+  tick)    [ $# -eq 2 ] || { echo "usage: tick <issue> <text in the acceptance box>" >&2; exit 64; }; tick_one "$1" "$2" ;;
+  close)   [ $# -ge 1 ] && [ $# -le 2 ] || { echo "usage: close <issue> [--force]" >&2; exit 64; }; close_card "$@" ;;
   item-id) [ $# -eq 1 ] || { echo "usage: item-id <issue>" >&2; exit 64; }; item_id "$1"; echo "$ITEM_ID" ;;
   ids)     load_ids; jq -n --arg p "$PROJECT_ID" --arg f "$FIELD_ID" --argjson o "$OPTIONS_JSON" '{projectId:$p, fieldId:$f, options:$o}' ;;
   items)   items ;;

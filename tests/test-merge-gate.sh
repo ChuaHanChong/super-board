@@ -200,19 +200,21 @@ RC=0; STUB_OID="$SHA" gate --expect-head "$SHA" --body-file /nope.md >/dev/null 
 [ "$RC" -eq 66 ] || fail "an unreadable --body-file should exit 66, got $RC"
 teardown
 
-# 9c — a Closes line is the delivery claim: after the merge, its card's acceptance
-#      boxes are ticked and the issue is closed (GitHub's auto-close never edits it).
+# 9c — a Closes line is a delivery claim, so an open acceptance box refuses the
+#      merge (11): ticking belongs to each AC's evidence, not to the end of the flow.
 head_setup
-printf '## Acceptance Criteria\n- [ ] one\n- [ ] two\n' > "$TMP/issue.md"
+printf '## Acceptance Criteria\n- [ ] one\n- [x] two\n' > "$TMP/issue.md"
+RC=0; OUT=$(STUB_OID="$SHA" STUB_ISSUE_BODY="$TMP/issue.md" \
+  STUB_META='{"files":[],"labels":[],"body":"Closes #42","additions":0,"deletions":0,"changedFiles":0}' \
+  gate --expect-head "$SHA" 2>&1) || RC=$?
+[ "$RC" -eq 11 ] || fail "an open box should refuse the merge (11), got $RC: $OUT"
+echo "$OUT" | grep -q 'acceptance boxes still open: #42' || fail "exit 11 must name the issue: $OUT"
+grep -q '^pr merge' "$GH_LOG" && fail "no merge may run with an open acceptance box"
+printf '## Acceptance Criteria\n- [x] one\n- [x] two\n' > "$TMP/issue.md"
 RC=0; STUB_OID="$SHA" STUB_ISSUE_BODY="$TMP/issue.md" \
   STUB_META='{"files":[],"labels":[],"body":"Closes #42","additions":0,"deletions":0,"changedFiles":0}' \
   gate --expect-head "$SHA" >/dev/null 2>&1 || RC=$?
-[ "$RC" -eq 0 ] || fail "a merge with Closes should exit 0, got $RC"
-grep -q '^issue view 42 ' "$GH_LOG" || fail "the tick must read the issue body: $(cat "$GH_LOG")"
-grep -q '^issue edit 42 ' "$GH_LOG" || fail "the tick must rewrite the issue body"
-grep -q '^- \[x\] one' "$TMP/issue.md" || fail "the first box must be ticked"
-grep -q -- '- \[ \]' "$TMP/issue.md" && fail "a box stayed empty after the merge"
-grep -q '^issue close 42' "$GH_LOG" || fail "the delivered issue must be closed"
+[ "$RC" -eq 0 ] || fail "a fully ticked Closes issue should merge, got $RC"
 teardown
 
 # 9d — the gate runs the checkout's board tooling, not the merged one. A tracked

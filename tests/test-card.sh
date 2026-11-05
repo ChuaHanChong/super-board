@@ -32,7 +32,7 @@ esac
 { printf '%s ' "$kind" "$@" | tr '\n' ' '; echo; } >> "$FAKE_LOG"
 case "$kind" in
   issue-view) cat "$FAKE_DIR/issue-body.md" ;;
-  issue-edit) cat > "$FAKE_DIR/issue-new-body.md" ;;
+  issue-edit) cat > "$FAKE_DIR/issue-new-body.md" && mv "$FAKE_DIR/issue-new-body.md" "$FAKE_DIR/issue-body.md" ;;
   issue-close) : > "$FAKE_DIR/issue-closed" ;;
   mutation)
     if [ -f "$FAKE_DIR/fail-mutation-once" ]; then rm -f "$FAKE_DIR/fail-mutation-once"
@@ -133,24 +133,26 @@ G -C "$TMP/super" submodule add -q "$TMP/origin" projects/a
 [ ! -e "$TMP/super/.git/modules/.claude" ] || fail "submodule cache leaked into shared .git/modules"
 ok "cache stays inside its own repo (normal + submodule)"
 
-# 11 — Done is delivery: every acceptance box is ticked, the issue stays open.
-printf '## Acceptance Criteria\n- [ ] first\n- [ ] second\n' > "$TMP/issue-body.md"
+# 11 — tick one box as its evidence lands; the other box is untouched.
+printf '## Acceptance Criteria\n- [ ] first one\n- [ ] second one\n' > "$TMP/issue-body.md"
 rm -f "$TMP/issue-new-body.md" "$TMP/issue-closed"; reset_log
-card move 232 Done >/dev/null
-[ "$(calls mutation)" = 1 ] || fail "Done still moves the card: $(cat "$FAKE_LOG")"
-[ "$(calls issue-view)" = 1 ] && [ "$(calls issue-edit)" = 1 ] \
-  || fail "Done should read and rewrite the body: $(cat "$FAKE_LOG")"
-grep -q '^- \[x\] first' "$TMP/issue-new-body.md" || fail "first box not ticked"
-grep -q '^- \[x\] second' "$TMP/issue-new-body.md" || fail "second box not ticked"
-grep -q -- '- \[ \]' "$TMP/issue-new-body.md" && fail "a box stayed empty"
-[ ! -f "$TMP/issue-closed" ] || fail "Done must not close the issue"
-ok "Done ticks acceptance boxes, leaves the issue open"
+card tick 232 "first one" >/dev/null
+grep -q '^- \[x\] first one' "$TMP/issue-body.md" || fail "the named box was not ticked"
+grep -q '^- \[ \] second one' "$TMP/issue-body.md" || fail "tick touched another box"
+RC=0; card tick 232 "absent text" >/dev/null 2>&1 || RC=$?
+[ "$RC" -eq 65 ] || fail "ticking no box should exit 65, got $RC"
+ok "tick one box by text, no match exits 65"
 
-# 12 — close ticks first, then closes. A card closed by hand cannot keep empty boxes.
-rm -f "$TMP/issue-new-body.md" "$TMP/issue-closed"; reset_log
+# 12 — close refuses while a box is open; --force closes a parked card.
+RC=0; card close 232 >/dev/null 2>&1 || RC=$?
+[ "$RC" -eq 65 ] && [ ! -f "$TMP/issue-closed" ] || fail "close must refuse an open box (rc=$RC)"
+card tick 232 "second one" >/dev/null
 card close 232 >/dev/null
-[ -f "$TMP/issue-closed" ] || fail "close must close the issue"
-grep -q '^- \[x\] first' "$TMP/issue-new-body.md" || fail "close must tick first"
-ok "close ticks then closes"
+[ -f "$TMP/issue-closed" ] || fail "close must close when every box is ticked"
+rm -f "$TMP/issue-closed"
+printf '## Acceptance Criteria\n- [ ] parked\n' > "$TMP/issue-body.md"
+card close 232 --force >/dev/null
+[ -f "$TMP/issue-closed" ] || fail "--force must close a parked card"
+ok "close refuses open boxes, --force closes a park"
 
 echo "PASS: $pass card-helper checks"
