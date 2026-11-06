@@ -45,6 +45,7 @@ FORMS = {
              'pr view <N> --json files,labels,body,additions,deletions,changedFiles > <file> taken right before; '
              'if you pushed in between, re-take the metadata'),
     'state': 'issue view <N> --json state --jq .state',
+    'array': 'issue view <N> --json labels (a JSON list; do not add --jq)',
     'merge-state': 'pr view <N> --json state,headRefOid,mergeCommit',
     'prs-open': 'pr list --state open --json number,title,body,url,headRefName,files',
     'prs-merged': 'pr list --state merged --json number,title,body,url',
@@ -377,7 +378,30 @@ def complete_metadata(args, text):
     return json.dumps(value)
 
 
+def canonical_head(args):
+    """Kind head always uses the canonical jq; a caller's -q/--jq cannot break it."""
+    if args[:2] != ['pr', 'view']:
+        return args
+    kept, skip = [], False
+    for arg in args:
+        if skip:
+            skip = False
+            continue
+        if arg in ('--jq', '-q'):
+            skip = True
+            continue
+        if arg.startswith(('--jq=', '-q=')):
+            continue
+        kept.append(arg)
+    return kept + ['--jq', r'"\(.headRefName) \(.headRefOid)"']
+
+
+ATTEMPTS = 5  # a concurrent burst can outlast three quick retries
+
+
 def read(args, kind='json', meta=None, recovering=False):
+    if kind == 'head':
+        args = canonical_head(args)
     if not read_only(args):
         raise ValueError('retry helper accepts read-only GitHub commands only')
     # A diff read with no meta is the caller's malformed read, not missing evidence:
@@ -390,8 +414,8 @@ def read(args, kind='json', meta=None, recovering=False):
     operation = {'args': args, 'kind': kind, 'meta': meta}
     last = 'GitHub read failed'
     shape_only = True  # every attempt reached GitHub and got a payload of the wrong shape
-    delay = float(os.environ.get('SB_GITHUB_RETRY_DELAY', '1'))
-    for attempt in range(1, 4):
+    delay = float(os.environ.get('SB_GITHUB_RETRY_DELAY', '2'))
+    for attempt in range(1, ATTEMPTS + 1):
         if not recovering:
             check_halt()
         try:
@@ -429,11 +453,11 @@ def read(args, kind='json', meta=None, recovering=False):
             shape_only = False
             last = 'GitHub required read timed out or could not start'
         if attempt < 3:
-            print(f'[github-read] {last}; retry {attempt + 1}/3', file=sys.stderr)
+            print(f'[github-read] {last}; retry {attempt + 1}/{ATTEMPTS}', file=sys.stderr)
             time.sleep(max(0, delay) * attempt)
     if shape_only and kind in FORMS and not os.environ.get('SB_GITHUB_READ_STRICT'):
         raise ValueError(f'{last}; this call failed, the run continues. Valid form: --kind {kind} -- {FORMS[kind]}')
-    halt(f'{last}; stopped after 3 failed attempts', 3, operation)
+    halt(f'{last}; stopped after {ATTEMPTS} failed attempts', ATTEMPTS, operation)
 
 
 def main():

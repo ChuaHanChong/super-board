@@ -29,6 +29,10 @@
 #     ids                     print {projectId, fieldId, options:{name:id}} (cached)
 #     items                   the whole board in `gh project item-list --format json` shape
 #                             ({items:[{id,status,labels,title,content:{type,number,title,url,repository}}],totalCount})
+#     report [--md] [next]    one fixed lane report: a header, every card in column order
+#                             with its live `Run super-<lane> for issue #<n>` process (or
+#                             "-"), a per-column summary, and `next <text>` when given.
+#                             --md renders the cards as a Markdown table.
 #
 # Owner/number/repo come from --config (project.owner, project.number,
 # repo.remote), else $BUILD_LOOP_OWNER / $BUILD_LOOP_PROJECT and the origin remote.
@@ -59,7 +63,7 @@ while [ $# -gt 0 ]; do
     *) break ;;
   esac
 done
-VERB="${1:-}"; [ -n "$VERB" ] || { echo "usage: super-board-card.sh <move|status|tick|close|item-id|ids|items> …" >&2; exit 64; }
+VERB="${1:-}"; [ -n "$VERB" ] || { echo "usage: super-board-card.sh <move|status|tick|close|item-id|ids|items|report> …" >&2; exit 64; }
 shift
 
 if [ -n "$CONFIG" ]; then
@@ -239,6 +243,75 @@ close_card() {  # close only when every box is ticked; --force for a parked or d
   gh issue close "$issue" >/dev/null
 }
 
+# ── report ──────────────────────────────────────────────────────────────
+base_branch() {  # config.base_branch, else main
+  local b=""
+  [ -n "$CONFIG" ] && b=$(echo "${CJ:-{\}}" | jq -r '.base_branch // empty' 2>/dev/null)
+  echo "${b:-main}"
+}
+
+live_lanes() {  # "<issue> <lane>" per live `Run super-<lane> for issue #<n>` process
+  { ps -ww -eo args= 2>/dev/null || true; } | awk '
+    match($0, /Run super-(build|qa|review) for issue #[0-9]+/) {
+      s = substr($0, RSTART, RLENGTH)
+      lane = s; sub(/^Run super-/, "", lane); sub(/ for issue #.*/, "", lane)
+      num = s; sub(/^.*#/, "", num)
+      print num, lane
+    }' | sort -u
+}
+
+report() {  # $@ = [--md] [next text …]
+  local md=0 next="" a rows tsv lanes summary base sha
+  for a in "$@"; do
+    case "$a" in
+      --md) md=1 ;;
+      *) next="${next:+$next }$a" ;;
+    esac
+  done
+  rows=$(items) || return $?
+  lanes=$(live_lanes)
+  tsv=$(printf '%s\n' "$rows" | jq -r --argjson live \
+    "$(printf '%s\n' "$lanes" | jq -Rn '[inputs | split(" ") | select(length == 2) | {(.[0]): .[1]}] | add // {}')" '
+      ["Building","QA","Review","Ready","Blocked","Backlog","Done"] as $order
+      | ($order | to_entries | map({key: .value, value: .key}) | from_entries) as $rank
+      | [ .items[]
+          | select(.status != null and .content.number != null)
+          | [ (.content.number | tostring), .status,
+              ($live[(.content.number | tostring)] // "-"), (.content.title // "") ] ]
+      | sort_by([ ($rank[.[1]] // 99), (.[0] | tonumber) ])
+      | .[] | @tsv') || return 69
+  base=$(base_branch)
+  sha=$(git rev-parse --short=8 "origin/$base" 2>/dev/null \
+        || git rev-parse --short=8 "$base" 2>/dev/null || echo unknown)
+  printf 'super-board · %s · %s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$base" "$sha"
+  if [ "$md" = 1 ]; then
+    printf '| card | column | lane | title |\n| --- | --- | --- | --- |\n'
+    printf '%s\n' "$tsv" | awk -F '\t' 'NF { printf "| %s | %s | %s | %s |\n", $1, $2, $3, $4 }'
+  else
+    printf '%s\n' "$tsv" | awk -F '\t' '
+      NF {
+        rows[++n] = $0
+        if (length($1) > w1) w1 = length($1)
+        if (length($2) > w2) w2 = length($2)
+        if (length($3) > w3) w3 = length($3)
+      }
+      END {
+        if (w1 < 4) w1 = 4; if (w2 < 6) w2 = 6; if (w3 < 4) w3 = 4
+        printf "%-" w1 "s  %-" w2 "s  %-" w3 "s  %s\n", "card", "column", "lane", "title"
+        for (i = 1; i <= n; i++) {
+          split(rows[i], f, "\t")
+          printf "%-" w1 "s  %-" w2 "s  %-" w3 "s  %s\n", f[1], f[2], f[3], f[4]
+        }
+      }'
+  fi
+  summary=$(printf '%s\n' "$tsv" | awk -F '\t' '
+    NF { c[$2]++ }
+    END { printf "building=%d qa=%d review=%d ready=%d blocked=%d backlog=%d done=%d",
+          c["Building"], c["QA"], c["Review"], c["Ready"], c["Blocked"], c["Backlog"], c["Done"] }')
+  printf '%-7s  %s\n' summary "$summary"
+  [ -z "$next" ] || printf '%-7s  %s\n' next "$next"
+}
+
 case "$VERB" in
   move)    [ $# -eq 2 ] || { echo "usage: move <issue> <Status>" >&2; exit 64; }
            move "$1" "$2" || exit $?
@@ -252,5 +325,6 @@ case "$VERB" in
   item-id) [ $# -eq 1 ] || { echo "usage: item-id <issue>" >&2; exit 64; }; item_id "$1"; echo "$ITEM_ID" ;;
   ids)     load_ids; jq -n --arg p "$PROJECT_ID" --arg f "$FIELD_ID" --argjson o "$OPTIONS_JSON" '{projectId:$p, fieldId:$f, options:$o}' ;;
   items)   items ;;
+  report)  report "$@" ;;
   *) echo "unknown verb: $VERB" >&2; exit 64 ;;
 esac
