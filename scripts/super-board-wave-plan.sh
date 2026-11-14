@@ -49,12 +49,15 @@
 # moves it back to Ready, keeping the branch.
 #
 # LABEL ROUTING (v3.0.0). One board shape for every project; a card's label picks
-# its lane. Three labels: `qa`, `bug`, `feature`. A Ready card labelled `qa` skips
-# the Builder and goes straight to the Tester (lane "qa"); every other Ready card,
-# labelled or not, is built first (lane "build"). Each picked card carries `lane`
-# and its `labels`. The old per-board `variant` is gone: a config still saying
-# "qa-only" is refused (exit 65) until `super-board onboard` upgrades it, because
-# reading it as "full" would start building on a board meant only for testing.
+# its lane. A *qa card* is labelled `qa` and carries no build-path type label
+# (bug, feature, ux, refactor, tech-debt, tests, docs): it skips the Builder and
+# goes straight to the Tester (lane "qa"). Every other Ready card is built first
+# (lane "build"), so a stale `qa` label on a typed card cannot route it to QA
+# and a qa card back for a QA rebuild (Ready + `loop:rebuild-N`) stays in
+# QA. Each picked card carries `lane` and its `labels`. The old per-board
+# `variant` is gone: a config still saying "qa-only" is refused (exit 65) until
+# `super-board onboard` upgrades it, because reading it as "full" would start
+# building on a board meant only for testing.
 #
 # Usage:
 #   super-board-wave-plan.sh --config <config.json> [--items <project-items.json>]
@@ -138,10 +141,14 @@ echo "$ITEMS" | jq --argjson cols "$COLUMNS" --argjson cap "$MAX_WORKERS" --argj
   # them on the content, as strings or {name}. Lower-cased, names only.
   def labels_of: [ ((.labels // []) + (.content.labels // []))[]
                    | (if type == "object" then .name else . end) | ascii_downcase ] | unique;
+  # The build-path type labels the skill registry routes by; `qa` alone is the
+  # QA-only lane.
+  def build_path_types: ["bug", "feature", "ux", "refactor", "tech-debt", "tests", "docs"];
   def lane_of($status; $labels):
     if $status == "Review" then "review"
     elif $status == "QA" then "qa"
-    elif ($labels | index("qa")) then "qa"
+    elif $status == "Building" then "build"
+    elif ($labels | index("qa")) and ([ $labels[] | select(. as $l | build_path_types | index($l)) ] | length == 0) then "qa"
     else "build" end;
   # Unknown to the graph (closed, or beyond the fetch limit) is not "free".
   def free($n): (dep($n) | if . == null then false else .runnable end);

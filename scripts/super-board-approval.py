@@ -35,8 +35,12 @@ def body_links(body, repo):
 
 
 def scope_for(plan):
-    # Exclude UI-only `done`; a label change must not change what was approved.
-    relevant = {key: plan.get(key, []) for key in ("human", "migrations", "run", "needs_you")}
+    # The head-bound steps a human must perform. Policy holds (`human`) and UI-only
+    # `done` stay out: `human` evidence is derived from the merge diff, so an
+    # `origin/main` move recomputes it (size counts, matched paths) and would
+    # invalidate an approval that is still true. Order never changes the step set.
+    relevant = {key: sorted(plan.get(key, []), key=lambda item: json.dumps(item, sort_keys=True))
+                for key in ("migrations", "run", "needs_you")}
     return hashlib.sha256(json.dumps(relevant, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 

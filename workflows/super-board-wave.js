@@ -32,9 +32,17 @@ if (!input || !Array.isArray(input.cards) || !input.configPath) {
 if (input.variant && input.variant !== 'full') {
   throw new Error(`super-board-wave: variant "${input.variant}" was removed in v3.0.0 — labels route cards; run /super-board onboard to upgrade`)
 }
-// Lane for a card entering at Ready: the planner's `lane`, else its labels.
+// Lane for a card entering at Ready: the planner's `lane`, else its labels. A
+// *qa card* is labelled `qa` with no build-path type label, so a stale `qa` label
+// on a typed card cannot route it to QA and a qa card back for a QA rebuild keeps
+// QA.
 const labelsOf = (card) => (card.labels || []).map((l) => String(l).toLowerCase())
-const readyLane = (card) => card.lane || (labelsOf(card).includes('qa') ? 'qa' : 'build')
+const isQaCard = (card) => {
+  const labels = labelsOf(card)
+  const builds = ['bug', 'feature', 'ux', 'refactor', 'tech-debt', 'tests', 'docs']
+  return labels.includes('qa') && !labels.some((l) => builds.includes(l))
+}
+const readyLane = (card) => card.status === 'Ready' && (card.lane === 'qa' || (!card.lane && isQaCard(card))) ? 'qa' : 'build'
 if (input.tier && !['low', 'medium', 'high'].includes(input.tier)) {
   throw new Error(`super-board-wave: unknown tier "${input.tier}" — use low | medium | high`)
 }

@@ -1,5 +1,20 @@
 # Release notes
 
+## v3.4.0 - 2026-11-14
+
+Lane runtime fixes synced back from a production install.
+
+- 🐛 **Merge approval binds to the head and the human steps.** `super-board-approval.py` hashes migrations, run and needs-you steps only, order-insensitive. Policy holds are derived from the merge diff, so a base move no longer voids a true approval; a new head still does.
+- ⚡ **Merge gate caches a green verify.** Key: base commit + merged tree + verify commands (and `scripts/verify.sh`) + the QA report selection. `--verify-cache-ttl` (default 1200 s). Only green runs are recorded. Logs go to `.claude/super-board/inflight/verify-logs/`; `super-board-prune-verify-logs.py` prunes them past 7 days and never while `merge.lock` is held. The gate exports `SB_PR` to the verify commands.
+- 🐛 **Per-lane temp root.** Each lane gets `TMPDIR`, `UV_CACHE_DIR` and `UV_PYTHON_INSTALL_DIR` under `lane.tmp_root` (default `.claude/super-board/tmp/lanes`), removed on every exit by `super-board-lane-tmp.py`. Math threads default to 4 per test process.
+- 🐛 **A lane unregisters its GitNexus index on every exit**, including SIGTERM and halts before the child starts.
+- 🔧 **GitNexus index health gate.** `super-board-gitnexus-health.py` blocks a lane whose index has blank `Function` names; lane docs say to rebuild with `--force --index-only`, never refresh.
+- 🐛 **A qa card is `qa` with no build-path type label.** A stale `qa` label on a typed card builds; a Building card always builds. Wave plan, wave workflow, codex wave, legacy runner and readiness check agree.
+- 🐛 **Branch-protection 403 "Upgrade to GitHub Pro" is a known absence**, not a read halt.
+- 🐛 **Block template fields are a list**, so GitHub does not merge them into one paragraph; machine lines stay bare at column 0.
+- 📝 Builder never ticks acceptance criteria; the Tester ticks each as its evidence lands.
+- 🧪 Tests ported: approval scope, block template format, merge-gate cache, verify-log prune, lane temp root, lane GitNexus cleanup, lane routing, GitNexus health. Stdlib only, via `tests/pytest_lite.py`.
+
 ## v3.3.0 — 2026-10-27
 
 The security check moves to QA, and `/super-collect` hands its findings to Matt Pocock's planning chain.

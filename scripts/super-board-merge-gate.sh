@@ -48,7 +48,31 @@
 # Usage:
 #   super-board-merge-gate.sh --config <config.json> --pr <number>
 #                             [--expect-head <sha>] [--subject <title>] [--body-file <md>]
-#                             [--lock-timeout 1800] [--stale-after 5400] [--dry-run]
+#                             [--lock-timeout 1800] [--stale-after 5400]
+#                             [--verify-cache-ttl 1200] [--dry-run]
+#
+# VERIFIED-TREE CACHE
+#
+# Several PRs usually share one base, so the same suite is proven green again and
+# again for a tree that has not changed. The gate hashes what it is about to prove:
+# base commit + the merged tree it verifies + the verify command list and the
+# `scripts/verify.sh` those commands run + the QA report selection the commands
+# read - and reuses a green result recorded under that key within
+# `--verify-cache-ttl` (default 1200s). A new push (different tree), a moved base,
+# a changed command list, a changed/missing/failing QA report, an expired entry or
+# a cache miss runs the full suite as before. The key itself is printed, so the log
+# proves what was reused: `verify: cached from #<pr> at <time> (key <key>)`.
+#
+# Only a green run is recorded. A failure never writes an entry, so it can never be
+# replayed as a pass. The run's own output is kept under
+# `.claude/super-board/inflight/verify-logs/<key>.log` with its head and command,
+# outside the scratch worktree the gate deletes. Those logs are pruned past a 7-day
+# retention by `super-board-prune-verify-logs.py`, which the gate calls before it
+# takes the lock and which deletes nothing while `merge.lock` is held — a log from
+# a run in flight is hours old, never days. Everything else stays as it was:
+# the check still happens inside the merge lock, approval pins the head, and
+# `--match-head-commit` still makes GitHub refuse a push that landed during
+# verification.
 #
 # `--expect-head` is the PR head commit the Reviewer actually reviewed and
 # tested (its `headRefOid` when review passed). The gate pins everything to one
@@ -118,6 +142,7 @@ HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 GITHUB_READ="$HERE/super-board-github-read.py"
 
 CONFIG=""; PR=""; LOCK_TIMEOUT=1800; STALE_AFTER=""; DRY=0; EXPECT_HEAD=""; SUBJECT=""; MSG_FILE=""
+CACHE_TTL=1200
 while [ $# -gt 0 ]; do
   case "$1" in
     --config)        CONFIG="$2"; shift 2 ;;
@@ -127,12 +152,16 @@ while [ $# -gt 0 ]; do
     --body-file)     MSG_FILE="$2"; shift 2 ;;
     --lock-timeout)  LOCK_TIMEOUT="$2"; shift 2 ;;
     --stale-after)   STALE_AFTER="$2"; shift 2 ;;
+    --verify-cache-ttl) CACHE_TTL="$2"; shift 2 ;;
     --dry-run)       DRY=1; shift ;;
     *) echo "unknown arg: $1" >&2; exit 64 ;;
   esac
 done
 [ -n "$CONFIG" ] && [ -e "$CONFIG" ] || { echo "config not found: ${CONFIG:-<unset>}" >&2; exit 66; }
 [ -n "$PR" ] || { echo "--pr <number> is required" >&2; exit 64; }
+case "$CACHE_TTL" in
+  ''|*[!0-9]*) echo "--verify-cache-ttl needs whole seconds, got: $CACHE_TTL" >&2; exit 64 ;;
+esac
 [ -z "$MSG_FILE" ] || [ -r "$MSG_FILE" ] || { echo "--body-file not readable: $MSG_FILE" >&2; exit 66; }
 # A lock is presumed abandoned only well past the point a caller stops waiting,
 # so a slow-but-alive merge is never stolen from. The floor matters as much as
@@ -152,6 +181,8 @@ BASE=$(echo "$CONFIG_JSON" | jq -r '.base_branch // "main"')
 REPO=$(echo "$CONFIG_JSON" | jq -r '.repo.remote // ""' | sed -E 's#^https?://github\.com/##; s#\.git$##')
 REPO_PATH=$(echo "$CONFIG_JSON" | jq -r '.repo.path // "."')
 export SB_REPO_PATH="$REPO_PATH"
+# Verify commands may read the card's QA report by PR number.
+export SB_PR="$PR"
 # Read with a while-loop rather than `mapfile`: macOS ships bash 3.2 and every
 # other script in this repo runs there, so this one does too.
 VERIFY=()
@@ -168,6 +199,12 @@ python3 "$GITHUB_READ" --check
 
 LOCK_DIR="${REPO_PATH}/.claude/super-board/inflight/merge.lock"
 mkdir -p "$(dirname "$LOCK_DIR")"
+
+# Bounded retention for the verified-tree cache's logs: one per uncached run, and
+# nothing removed them before. Before the lock, so a held lock means another gate
+# is verifying and every log stays. Pruning is tidying, never the merge's proof.
+python3 "$HERE/super-board-prune-verify-logs.py" --root "$REPO_PATH" >&2 \
+  || echo "[merge-gate #${PR}] could not prune verify logs (not fatal)" >&2
 
 say() { echo "[merge-gate #${PR}] $*" >&2; }
 
@@ -247,7 +284,9 @@ PLAN=$(python3 "$HERE/super-board-merge-policy.py" --config "$CONFIG" --meta "$M
   say "merge policy could not be evaluated — a human merges this one"; exit 7; }
 
 # The label is display-only. A request posted before `done` pins the exact head
-# and policy/commands. Re-read trusted approval evidence; never mint it here.
+# and the required human steps/migrations. Policy holds stay out of the scope: their
+# evidence comes from the merge diff, so an `origin/main` move would re-request a
+# `done` that still holds. Re-read trusted approval evidence; never mint it here.
 APPROVED=false
 approval_check() {
   APPROVAL=$(python3 "$HERE/super-board-approval.py" --repo "$REPO" --pr "$PR" \
@@ -305,16 +344,101 @@ if ! git -C "$SCRATCH" merge "origin/${BASE}" --no-edit --quiet 2>/dev/null; the
   exit 5
 fi
 
-for cmd in "${VERIFY[@]}"; do
-  say "verify: ${cmd}"
-  if ! ( cd "$SCRATCH" && eval "$cmd" ) >"$SCRATCH/.verify.log" 2>&1; then
-    say "FAILED: ${cmd}"
-    tail -30 "$SCRATCH/.verify.log" >&2
-    say "the branch is stale against ${BASE} — send it back to Build for a rebase pass"
-    exit 2
+# ---- the verified-tree cache ------------------------------------------------
+# The proof below is a function of three things: the base commit merged in, the
+# exact tree left in the scratch worktree, and the commands that proved it (plus
+# the `scripts/verify.sh` those commands usually run, so editing the suite
+# invalidates without touching the command list). Hash them together, print the
+# key, and reuse a recorded green only when every part still matches.
+sha256_of_stdin() {
+  if command -v sha256sum >/dev/null 2>&1; then sha256sum; else shasum -a 256; fi | cut -d' ' -f1
+}
+BASE_SHA=$(git -C "$REPO_PATH" rev-parse "origin/${BASE}")
+TREE=$(git -C "$SCRATCH" rev-parse 'HEAD^{tree}')
+COMMANDS_HASH=$(
+  {
+    printf '%s\n' "${VERIFY[@]}"
+    if [ -f "$SCRATCH/scripts/verify.sh" ]; then cat "$SCRATCH/scripts/verify.sh"; fi
+  } | sha256_of_stdin
+)
+# A cached green proves the QA report's own selection, so the selection is part of
+# the key: the newest `[qa] [report]` comments on this PR, as written. A changed,
+# missing, failing or unreadable report hashes differently from any recorded green,
+# so the gate re-runs the selection on the same tree. Two PRs naming the same
+# selection on the same tree still share an entry, which is what the cache is for.
+# Raw `gh` because a missing report is a cache miss, never a run halt.
+QA_SELECTION=$(
+  gh api "repos/${REPO}/issues/${PR}/comments" --paginate --slurp 2>/dev/null \
+    | jq -c '[.[][] | select(.body | contains("[qa] [report]")) | .body]' 2>/dev/null
+) || QA_SELECTION="<unreadable qa report>"
+QA_SELECTION=${QA_SELECTION:-"<no qa report>"}
+SELECTION_HASH=$(printf '%s\n' "$QA_SELECTION" | sha256_of_stdin)
+CACHE_KEY=$(printf 'base:%s\ntree:%s\ncommands:%s\nselection:%s\n' \
+  "$BASE_SHA" "$TREE" "$COMMANDS_HASH" "$SELECTION_HASH" | sha256_of_stdin)
+CACHE_DIR="${REPO_PATH}/.claude/super-board/inflight/verify-cache"
+CACHE_FILE="${CACHE_DIR}/${CACHE_KEY}.json"
+say "verify-cache key: ${CACHE_KEY}"
+say "verify-cache base ${BASE_SHA} tree ${TREE} selection ${SELECTION_HASH}"
+
+CACHED_PR=""; CACHED_AT=""; CACHED_HEAD=""
+if [ -f "$CACHE_FILE" ]; then
+  ENTRY=$(jq -r '[.status, (.pr // "" | tostring), (.at // 0 | tostring), (.head // "")] | @tsv' \
+    "$CACHE_FILE" 2>/dev/null || true)
+  IFS=$'\t' read -r E_STATUS E_PR E_AT E_HEAD <<<"$ENTRY"
+  # Only the gate writes this entry, but a hand-edited `at` must not abort the
+  # run under `set -u`: an age that is not a number is not evidence.
+  case "${E_AT:-0}" in
+    ''|*[!0-9]*)
+      say "verify-cache entry has no usable age; ignoring it"
+      E_STATUS=""; E_AT=0 ;;
+  esac
+  E_AT=${E_AT:-0}
+  E_AGE=$(( $(date +%s) - E_AT ))
+  if [ "${E_STATUS:-}" != green ]; then
+    say "verify-cache entry is not a recorded pass; ignoring it"
+  elif [ "$E_AGE" -ge "$CACHE_TTL" ]; then
+    say "verify-cache stale: recorded ${E_AGE}s ago, ttl ${CACHE_TTL}s; re-running"
+    rm -f "$CACHE_FILE"
+  else
+    CACHED_PR="$E_PR"; CACHED_HEAD="$E_HEAD"
+    CACHED_AT=$(date -u -r "${E_AT:-0}" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null \
+      || date -u -d "@${E_AT:-0}" +%Y-%m-%dT%H:%M:%SZ)
   fi
-done
-say "verified green against ${BASE} (${#VERIFY[@]} command(s))"
+fi
+
+if [ -n "$CACHED_PR" ]; then
+  say "verify: cached from #${CACHED_PR} at ${CACHED_AT} (key ${CACHE_KEY}, head ${CACHED_HEAD})"
+else
+  # The log lives outside $SCRATCH so cleanup cannot drop the output that proved
+  # this tree green. It names the command, the head and the selection.
+  LOG_DIR="${REPO_PATH}/.claude/super-board/inflight/verify-logs"
+  mkdir -p "$LOG_DIR"
+  VERIFY_LOG="${LOG_DIR}/${CACHE_KEY}.log"
+  printf 'head: %s\nbase: %s\npr: %s\nselection: %s\n' \
+    "$HEAD_SHA" "$BASE_SHA" "$PR" "$SELECTION_HASH" > "$VERIFY_LOG"
+  for cmd in "${VERIFY[@]}"; do
+    say "verify: ${cmd}"
+    printf '\n$ %s\n' "$cmd" >> "$VERIFY_LOG"
+    if ! ( cd "$SCRATCH" && eval "$cmd" ) >>"$VERIFY_LOG" 2>&1; then
+      say "FAILED: ${cmd}"
+      tail -30 "$VERIFY_LOG" >&2
+      say "the branch is stale against ${BASE} - send it back to Build for a rebase pass"
+      exit 2
+    fi
+  done
+  say "verified green against ${BASE} (${#VERIFY[@]} command(s); log ${VERIFY_LOG})"
+  # Recorded only after every command passed, so a red run can never be replayed
+  # as green. A dry run proves nothing about a merge, so it records nothing.
+  if [ "$DRY" -eq 0 ]; then
+    mkdir -p "$CACHE_DIR"
+    jq -cn --arg base "$BASE_SHA" --arg tree "$TREE" --arg commands "$COMMANDS_HASH" \
+        --arg key "$CACHE_KEY" --arg head "$HEAD_SHA" --argjson pr "$PR" \
+        --argjson at "$(date +%s)" \
+        '{status:"green",base:$base,tree:$tree,commands:$commands,key:$key,pr:$pr,head:$head,at:$at}' \
+      > "$CACHE_FILE.tmp" 2>/dev/null && mv "$CACHE_FILE.tmp" "$CACHE_FILE" \
+      || say "could not record the verify cache (not fatal; the suite still ran)"
+  fi
+fi
 
 python3 "$GITHUB_READ" --check
 

@@ -255,10 +255,11 @@ class Readiness(unittest.TestCase):
         self.full()
         (self.root / '.claude/skills/implement/SKILL.md').unlink()
         self.card['labels'] = ['qa']
-        result = self.run_cli()
+        qa_only = ['--lane', 'qa']  # readiness assumes build for Ready; the launcher asks for the qa route
+        result = self.run_cli(extra=qa_only)
         self.assertNotIn('build', [e['lane'] for e in result['entries']])
-        self.card['body'] = 'Skills: custom'; self.run_cli(expected=10)
-        self.put('custom'); self.run_cli()
+        self.card['body'] = 'Skills: custom'; self.run_cli(extra=qa_only, expected=10)
+        self.put('custom'); self.run_cli(extra=qa_only)
         self.card.update(status='Review', labels=[], body='')
         (self.root / '.claude/skills/tdd/SKILL.md').unlink()
         result = self.run_cli()

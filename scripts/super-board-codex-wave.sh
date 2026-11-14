@@ -21,6 +21,16 @@ import tempfile
 import threading
 import time
 
+# Labels that route a card through the Builder. A card carrying one of them is
+# built even when it also carries a stale `qa` label.
+BUILD_PATH_TYPES = ('bug', 'feature', 'ux', 'refactor', 'tech-debt', 'tests', 'docs')
+
+def entry_lane(labels):
+    """Return the Ready entry lane for lower-cased labels: qa only for a qa card."""
+    if 'qa' in labels and not any(label in BUILD_PATH_TYPES for label in labels):
+        return 'qa'
+    return 'build'
+
 parser = argparse.ArgumentParser(description='Dispatch one explicitly opted-in Codex or OpenCode wave.')
 parser.add_argument('--config', required=True)
 parser.add_argument('--cards', required=True, help='planner card array JSON or JSON file')
@@ -207,8 +217,13 @@ def run_card(card):
                     detail='run halted while grading; preserve claims and worktrees', prUrl=None,
                     priorFindings=None, lanesRun='none:halted')
     labels = [str(label).lower() for label in card.get('labels', [])]
-    first = card.get('lane') or ('qa' if 'qa' in labels else 'build')
-    entry = 'review' if card['status'] == 'Review' else 'qa' if card['status'] == 'QA' else first
+    first = card.get('lane') or entry_lane(labels)
+    # The board column decides the entry lane; a Ready `qa` label only offers the QA
+    # route, so a Building card always builds.
+    entry = ('review' if card['status'] == 'Review'
+             else 'qa' if card['status'] == 'QA'
+             else 'build' if card['status'] == 'Building'
+             else first)
     lanes = ['build', 'qa', 'review'][['build', 'qa', 'review'].index(entry):]
     history = []
     current = dict(card)
