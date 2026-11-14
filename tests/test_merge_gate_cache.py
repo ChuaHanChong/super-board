@@ -313,6 +313,20 @@ def test_the_success_log_is_kept_after_cleanup(tmp_path: Path) -> None:
     assert "sh -c 'echo the-selected-output" in text
 
 
+def test_a_relative_venv_interpreter_runs_in_the_scratch_worktree(tmp_path: Path) -> None:
+    """The main checkout's git-ignored venvs/ reaches a relative `venvs/...` line."""
+    h = Harness(tmp_path)
+    marker = tmp_path / "venv-ran"
+    interpreter = h.repo / "venvs" / "probe" / "bin" / "python"
+    interpreter.parent.mkdir(parents=True)
+    interpreter.write_text(f"#!/usr/bin/env bash\nprintf ran > {marker}\n")
+    interpreter.chmod(0o755)
+    h.set_commands(["venvs/probe/bin/python"])
+    result = h.gate(1, "feat-a")
+    assert result.returncode == 0, result.stderr
+    assert marker.read_text() == "ran"
+
+
 def test_the_verify_commands_see_the_card_pr(tmp_path: Path) -> None:
     """The gate exports SB_PR so verify commands can find the card's QA report."""
     h = Harness(tmp_path)

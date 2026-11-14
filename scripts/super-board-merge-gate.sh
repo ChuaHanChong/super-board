@@ -344,6 +344,13 @@ if ! git -C "$SCRATCH" merge "origin/${BASE}" --no-edit --quiet 2>/dev/null; the
   exit 5
 fi
 
+# venvs/ is usually git-ignored, so the scratch worktree has no interpreter and a
+# relative `venvs/...` verify command exits 127. Link the main checkout's venvs/
+# only, and only when it exists.
+if [ -d "${REPO_PATH}/venvs" ] && [ ! -e "${SCRATCH}/venvs" ]; then
+  ln -s "${REPO_PATH}/venvs" "${SCRATCH}/venvs"
+fi
+
 # ---- the verified-tree cache ------------------------------------------------
 # The proof below is a function of three things: the base commit merged in, the
 # exact tree left in the scratch worktree, and the commands that proved it (plus
