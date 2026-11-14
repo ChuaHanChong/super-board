@@ -106,9 +106,11 @@ def remaining(card, lane=None):
     status = card.get('status')
     if status not in ['Ready', 'Building', 'QA', 'Review']:
         raise ValueError('card status must be Ready/Building/QA/Review')
-    first = 'review' if status == 'Review' else 'qa' if status == 'QA' else 'qa' if 'qa' in labels_of(card) else 'build'
+    # The board column decides the entry lane; a Ready `qa` label only offers the QA
+    # route to its launcher, so a stale label can never refuse the build lane.
+    first = 'review' if status == 'Review' else 'qa' if status == 'QA' else 'build'
     route = card.get('lane')
-    if route is not None and route != first:
+    if route is not None and route != first and not (status == 'Ready' and route == 'qa'):
         raise ValueError('card lane conflicts with status/qa routing')
     if lane:
         # A launcher can test a later lane while retaining its original card status.

@@ -13,6 +13,7 @@
 set -euo pipefail
 exec python3 - "${BASH_SOURCE[0]}" "$@" <<'PY'
 import argparse
+import atexit
 import importlib.util
 import json
 import os
@@ -264,6 +265,76 @@ for value in declared_roots:
     extra = (Path(value) if os.path.isabs(value) else common_dir.parent / value).resolve()
     extra.mkdir(parents=True, exist_ok=True)
     write_roots.append(extra)
+# Per-lane temp root: a lane takes its TMPDIR and uv cache from here, so no
+# pytest basetemp, uv cache or git worktree of this lane lands in the host /tmp.
+lane_tmp_root = lane_config.get('tmp_root', '') if isinstance(lane_config, dict) else ''
+if not isinstance(lane_tmp_root, str):
+    fail('lane.tmp_root must be a path')
+lane_tmp_base = ((Path(lane_tmp_root) if os.path.isabs(lane_tmp_root) else common_dir.parent / lane_tmp_root)
+                 if lane_tmp_root else (common_dir.parent / '.claude' / 'super-board' / 'tmp' / 'lanes'))
+tmp_helper = script_path.with_name('super-board-lane-tmp.py')
+try:
+    lane_tmp = Path(subprocess.check_output(
+        [sys.executable, str(tmp_helper), 'create', str(lane_tmp_base.resolve()), str(card['number']), args.lane],
+        text=True).strip())
+except (OSError, subprocess.CalledProcessError) as error:
+    result('failed', f'cannot create the lane temp root under {lane_tmp_base}: {error}')
+    sys.exit(1)
+write_roots.append(lane_tmp)
+
+child = None
+lane_finished = False
+# The index registry lives in GITNEXUS_HOME, so the exit cleanup must read the one the lane used.
+gitnexus_home = Path(os.environ.get('GITNEXUS_HOME') or Path.home() / '.gitnexus').resolve()
+lane_worktree = root / '.claude' / 'worktrees' / f"issue-{card['number']}-{args.lane}"
+# `remove` unregisters by path, so it still works after the lane deleted its worktree on the
+# ordinary exit. One removal measured 0.1 s; 5 s fits behind the 2 s child wait inside the
+# wave's 10 s SIGTERM grace.
+GITNEXUS_REMOVE_TIMEOUT_SECONDS = 5
+def clean_lane_gitnexus():
+    """Best effort: unregister the lane worktree's GitNexus index by path, never touching our stdout."""
+    if child is None or not shutil.which('gitnexus'):  # no child ran, so this lane registered no index
+        return
+    try:
+        done = subprocess.run(['gitnexus', 'remove', '--force', str(lane_worktree)], cwd=str(root), capture_output=True,
+                              text=True, timeout=GITNEXUS_REMOVE_TIMEOUT_SECONDS,
+                              env=dict(os.environ, GITNEXUS_HOME=str(gitnexus_home)))
+    except (OSError, subprocess.SubprocessError) as error:
+        sys.stderr.write(f'gitnexus remove skipped: {error}\n')
+        return
+    if done.returncode:
+        sys.stderr.write(f'gitnexus remove exited {done.returncode}\n' + done.stderr)
+def finish_lane_tmp():
+    """Remove this lane's temp root and the worktrees it registered; report /tmp leftovers."""
+    done = subprocess.run([sys.executable, str(tmp_helper), 'cleanup', str(root), str(lane_tmp)],
+                          capture_output=True, text=True)
+    sys.stderr.write(done.stdout + done.stderr)
+def finish_lane():
+    """Unregister the lane's index, then remove its temp root; every exit path runs it once."""
+    global lane_finished
+    if lane_finished:
+        return
+    lane_finished = True
+    clean_lane_gitnexus()
+    finish_lane_tmp()
+def interrupted(signum, frame):
+    if child is not None:
+        child.terminate()
+        try:
+            child.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            child.kill()
+            child.wait()
+    result('halted', 'lane interrupted; preserve claims and worktrees')
+    sys.stdout.flush()  # the bounded cleanup below must never cost the lane result
+    finish_lane()
+    sys.exit(128 + signum)
+# Registered as soon as the root exists: every later exit, including a halt gate that runs
+# before the child starts (exit 10, 64 or 79), removes the root and the lane's index.
+atexit.register(finish_lane)
+signal.signal(signal.SIGTERM, interrupted)
+signal.signal(signal.SIGINT, interrupted)
+
 helper = script_path.with_name('super-board-github-read.py')
 if not helper.exists() or subprocess.run([sys.executable, str(helper), '--check']).returncode:
     result('halted', 'required GitHub reads halted or helper missing; preserve claims and worktrees')
@@ -272,7 +343,6 @@ if not helper.exists() or subprocess.run([sys.executable, str(helper), '--check'
 resolver_path = script_path.with_name('super-board-skills-ready.py')
 try:
     # The lane's CLI and the host's MCP server must share one index; a sandbox denies this home by default.
-    gitnexus_home = Path(os.environ.get('GITNEXUS_HOME') or Path.home() / '.gitnexus').resolve()
     gitnexus_home.mkdir(parents=True, exist_ok=True)
     spec = importlib.util.spec_from_file_location('skills_ready', resolver_path)
     resolver = importlib.util.module_from_spec(spec)
@@ -354,28 +424,21 @@ def conforms(value, rule):
             return False
         return all(conforms(value[key], rule['properties'][key]) for key in value)
     return True
-child = None
-def interrupted(signum, frame):
-    if child is not None:
-        child.terminate()
-        try:
-            child.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            child.kill()
-            child.wait()
-    result('halted', 'lane interrupted; preserve claims and worktrees')
-    sys.exit(128 + signum)
-signal.signal(signal.SIGTERM, interrupted)
-signal.signal(signal.SIGINT, interrupted)
-with tempfile.TemporaryDirectory(prefix=f'super-board-{backend.name}-') as temporary:
+with tempfile.TemporaryDirectory(prefix=f'super-board-{backend.name}-', dir=str(lane_tmp)) as temporary:
     run = dict(root=root, git_dir=git_dir, common_dir=common_dir, model=model, prompt=prompt, installation_id=installation_id,
                schema_path=Path(temporary) / 'schema.json', output=Path(temporary) / 'result.json',
                gitnexus_home=gitnexus_home, write_roots=write_roots)
     run['schema_path'].write_text(json.dumps(schema))
     command, stdin = backend.command(run)
+    lane_env = dict(os.environ, TMPDIR=str(lane_tmp),
+                    TMP=str(lane_tmp), TEMP=str(lane_tmp), UV_CACHE_DIR=str(lane_tmp / 'uv-cache'),
+                    UV_PYTHON_INSTALL_DIR=str(lane_tmp / 'uv-python'))
+    # Cap BLAS/OpenMP fan-out per test process; concurrent lanes otherwise oversubscribe the host.
+    for variable in ('OMP_NUM_THREADS', 'MKL_NUM_THREADS', 'OPENBLAS_NUM_THREADS'):
+        lane_env.setdefault(variable, '4')
     try:
         child = subprocess.Popen(command, stdin=subprocess.PIPE if stdin is not None else subprocess.DEVNULL,
-                                 stdout=subprocess.PIPE if backend.capture_stdout else sys.stderr, text=True)
+                                 stdout=subprocess.PIPE if backend.capture_stdout else sys.stderr, text=True, env=lane_env)
         stdout, _ = child.communicate(stdin)
         require_verification_ready()
         if child.returncode:

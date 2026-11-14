@@ -184,7 +184,12 @@ Every Ready issue should be executable without live clarification. Preferred iss
 - Human gates: <deploy, destructive DB action, product decision, etc.>
 ```
 
-Super Build treats acceptance criteria as the completion contract. Tick an AC in the issue body as soon as that AC's own evidence lands: `.claude/bin/super-board-card.sh tick <issue> "<text from the AC line>"`. Tick one box at a time; never bulk-tick at the end, never tick before the evidence exists, and leave an unmet box open. If the issue is too vague to execute, label/comment it as human-gated instead of guessing.
+Super Build treats acceptance criteria as the completion contract. The Builder never ticks a box:
+it opens the PR with every AC unchecked and a one-line reason (`not verified yet: QA has not run`).
+The Tester ticks each box as that AC's own evidence lands — `.claude/bin/super-board-card.sh tick
+<issue> "<text from the AC line>"` for the issue body, the PR's `ac` block alongside it — one box at
+a time, never bulk-ticked at the end, never before the evidence exists, and an unmet box stays open.
+If the issue is too vague to execute, label/comment it as human-gated instead of guessing.
 
 ## Constraints
 

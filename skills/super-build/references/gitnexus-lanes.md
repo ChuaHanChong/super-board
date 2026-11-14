@@ -4,10 +4,13 @@ Use GitNexus on every code card, in the lane's own worktree. A code card is any 
 
 ## Setup
 
-1. Index the worktree: `gitnexus analyze --index-only .` from its root.
-   `--index-only` writes nothing into the PR. A research card already indexed in its preamble does not repeat this.
-2. Pass the worktree's absolute path as `repo`, because folder names repeat across projects.
-3. Run `gitnexus clean --force` in the worktree on every exit from the lane.
+1. Index the worktree from its root. The command depends on whether it already has an index:
+   - Fresh worktree, no `.gitnexus` folder: `gitnexus analyze --index-only .`
+   - Worktree that already has `.gitnexus` (a rebuild round, the run after merging `origin/main`, any second index): `gitnexus analyze --force --index-only .`
+2. Never run `gitnexus analyze --watch`, and never index a worktree that already has `.gitnexus` without `--force`: the incremental refresh blanks `Function` `name`/`id`/`filePath` (seen on gitnexus 1.6.12), so `impact`, `context` and `detect-changes` return nothing. `--force` rebuilds the graph; `--index-only` writes nothing into the PR. A research card already indexed in its preamble does not repeat this.
+3. Health check after every index: `.claude/bin/super-board-gitnexus-health.py --repo <absolute worktree path>`. It runs `MATCH (n:Function) WHERE n.name = "" RETURN count(n)`. A non-zero count Blocks the lane, and the block names the count.
+4. Pass the worktree's absolute path as `repo`, because folder names repeat across projects.
+5. Run `gitnexus clean --force` in the worktree on every exit from the lane.
 
 ## What each lane runs
 
@@ -29,3 +32,4 @@ Use GitNexus on every code card, in the lane's own worktree. A code card is any 
 1. `gitnexus` is required on a code card: readiness halts without it. A failed index is Blocked, naming the error.
    A row's skill the host does not have: run its commands directly.
 2. An empty `impact` is not proof of safety: `getattr`, registries, decorators and Hydra `_target_` leave no edge. Also text-search the symbol, including config files.
+3. A blank `Function` name is a broken index, not a clean one: the health check in Setup decides, never an empty `impact` result.

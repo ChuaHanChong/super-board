@@ -86,6 +86,12 @@ label picks its path — three labels, no per-board variant:
 | `qa` | Ready → QA → Review → Done | test what already exists; skips Building |
 | none | as `feature` | the classifier adds `feature` or `bug`; it never adds `qa` |
 
+A **qa card** is labelled `qa` and carries no build-path type label (`bug`, `feature`,
+`ux`, `refactor`, `tech-debt`, `tests`, `docs`). Only a qa card enters at QA. Every other
+card builds, so a stale `qa` label on a typed card cannot skip Building, and a qa card
+back for a QA rebuild (Ready + `loop:rebuild-N`) stays in QA. The readiness check
+lets any launcher ask for the build lane on a Ready card.
+
 `super-board-wave-plan.sh` puts `lane` (`build` / `qa` / `review`) and `labels` on every picked
 card; `super-board-wave.js` sends a `qa` card from Ready straight to the Tester. The legacy runner
 reads the label of the top Ready card the same way (`card_lane`).

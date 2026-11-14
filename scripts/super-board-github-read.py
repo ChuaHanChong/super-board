@@ -9,6 +9,10 @@ Mutations never enter this retry helper. For the agent-facing kinds in FORMS, a
 payload that fails its shape on every attempt is the caller's malformed read, not
 an outage: that call exits 64 with the valid form and the run keeps going. Scripts
 whose commands are fixed set SB_GITHUB_READ_STRICT=1 to keep halting on it.
+
+A branch-protection read on a repo whose plan does not expose the feature answers
+403 "Upgrade to GitHub Pro ...". That read can never succeed, so it returns an empty
+result as a known absence and never writes a halt.
 """
 from __future__ import annotations
 
@@ -127,6 +131,20 @@ def permanent_error(text):
                      r'GRAPHQL_VALIDATION_FAILED|undefinedField|variableRequiresValidType|'
                      r'HTTP 40[134]|Bad credentials|requires authentication|Resource not accessible|'
                      r'Could not resolve to (?:a|an) |missing required scopes', text, re.I) is not None
+
+
+# A branch-protection read on a repo whose plan does not expose the feature answers
+# 403 "Upgrade to GitHub Pro ..." forever: a known absence, never an outage.
+PROTECTION_PATH = re.compile(r'/branches/[^/\s]+/protection(?:[/?\s]|$)')
+UPGRADE_403 = re.compile(r'Upgrade to GitHub Pro|make this repository public', re.I)
+
+
+def known_absence(args, diagnostic):
+    """True when this read asks for branch protection the repository cannot expose."""
+    # Only the plan message is an absence: any other 401/403 on the same path is a real
+    # auth, permission or quota failure, and permanent_error() must still halt it.
+    return (any(PROTECTION_PATH.search(arg) for arg in args)
+            and UPGRADE_403.search(diagnostic) is not None)
 
 
 def require(condition, why):
@@ -432,6 +450,11 @@ def read(args, kind='json', meta=None, recovering=False):
                     diagnostic += json.dumps([p.get('errors', []) for p in (payload if isinstance(payload, list) else [payload]) if isinstance(p, dict)])
                 except ValueError:
                     pass
+            if result.returncode and known_absence(args, diagnostic):
+                # Known absence: an empty result keeps the call successful and halts nothing.
+                print('[github-read] absent: branch protection is not available on this repo',
+                      file=sys.stderr)
+                return '{}', {}
             if permanent_error(diagnostic):
                 halt('GitHub rejected a required read (query, authentication, or permission error); fix it before restarting', attempt, operation)
             if result.returncode:

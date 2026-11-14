@@ -24,27 +24,36 @@ The bot must write a structured comment on **both the issue and the PR** (if a P
 
 ```
 [<role>] [blocker] 🛑 blocked · <reason emoji> <one-line reason>
-Card:        #<N> <title>
-PR:          #<P> (if exists)
-Reason tag:  <emoji from table below>
-Why blocked: <concrete; 1 line — name the specific thing that is missing or wrong>
-Evidence:    <the command + output, file:line, or error that shows it — not a paraphrase>
-Checked:     <what the bot verified before blocking, so nobody re-checks it — or "-">
-What blocks: <what specific external action would change this — credentials, perms, decisions>
-Why I (bot) cannot decide:
-             <one line explaining the decision the bot refuses to make on its own —
-              "involves billing config; this is a customer money decision",
-              "requires choosing between two valid auth providers; ambiguous from spec",
-              "would drop a Postgres table; destructive, needs human sign-off">
-To unblock:  <concrete action the human can take, in their own checklist form>
-             [ ] <step 1>
-             [ ] <step 2>
-Owner:       <who acts next — "Eric", "repo admin", "design" — never "someone">
-Move back:   drag this card to Ready after the steps above are done
-blocked-by:  <comma-separated issue numbers, or "-" if nothing on this board clears it>
+- **Card:** #<N> <title>
+- **PR:** #<P> (if exists)
+- **Reason tag:** <emoji from table below>
+- **Why blocked:** <concrete; 1 line — name the specific thing that is missing or wrong>
+- **Evidence:** <the command + output, file:line, or error that shows it — not a paraphrase>
+- **Checked:** <what the bot verified before blocking, so nobody re-checks it — or "-">
+- **What blocks:** <what specific external action would change this — credentials, perms, decisions>
+- **Why I (bot) cannot decide:** <one line explaining the decision the bot refuses to make on its own —
+  "involves billing config; this is a customer money decision",
+  "requires choosing between two valid auth providers; ambiguous from spec",
+  "would drop a Postgres table; destructive, needs human sign-off">
+- **To unblock:**
+  - [ ] <step 1>
+  - [ ] <step 2>
+- **Owner:** <who acts next — "Eric", "repo admin", "design" — never "someone">
+- **Move back:** drag this card to Ready after the steps above are done
+
+blocked-by: <comma-separated issue numbers, or "-" if nothing on this board clears it>
 ```
 
-One line per field. The header is the comment header of writing-standard.md § 4: `<role>` is
+One line per field, and every prose field is a list item. GitHub Markdown collapses a single newline
+into a space, so fields written as plain consecutive lines render as one paragraph: a field that must
+not merge with its neighbour gets a list item or a blank line between them, never a single newline.
+Two lines stay bare at column 0, with a blank line above them, because a script reads them and no
+Markdown shape is worth a broken parser: `blocked-by:` (`super-board-deps.sh`) and
+`approval-request:` (`super-board-approval.py`). The same applies to every other machine line a lane
+emits (`root-cause-hash:`, `gh-quota-on-exit:`, `move-mutation-result:`, `needs-you:`): bare, at
+column 0, never a list item. `Reason tag:` may be a list item, because both parsers match it
+unanchored, but it must carry the emoji.
+The header is the comment header of writing-standard.md § 4: `<role>` is
 the lane that writes it (`builder` · `qa` · `reviewer` · `collect` · `orchestrator`). The Block
 template is the one comment allowed past 8 lines — its fields are what the human and the sweep
 need. The reader is a human deciding in ten seconds whether this is theirs: lead with the fact,
@@ -53,9 +62,12 @@ prose through `humanizer` when installed.
 
 ### The `blocked-by:` line is mandatory
 
-Last line of the block, always present, machine-read. It sits alongside the other machine lines the
-lanes already emit (`root-cause-hash:`, `gh-quota-on-exit:`, `move-mutation-result:`) and follows the
-same rule: **prose above for the human, one parseable line below for the loop.**
+Last line of the block, always present, machine-read. It stays a bare `blocked-by:` at column 0 with
+a blank line above it; **never** `- **blocked-by:**`, because `super-board-deps.sh` matches
+`^[ \t]*blocked-by:` and a list item hides the line from the sweep. It sits alongside the other
+machine lines the lanes already emit (`root-cause-hash:`, `gh-quota-on-exit:`,
+`move-mutation-result:`) and follows the same rule: **prose above for the human, one parseable line
+below for the loop.**
 
 - `blocked-by: 32, 91` — this card returns to `Ready` the moment both close. The sweep does it.
 - `blocked-by: -` — nothing on this board clears it. It waits for a person, and the sweep leaves it
@@ -109,6 +121,7 @@ that policy hold too: the approval covers those human steps as well as the code.
 - [ ] Run `<exact command 1, copy-paste ready>` on the **<env>** database
 - [ ] <exact command 2, if any>
 - [ ] Comment `done` here
+
 After a trusted human confirms this version, the next wave returns it to Review for verification.
 
 <details><summary>Why, and what I checked</summary>
@@ -131,8 +144,10 @@ Example (what the person sees on GitHub):
 > After a trusted human confirms this version, the next wave returns it to Review for verification.
 > ▸ Why, and what I checked
 
-The `Reason tag:` and `blocked-by: -` lines stay (inside the fold): the planner reads them
-(`super-board-deps.sh` → `needsYou`, `humanGated`). The issue and the PR get the `needs-you` label.
+The `Reason tag:` and `blocked-by: -` lines stay (inside the fold), bare at column 0: the planner
+reads them (`super-board-deps.sh` → `needsYou`, `humanGated`) and `super-board-approval.py` reads
+`approval-request:` at column 0. They are machine lines, not fields, so the list-item rule above does
+not apply to them. The issue and the PR get the `needs-you` label.
 
 **The checklist commands are exact.** Copy them from the gate's `needs-you: <command>` lines;
 never paraphrase ("run the migration on prod"). A placeholder such as `<your live migrate command>`
@@ -140,8 +155,9 @@ means the config has no command for that env — say so in the fold and name the
 (`migrations.commands.live`).
 
 **Approval request.** Copy the gate's `approval-request:` line verbatim into this
-issue comment. It records the full PR head and the exact policy/human steps being
-confirmed. The issue must be linked by the PR's closing reference (`Closes #N`).
+issue comment. It pins the repository, PR, full head and required human steps and
+migrations. A base move never changes it; a new head does. The issue must be linked
+by the PR's closing reference (`Closes #N`).
 For a standalone PR, post the canonical request on the PR instead. Keep a single
 request location: the PR's status comment links to the issue request and does not
 repeat `Reason tag: 🙋` or `approval-request:`. Never edit a request after posting;

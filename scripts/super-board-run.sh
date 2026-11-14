@@ -190,13 +190,18 @@ issue_is_open() {
 TOP_ISSUE=""
 TOP_ITEM_ID=""
 card_lane() {
-  # "qa" when issue $1 carries the `qa` label on the board snapshot, else "build".
-  # Labels sit on the item (`labels`) or its content, as names or {name}.
+  # "qa" only for a qa card: a Ready issue $1 carries the `qa` label and no
+  # build-path type label (bug, feature, ux, refactor, tech-debt, tests, docs).
+  # A stale `qa` label on a typed card never routes it to QA, and a qa card back
+  # for a QA rebuild stays in QA. Labels sit on the item (`labels`) or
+  # its content, as names or {name}.
   echo "$PROJECT_ITEMS_JSON" | jq -r --argjson n "$1" '
     [.items[] | select(.content.number == $n)
      | ((.labels // []) + (.content.labels // []))[]
-     | (if type == "object" then .name else . end) | ascii_downcase]
-    | if index("qa") then "qa" else "build" end' 2>/dev/null || echo build
+     | (if type == "object" then .name else . end) | ascii_downcase] as $labels
+    | if ($labels | index("qa")) and
+         ([ $labels[] | select(. as $l | ["bug", "feature", "ux", "refactor", "tech-debt", "tests", "docs"] | index($l)) ] | length == 0)
+      then "qa" else "build" end' 2>/dev/null || echo build
 }
 
 top_card_in_column() {

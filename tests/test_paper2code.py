@@ -89,6 +89,7 @@ class Paper2Code(unittest.TestCase):
                         str(self.project.resolve()): 'write', str((self.project / '.git').resolve()): 'write'}
             if call['lane'] == 'build':
                 expected[str(installation_id.resolve())] = 'write'
+            expected[str((self.project / '.claude/super-board/tmp/lanes' / f"7-{call['lane']}").resolve())] = 'write'  # per-lane temp root
             expected[str(Path(self.env.get('GITNEXUS_HOME') or Path.home() / '.gitnexus').resolve())] = 'write'
             self.assertEqual(filesystem, expected)
             self.assertEqual([value for value in configs if value.startswith('shell_environment_policy.set.CODEX_HOME=')],
