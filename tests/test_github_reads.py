@@ -134,6 +134,59 @@ sys.exit(r.get('rc', 0))
         self.assertEqual(result.returncode, 79)
         self.assertEqual(self.halt.read_text(), original)
 
+    PROTECTION = ['api', 'repos/acme/app/branches/main/protection']
+    UPGRADE = 'HTTP 403: Upgrade to GitHub Pro or make this repository public to enable this feature.'
+    QUOTA = '{"resources":{"graphql":{"remaining":5000,"reset":0},"core":{"remaining":5000,"reset":0}}}'
+
+    def test_branch_protection_plan_403_is_absent_not_halt(self):
+        # A repo whose plan cannot expose protection: an absence, never an outage.
+        for path in ['repos/acme/app/branches/main/protection',
+                     'repos/acme/app/branches/main/protection/required_pull_request_reviews',
+                     'repos/acme/app/branches/main/protection?x=1']:
+            with self.subTest(path=path):
+                self.log.unlink(missing_ok=True)
+                r = self.read([{'rc': 1, 'err': self.UPGRADE}], command=['api', path])
+                self.assertEqual((r.returncode, r.stdout), (0, '{}'), r.stderr)
+                self.assertEqual(self.log.read_text(), '1')
+                self.assertFalse(self.halt.exists(), 'an absence must not halt other lanes')
+        self.assertEqual(self.read([{'out': '{}'}]).returncode, 0)
+
+    def test_real_failure_on_the_protection_path_still_halts(self):
+        # Only the plan message is absent; permission, auth, quota and server failures halt.
+        for err, calls in [('HTTP 403: Resource not accessible by integration', '1'),
+                           ('HTTP 403: missing required scopes', '1'),
+                           ('HTTP 401: Bad credentials', '1'),
+                           ('HTTP 403: API rate limit exceeded for user ID 1.', None),
+                           ('HTTP 429: API rate limit exceeded for user ID 1.', None),
+                           ('HTTP 500: Server Error', None)]:
+            with self.subTest(err=err):
+                self.halt.unlink(missing_ok=True)
+                self.log.unlink(missing_ok=True)
+                r = self.read([{'rc': 1, 'err': err}], command=self.PROTECTION)
+                self.assertEqual(r.returncode, 79, r.stderr)
+                self.assertEqual(r.stdout, '')
+                self.assertTrue(self.halt.exists())
+                if calls:
+                    self.assertEqual(self.log.read_text(), calls, 'a permanent error is not retried')
+
+    def test_plan_message_outside_the_protection_path_still_halts(self):
+        # The absence is scoped to the protection path; any other read keeps its 403.
+        r = self.read([{'rc': 1, 'err': self.UPGRADE}], command=['api', 'repos/acme/app/branches/main'])
+        self.assertEqual(r.returncode, 79, r.stderr)
+        self.assertEqual(self.log.read_text(), '1')
+        self.assertTrue(self.halt.exists())
+
+    def test_resume_clears_a_halt_from_the_absent_read(self):
+        # --resume replays the saved protection read, gets the absence, then clears the halt.
+        self.halt.write_text(json.dumps({'reason': 'GitHub rejected a required read', 'attempts': 1, 'at': 0,
+                                         'operation': {'args': self.PROTECTION, 'kind': 'json', 'meta': None}}))
+        self.env['READ_RESPONSES'] = json.dumps([{'rc': 1, 'err': self.UPGRADE}, {'out': self.QUOTA}])
+        r = subprocess.run(['python3', str(HELPER), '--resume'], env=self.env, cwd=self.root,
+                           text=True, capture_output=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(self.log.read_text(), '2')
+        self.assertFalse(self.halt.exists())
+
     def test_legacy_read_failure_preserves_snapshot_and_prevents_dispatch(self):
         self.env['READ_RESPONSES'] = json.dumps([{'rc': 1}])
         script = """SB_LIB_ONLY=1 . "$1"

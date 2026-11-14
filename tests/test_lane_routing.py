@@ -1,4 +1,4 @@
-"""One lane-routing contract for every launcher: a typed card builds, a qa card test (#1689).
+"""One lane-routing contract for every launcher: a typed card builds, a qa card tests.
 
 A *qa card* is labelled `qa` and carries no build-path type label (bug, feature, ux,
 refactor, tech-debt, tests, docs). It is the only card that enters at QA. Every other

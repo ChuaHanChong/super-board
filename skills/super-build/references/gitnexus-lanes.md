@@ -7,7 +7,7 @@ Use GitNexus on every code card, in the lane's own worktree. A code card is any 
 1. Index the worktree from its root. The command depends on whether it already has an index:
    - Fresh worktree, no `.gitnexus` folder: `gitnexus analyze --index-only .`
    - Worktree that already has `.gitnexus` (a rebuild round, the run after merging `origin/main`, any second index): `gitnexus analyze --force --index-only .`
-2. Never run `gitnexus analyze --watch`, and never index a worktree that already has `.gitnexus` without `--force`: the incremental refresh blanks `Function` `name`/`id`/`filePath` (4,304 rows on gitnexus 1.6.12), so `impact`, `context` and `detect-changes` return nothing. `--force` rebuilds the graph; `--index-only` writes nothing into the PR. A research card already indexed in its preamble does not repeat this.
+2. Never run `gitnexus analyze --watch`, and never index a worktree that already has `.gitnexus` without `--force`: the incremental refresh blanks `Function` `name`/`id`/`filePath` (seen on gitnexus 1.6.12), so `impact`, `context` and `detect-changes` return nothing. `--force` rebuilds the graph; `--index-only` writes nothing into the PR. A research card already indexed in its preamble does not repeat this.
 3. Health check after every index: `.claude/bin/super-board-gitnexus-health.py --repo <absolute worktree path>`. It runs `MATCH (n:Function) WHERE n.name = "" RETURN count(n)`. A non-zero count Blocks the lane, and the block names the count.
 4. Pass the worktree's absolute path as `repo`, because folder names repeat across projects.
 5. Run `gitnexus clean --force` in the worktree on every exit from the lane.

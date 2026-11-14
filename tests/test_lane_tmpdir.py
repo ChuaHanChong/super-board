@@ -1,4 +1,4 @@
-"""Checks the per-lane temp root (#1486): created on /data, cleaned, and never hides /tmp work."""
+"""Checks the per-lane temp root: created under the configured root, cleaned, and never hides /tmp work."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Checks the lane exit unregisters its GitNexus index (#1694) from every exit path."""
+"""Checks the lane exit unregisters its GitNexus index from every exit path."""
 
 from __future__ import annotations
 

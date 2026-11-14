@@ -1,4 +1,4 @@
-"""Pins the block-exit template's rendering shape and its machine lines (#1548).
+"""Pins the block-exit template's rendering shape and its machine lines.
 
 GitHub Markdown collapses a single newline into a space, so a blocker written as
 `Card:` / `PR:` / `Reason tag:` lines on consecutive single-newline lines renders
@@ -104,7 +104,7 @@ def test_blocked_by_line_is_parseable_when_rendered() -> None:
 
 
 def test_parser_anchors_are_pinned() -> None:
-    """The template's bare machine lines match the parsers' own anchors (#1548 R1)."""
+    """The template's bare machine lines match the parsers' own anchors."""
     _assert_parsers_keep_these_anchors()
 
 
